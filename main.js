@@ -10,13 +10,25 @@ var lims = {
     'min' : 1,
     'max' : 10,
   },
+  'diameter':{
+    'min' : 4,
+    'max' : 14,
+  },
+  'bladeHeight' : {
+    'min' : 7,
+    'max' : 14,
+  },
+  'ceilingHeight' : {
+    'min' : 9,
+    'max' : 15,
+  },
   'dimensionlessDiameter':{
     'min' : 0.2,
     'max' : 0.5,
   },
   'aspectRatio' : {
-    'min' : 0.666666,
-    'max' : 1.5,
+    'min' : 3/4,
+    'max' : 4/3,
   },
 }
 console.log(lims);
@@ -26,7 +38,7 @@ function Room(ceilingHeight, sizeX, sizeY) {
   this.sizeX = sizeX;
   this.sizeY = sizeY;
   this.area = function() {
-    return this.sizeX * this. sizeY;
+    return this.sizeX * this.sizeY;
   }
 };
 room1 = new Room(12,90,50)
@@ -39,34 +51,38 @@ function Fan(type, diameter, airflow, bladeHeight) {
   this.airflow = airflow;
   this.bladeHeight = bladeHeight;
 };
-fan1 = new Fan('BestFanEver!!',5,5100,10)
+fan1 = new Fan('BestFanEver!!',8,5100,10)
 console.log(fan1)
 
-/* Sln object represents a potential design solutiion
-including the room & fan characteristics, as well as
-the number of fans */
-function Sln(numFansX, numFansY, room, fan){
+/* Layout object represents a potential design layout
+including the room characteristics and the number of fans */
+function Layout(numFansX, numFansY, room, fan){
   this.numFansX = numFansX;
   this.numFansY = numFansY;
   this.room =  room;
-  this.fan = fan;
   this.cellSizeX = this.room.sizeX / this.numFansX;
   this.cellSizeY = this.room.sizeY / this.numFansY;
-  this.cellArea = function(){
-    return this.cellSizeX * this.cellSizeY;
-  }
-  this.r = Math.sqrt(this.cellArea());
-  this.dr = this.fan.diameter/this.r;
+  this.cellArea = this.cellSizeX * this.cellSizeY;
+  this.r = Math.sqrt(this.cellArea);
   this.aspectRatio = this.cellSizeX/this.cellSizeY;
   this.validDiameters = function(){
-    return [lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max].map(n => n * this.r) ;
+    //test for dimensionless diameter
+    vds = [lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max].map(n => n * this.r);
+    maxDul507True = (this.room.ceilingHeight - 7)/0.2;
+    maxDul507False = (this.room.ceilingHeight - 10)/0.2;
+    if (vds[1] > maxDul507True) vds[1] = maxDul507True;
+    if (vds[1] > 7 && vds[1] > maxDul507False) vds[1] = maxDul507False;
+    if (vds[0] < lims.diameter.min) vds[0] = lims.diameter.min;
+    if (vds[0] > lims.diameter.max) vds[1] = lims.diameter.max;
+    return vds;
   }
 }
-console.log(new Sln(3,2, room1, fan1))
+layout1 = new Layout(3,2, room1, fan1);
+console.log(layout1);
 
 /* function to ensure that the resulting size of the fan 'cell' in either the
 X  or Y direction is within the limits of the underlying data set.
-Avoids unecessarily looping through a large array of 2d solution objects
+Avoids looping through an unecessarily large array of 2d Layout objects
 */
 testLims = function(value, index, testArray, )  {
   return value >= lims.cellSize.min*Math.sqrt(lims.aspectRatio.min) &&
@@ -80,18 +96,17 @@ console.log("Valid number of fans in Y direction: " + validNumFansY)
 console.log("Total number of cases: " + (validNumFansX.length * validNumFansY.length))
 
 
-/* create an array of all candidate solutions that fit within the limitations
+/* create an array of all candidate layouts that fit within the limitations
 based on all attributes
 */
-slns = [];
-
+layouts = [];
 failAspectRatio = [0,0];
 failCellSize = [0,0];
 failDimensionlessDiameter = [0,0];
 for (i = 0; i < validNumFansX.length; i++) {
   for (j = 0; j < validNumFansY.length; j++) {
     // instantiate a candidate solution
-    candidate = new Sln(validNumFansX[i],validNumFansY[j], room1, fan1);
+    candidate = new Layout(validNumFansX[i],validNumFansY[j], room1, fan1);
     // console.log(candidate);
     valid = true;
     // test to see if it meets validity criteria
@@ -119,42 +134,68 @@ for (i = 0; i < validNumFansX.length; i++) {
     //   failDimensionlessDiameter[1]++;
     //   valid = false;
     // };
-    if (valid) slns.push(candidate);
+    if (valid) layouts.push(candidate);
   };
 };
 
 console.log(failAspectRatio + " failed on [min, max] aspect ratio ");
 console.log(failCellSize + " failed on [min, max] cell size");
-console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
+//console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
 
-console.log(slns);
-console.log("Total number of viable solutions: " + slns.length);
+console.log(layouts);
+console.log("Total number of viable solutions: " + layouts.length);
 
 var vv = function(value, index, thisArray) {
   return value.validDiameters();
 }
 
 
-/* identify valid range of fan diameters to ensure a solution
+/* identify range of fan diameters within which at least one layout exists
 */
-var vs = slns.map(vv, slns)
+var vs = layouts.map(vv, layouts)
 console.log(vs)
 var mins = vs.map(function(elt) { return elt[0]; });
 var maxes = vs.map(function(elt) { return elt[1]; });
-var anySln = [Math.min.apply(null, mins), Math.max.apply(null, maxes)];
-console.log("Fan diameter must be within this range to have any solution: " + anySln);
+var anyLayout = [Math.min.apply(null, mins), Math.max.apply(null, maxes)];
+console.log("Fan diameter must be within this range to have a valid layout: " + anyLayout);
 
 
+/* Solution object represents a potential design solution
+including the room, layout and fan characteristics */
+function Solution(layout, fan){
+  this.layout = layout;
+  this.fan = fan;
+  this.dr = this.fan.diameter/this.layout.r;
+  this.clearanceX = function(){
+    return (this.layout.cellSizeX - this.fan.diameter) / 2;
+  }
+  this.clearanceY = function(){
+    return (this.layout.cellSizeY - this.fan.diameter) / 2;
+  }
+  this.airspeeds = function(){
+    //TODO: Calculate airspeeds for each solution
+    return [1,2,3];
+  }
+  this.validMountDistance = function(){
+    if (this.layout.room.ceilingHeight - this.fan.bladeHeight > 0.2 * this.fan.diameter){
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+solution1 = new Solution(layout1, fan1)
+console.log(solution1.clearanceX())
+console.log(solution1.clearanceY())
 
-// console.log(possibleNumFans);
-//
-// var items = [
-//   [1, 2],
-//   [3, 4],
-//   [5, 6]
-// ];
-//
-// console.log(pars);
-//
-// document.write(items);
-// document.write('    ')
+
+//TODO: Instantiate example fan objects
+//TODO: loop through layout for a range of fan objects
+
+/* TODO Develop methods to select for various design cases given
+a set of constraints:
+most/least # numFans - potentially also cost based?
+Smallest/Largest diameter numFans
+Highest/lowest numFans
+most/least uniformity ranked based on squareness, larger D/R ratio, larger D
+*/
