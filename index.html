@@ -1,21 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <title>CBE Fan Tool</title>
   <link rel="icon" href="https://cbe.berkeley.edu/wp-content/uploads/2018/09/cropped-CBE-favicon.3-150x150.png" sizes="32x32">
-</head>
-
-<!DOCTYPE html>
-<html lang="en-US">
-
-<head>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CBE Fan Tool</title>
-  <link rel="stylesheet" href="style.css" type="text/css" media="all">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 
   <style>
@@ -24,41 +15,6 @@
   <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-  <script>
-  $( function() {
-    $( "#slider-diameter" ).slider({
-      range: true,
-      min: 3,
-      max: 18,
-      values: [ 4, 14 ],
-      step: 0.1,
-      slide: function( event, ui ) {
-        $( "#diameter" ).val( ui.values[ 0 ] + " ft - "  + ui.values[ 1 ] + " ft");
-      }
-    });
-    $( "#diameter" ).val( $( "#slider-diameter" ).slider( "values", 0 ) +
-    " ft - " + $( "#slider-diameter" ).slider( "values", 1 ) + " ft");
-  } );
-  </script>
-  <script>
-  $( function() {
-    $( "#slider-dimless" ).slider({
-      range: true,
-      min: 0.15,
-      max: 0.60,
-      values: [ lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max ],
-      step: 0.01,
-      slide: function( event, ui ) {
-        $( "#dimless" ).val( ui.values[ 0 ] + "- "  + ui.values[ 1 ]);
-        lims.dimensionlessDiameter.max = ui.values[ 1 ];
-        lims.dimensionlessDiameter.min = ui.values[ 0 ];
-        updateAll();
-      }
-    });
-    $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
-    " - " + $( "#slider-dimless" ).slider( "values", 1 ));
-  } );
-  </script>
   <script src="/libs/underscore.min.js" defer></script>
   <script src="objects.js" defer></script>
   <script src="main.js" defer></script>
@@ -67,45 +23,33 @@
 <body>
   <h1>CBE Fan Tool</h1>
   <h2>Settings</h2>
-  <p>SI units
-    <label class="switch input">
-      <input type="checkbox" checked id="unitsSI" value= "checked">
-      <span class="slider round"></span>
-    </label>
-  </p>
-  <p>Settings</p>
+  <label for="radio-1">SI</label>
+  <input type="radio" name="radio-1" id="radio-1" checked>
+  <label for="radio-2">I-P</label>
+  <input type="radio" name="radio-1" id="radio-2">
+
+  <p>... more settings</p>
   <h2>Inputs</h2>
-  <!-- <form>
-    Maximum number of fans:
-    <input type="number input" id = "maxNumFans" value = 10 min=1 max=10>
-  </form> -->
-  <p>
-    <label for="diameter">Fan diameter:</label>
-    <input type="text" id="diameter" readonly style="border:0;
-    color:#f6931f; font-weight:bold;">
-  </p>
-  <div id="slider-diameter"></div>
   <p>
     <label for="dimless">Fan dimensionless diameter:</label>
     <input type="text" id="dimless" readonly style="border:0;
     color:#f6931f; font-weight:bold;">
+    <div id="slider-dimless"></div>
   </p>
-  <div id="slider-dimless"></div>
+  <p>... more inputs</p>
 
-  <h2>Output solutions</h2>
+  <h2>Outputs</h2>
 
   <table id="solutions" class="display" width="100%"></table>
 
-
-
-  <h2>Floor plan</h2>
+  <h3>Floor plan</h3>
   <canvas id = "canv" width = "500" height = "500"></canvas>
 
   <!-- svg example -->
   <!-- <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 600">
   <desc>Red rectangle shape</desc>
   <rect x="10" y="10" width="100" height="100" fill="#c00"  />
-</svg> -->
+  </svg> -->
 
 </body>
 

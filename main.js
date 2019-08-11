@@ -31,7 +31,6 @@ var lims = {
   },
 }
 
-
 // // get parameters from the url
 // var url = new URL(document.URL);
 // var query_string = url.search;
@@ -55,21 +54,65 @@ var lims = {
 //   })
 // }
 
+$(document).ready(function() {
+  $( "#slider-dimless" ).slider({
+    range: true,
+    min: 0.15,
+    max: 0.60,
+    values: [ lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max ],
+    step: 0.01,
+    slide: function( event, ui ) {
+      $( "#dimless" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+      lims.dimensionlessDiameter.max = ui.values[ 1 ];
+      lims.dimensionlessDiameter.min = ui.values[ 0 ];
+    }
+  });
+  $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
+  " - " + $( "#slider-dimless" ).slider( "values", 1 ));
+
+  $( ":radio" ).checkboxradio({
+    icon: false
+  });
+
+  calcSolutions();
+  drawRoom();
+
+  var tbl = $('#solutions').DataTable( {
+    data: getDataTbl(solutions),
+    destroy: true,
+    columns: [
+      { title: "# fans (X)" },
+      { title: "# fans (Y)" },
+      { title: "Fan diameter" }
+    ]
+  } );
+
+  $('#solutions tbody').on( 'click', 'tr', function () {
+    if ( $(this).hasClass('selected') ) {
+      $(this).removeClass('selected');
+    }
+    else {
+      tbl.$('tr.selected').removeClass('selected');
+      $(this).addClass('selected');
+      drawFans(this.rowIndex-1);
+    }
+  } );
+
+  // TODO: change to update based on any input changes
+  $('#slider-dimless').click(function () {
+    calcSolutions();
+    drawRoom();
+    tbl.clear();
+    tbl.rows.add(getDataTbl(solutions));
+    tbl.draw();
+  });
+} );
 
 
-updateAll()
 
-// document.getElementById("maxNumFans").addEventListener('change', updateAll);
-// document.getElementById("unitsSI").addEventListener('change', updateAll);
-
-// document.getElementById("maxNumFans").addEventListener('change', updateAll);
-document.getElementById("unitsSI").addEventListener('change', updateAll);
-document.getElementById("slider-diameter").addEventListener('change', updateAll);
-document.getElementById("slider-dimless").addEventListener('change', updateAll);
-
-function updateAll(){
-  unitsSI = document.getElementById("unitsSI").checked
-  console.log(`unitsSI is ${unitsSI}`);
+function calcSolutions(){
+  // unitsSI = document.getElementById("unitsSI").checked
+  // console.log(`unitsSI is ${unitsSI}`);
   // lims.numFans.max = parseInt(document.getElementById("maxNumFans").value);
   // lims.dimensionlessDiameter.max = parseInt($( "#slider-dimless" ).slider( "values", 1 ));
   room1 = new Room(12,90,50)
@@ -174,7 +217,7 @@ function updateAll(){
   console.log("Total number of viable solutions: " + solutions.length);
 
   var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
-  table = populateSolutionsTable();
+
   /* TODO Develop methods to select for various design cases given
   a set of constraints:
   most/least # numFans - potentially also cost based?
@@ -185,55 +228,41 @@ function updateAll(){
 }
 
 
-
-
-function populateSolutionsTable(){
-  dataSet = [];
-
+function getDataTbl(solutions){
+  tblData = [];
   for (i of solutions){
-    console.log(i.layout.numFansX)
-    dataSet.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
+    tblData.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
   }
-  console.log(dataSet);
-
-  $(document).ready(function() {
-    var table = $('#solutions').DataTable( {
-      data: dataSet,
-      destroy: true,
-      columns: [
-        { title: "# fans (X)" },
-        { title: "# fans (Y)" },
-        { title: "Fan diameter" }
-      ]
-    } );
-    $('#solutions tbody').on( 'click', 'tr', function () {
-        if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            drawPlan(this.rowIndex-1);
-        }
-    } );
-} );
+  return tblData;
 }
 
 
-function drawPlan(slnID) {
-  //TODO: review pros/cons of doing this with SVG instead of canvas
-
+function drawRoom() {
   var canvas = document.getElementById('canv');
   // Execute only if canvas is supported
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d')
     //clear plan after each solution selection
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Draw misc shapes
-    sln = solutions[slnID]
+    // draw the room in plan
     ctx.beginPath();
     ctx.rect(10,10, room1.sizeX*5,room1.sizeY*5);
     ctx.stroke();
+  } else {
+    alert("Your browser doesn't support HTML 5 Canvas");
+  }
+}
+
+
+function drawFans(slnID) {
+  //TODO: review pros/cons of doing this with SVG instead of canvas
+  var canvas = document.getElementById('canv');
+  // Execute only if canvas is supported
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d')
+    //clear plan after each solution selection
+    drawRoom();
+    sln = solutions[slnID];
     //draw 'fans'
     i = 0;
     j = 0;
@@ -245,10 +274,10 @@ function drawPlan(slnID) {
           10 + 5*(j + 0.5)*sln.layout.cellSizeY,
           sln.fan.diameter*5/2, 0, 2 * Math.PI);
           ctx.stroke();
-        }
       }
-    } else {
-      alert("Your browser doesn't support HTML 5 Canvas");
     }
-
+  } else {
+      alert("Your browser doesn't support HTML 5 Canvas");
   }
+
+}
