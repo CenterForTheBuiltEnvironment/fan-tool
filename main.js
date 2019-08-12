@@ -70,6 +70,21 @@ $(document).ready(function() {
   $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
   " - " + $( "#slider-dimless" ).slider( "values", 1 ));
 
+  $( "#slider-bladeHeight" ).slider({
+    range: true,
+    min: 7,
+    max: 18,
+    values: [ lims.bladeHeight.min, lims.bladeHeight.max ],
+    step: 0.1,
+    slide: function( event, ui ) {
+      $( "#bladeHeight" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+      lims.bladeHeight.max = ui.values[ 1 ];
+      lims.bladeHeight.min = ui.values[ 0 ];
+    }
+  });
+  $( "#bladeHeight" ).val( $( "#slider-bladeHeight" ).slider( "values", 0 ) +
+  " - " + $( "#slider-bladeHeight" ).slider( "values", 1 ));
+
   $( ":radio" ).checkboxradio({
     icon: false
   });
@@ -77,9 +92,56 @@ $(document).ready(function() {
   calcSolutions();
   drawRoom();
 
-  var tbl = $('#solutions').DataTable( {
+  var tblFans = $('#fans').DataTable( {
+    data: [
+      ['FanA', 4, 5100, true],
+      ['FanB', 6, 9100, true],
+      ['FanC', 8, 12100, false],
+      ['FanD', 12, 20000, false]
+    ],
+    destroy: true,
+    scrollY: "100px",
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    info: false,
+    columns: [
+      { title: "Name" },
+      { title: "D" },
+      { title: "Q" },
+      { title: "UL507" }
+    ]
+  } );
+
+  $('#fans tbody').on( 'click', 'tr', function () {
+    $(this).toggleClass('selected');
+    // calcSolutions();
+    // drawRoom();
+  } );
+
+
+  $('#addFan').on( 'click', function () {
+// replace with jQuery modal form to input new fan
+    tblFans.row.add( [
+      "FanT",
+      4,
+      3000,
+      "Y"
+    ] ).draw( false );
+  } );
+
+// Automatically add a first row of data
+$('#addRow').click();
+
+  var tblSln = $('#solutions').DataTable( {
     data: getDataTbl(solutions),
     destroy: true,
+    paging: true,
+    scrollY: true,
+    searching: false,
+    info: true,
+    lengthChange: false,
+    pageLength: 10,
     columns: [
       { title: "# fans (X)" },
       { title: "# fans (Y)" },
@@ -92,19 +154,19 @@ $(document).ready(function() {
       $(this).removeClass('selected');
     }
     else {
-      tbl.$('tr.selected').removeClass('selected');
+      tblSln.$('tr.selected').removeClass('selected');
       $(this).addClass('selected');
       drawFans(this.rowIndex-1);
     }
   } );
 
   // TODO: change to update based on any input changes
-  $('#slider-dimless').click(function () {
+  $('#slider-dimless').mouseup(function () {
     calcSolutions();
     drawRoom();
-    tbl.clear();
-    tbl.rows.add(getDataTbl(solutions));
-    tbl.draw();
+    tblSln.clear();
+    tblSln.rows.add(getDataTbl(solutions));
+    tblSln.draw();
   });
 } );
 
@@ -274,10 +336,10 @@ function drawFans(slnID) {
           10 + 5*(j + 0.5)*sln.layout.cellSizeY,
           sln.fan.diameter*5/2, 0, 2 * Math.PI);
           ctx.stroke();
+        }
       }
-    }
-  } else {
+    } else {
       alert("Your browser doesn't support HTML 5 Canvas");
-  }
+    }
 
-}
+  }

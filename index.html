@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="common.css">
 
   <style>
   #canv{border:1px solid lightgrey;}
@@ -21,36 +22,62 @@
 </head>
 
 <body>
-  <h1>CBE Fan Tool</h1>
-  <h2>Settings</h2>
-  <label for="radio-1">SI</label>
-  <input type="radio" name="radio-1" id="radio-1" checked>
-  <label for="radio-2">I-P</label>
-  <input type="radio" name="radio-1" id="radio-2">
+  <div id='all_content'>
+    <h1>CBE Fan Tool</h1>
 
-  <p>... more settings</p>
-  <h2>Inputs</h2>
-  <p>
-    <label for="dimless">Fan dimensionless diameter:</label>
-    <input type="text" id="dimless" readonly style="border:0;
-    color:#f6931f; font-weight:bold;">
-    <div id="slider-dimless"></div>
-  </p>
-  <p>... more inputs</p>
+    <div id="left_content" style="background-color: #DCE7F7;">
+      <h2>Settings</h2>
+      <div id="units" style="margin-bottom:7px; padding-top:6px; float:left;" class='in'>
+          Units:&nbsp
+      </div>
 
-  <h2>Outputs</h2>
+      <div style='margin-bottom:5px; float:right; margin-bottom:7px; padding-top:10px;'>
+        <label for="radio-1">Metric</label>
+        <input type="radio" name="radio-1" id="radio-1" checked style="width:200px; float:right; margin-right:14px;margin-bottom:5px;">
+        <label for="radio-2">Imperial</label>
+        <input type="radio" name="radio-1" id="radio-2" style="width:200px; float:right; margin-right:14px;margin-bottom:5px;">
+      </div>
+      <br>
+      <br>
+      <p>... more settings</p>
+      <h2>Inputs</h2>
+      <span>
+        <label for="dimless">Fan dimensionless diameter:</label>
+        <input type="text" id="dimless" readonly style="border:0;
+        color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        <div id="slider-dimless" class='slider'></div>
+      </span>
+      <span>
+        <label for="bladeHeight">Fan blade height:</label>
+        <input type="text" id="bladeHeight" readonly style="border:0;
+        color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        <div id="slider-bladeHeight" class='slider'></div>
+      </span>
+      <p>... more inputs</p>
+      <span>
+        <label>Fan selection</label>
+        <button type="button" id="addFan" style='float:right;'>Add fan</button>
+      </span>
+      <table id="fans" class="compact order-column hover stripe" width="95%"></table>
+    </div><!--id="left_content"-->
 
-  <table id="solutions" class="display" width="100%"></table>
 
-  <h3>Floor plan</h3>
-  <canvas id = "canv" width = "500" height = "500"></canvas>
+    <div id="right_content">
+      <h2 style="text-align:center;">Solutions</h2>
 
-  <!-- svg example -->
-  <!-- <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 600">
-  <desc>Red rectangle shape</desc>
-  <rect x="10" y="10" width="100" height="100" fill="#c00"  />
+      <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
+
+      <h2 style="text-align:center;">Plan view</h2>
+      <canvas id = "canv" width = "676" height = "676"></canvas>
+
+    </div><!--id="right_content"-->
+
+    <!-- svg example -->
+    <!-- <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 600">
+    <desc>Red rectangle shape</desc>
+    <rect x="10" y="10" width="100" height="100" fill="#c00"  />
   </svg> -->
-
+</div> <!--id="all_content"-->
 </body>
 
 </html>
