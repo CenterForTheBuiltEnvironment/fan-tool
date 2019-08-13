@@ -2,24 +2,24 @@
 given the limitations of the underlying experiment dataset*/
 var lims = {
   'cellSize': {
-    'min' : 15,
-    'max' : 50,
+    'min' : 4.572,
+    'max' : 15.24,
   },
   'numFans':{
     'min' : 1,
     'max' : 10,
   },
   'diameter':{
-    'min' : 4,
-    'max' : 14,
+    'min' : 1.2192,
+    'max' : 4.2672,
   },
   'bladeHeight' : {
-    'min' : 7,
-    'max' : 14,
+    'min' : 2.1336,
+    'max' : 4.2672,
   },
   'ceilingHeight' : {
-    'min' : 9,
-    'max' : 15,
+    'min' : 2.7432,
+    'max' : 4.572,
   },
   'dimensionlessDiameter':{
     'min' : 0.2,
@@ -30,6 +30,10 @@ var lims = {
     'max' : 4/3,
   },
 }
+
+room = [];
+fans = [];
+solutions = [];
 
 // // get parameters from the url
 // var url = new URL(document.URL);
@@ -55,6 +59,29 @@ var lims = {
 // }
 
 $(document).ready(function() {
+  $( "#accordion" ).accordion({
+    collapsible: true,
+    heightStyle: "content"
+  });
+  $( "#len" ).spinner({
+    step: 0.1,
+    min: 4.5,
+    max: 100,
+    numberFormat: "n"
+  });
+  $( "#wid" ).spinner({
+    step: 0.1,
+    min: 4.5,
+    max: 100,
+    numberFormat: "n"
+  });
+  $( "#hei" ).spinner({
+    step: 0.1,
+    min: 2.7,
+    max: 4.5,
+    numberFormat: "n"
+  });
+
   $( "#slider-dimless" ).slider({
     range: true,
     min: 0.15,
@@ -70,41 +97,63 @@ $(document).ready(function() {
   $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
   " - " + $( "#slider-dimless" ).slider( "values", 1 ));
 
-  $( "#slider-bladeHeight" ).slider({
+  $( "#slider-cellSize" ).slider({
     range: true,
-    min: 7,
-    max: 18,
-    values: [ lims.bladeHeight.min, lims.bladeHeight.max ],
+    min: 4.5,
+    max: 15.24,
+    values: [ lims.cellSize.min, lims.cellSize.max ],
     step: 0.1,
     slide: function( event, ui ) {
-      $( "#bladeHeight" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
-      lims.bladeHeight.max = ui.values[ 1 ];
-      lims.bladeHeight.min = ui.values[ 0 ];
+      // TODO: Can inject units based display here using:
+      // if ($("[name='units']")[0].checked){
+      $( "#cellSize" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+      lims.cellSize.max = ui.values[ 1 ];
+      lims.cellSize.min = ui.values[ 0 ];
     }
   });
-  $( "#bladeHeight" ).val( $( "#slider-bladeHeight" ).slider( "values", 0 ) +
-  " - " + $( "#slider-bladeHeight" ).slider( "values", 1 ));
+  // TODO: Can inject units based display here using:
+  // if ($("[name='units']")[0].checked){
+  $( "#cellSize" ).val( $( "#slider-cellSize" ).slider( "values", 0 ) +
+  " - " + $( "#slider-cellSize" ).slider( "values", 1 ));
+
+  $( "#slider-aspectRatio-min" ).slider({
+    range: "min",
+    value: 1.25,
+    min: 1,
+    max: 1.5,
+    step: 0.01,
+    slide: function( event, ui ) {
+      $( "#aspectRatio" ).val( "" + ui.value );
+    }
+  });
+  $( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) );
 
   $( ":radio" ).checkboxradio({
     icon: false
   });
 
-  calcSolutions();
-  drawRoom();
-
   var tblFans = $('#fans').DataTable( {
     data: [
-      ['FanA', 4, 5100, true],
-      ['FanB', 6, 9100, true],
-      ['FanC', 8, 12100, false],
-      ['FanD', 12, 20000, false]
+      ['TypeA', 1.2192,   2.611757, true],
+      ['TypeB', 1.319784, 2.258268, true],
+      ['TypeC', 1.524,    3.765196, true],
+      ['TypeD', 1.524,    3.826077, true],
+      ['TypeE', 2.1336,   7.734745, true],
+      ['TypeF', 2.4384,   13.80304, false],
+      ['TypeG', 2.4384,   16.57101, false],
+      ['TypeH', 3.048,    20.91151, false],
+      ['TypeI', 4.2672,   25.30817, false]
     ],
     destroy: true,
-    scrollY: "100px",
+    scrollY: "200px",
     scrollCollapse: true,
     paging: false,
     searching: false,
     info: false,
+    columnDefs: [{
+      targets: [1,2],
+      render: $.fn.dataTable.render.number(',', '.', 2)
+    }],
     columns: [
       { title: "Name" },
       { title: "D" },
@@ -113,28 +162,34 @@ $(document).ready(function() {
     ]
   } );
 
+  // select/deselect rows when clicked
   $('#fans tbody').on( 'click', 'tr', function () {
     $(this).toggleClass('selected');
-    // calcSolutions();
-    // drawRoom();
   } );
 
+  // update fans object and calculate solutions when a fan is selected/deseleccted
+  $('#fans tbody').on( 'click', function () {
+    fans =[]
+    tblFans.rows('.selected').data().each( function(row,index) {
+      fans.push(new Fan(...row))
+    });
+    updateSolutions();
+  } );
 
+  // add a fan using a jQuery modal form to input new fan on button click
   $('#addFan').on( 'click', function () {
-// replace with jQuery modal form to input new fan
+    // replace with jQuery modal form to input new fan
     tblFans.row.add( [
-      "FanT",
-      4,
-      3000,
-      "Y"
+      "Ex",
+      2,
+      9.9,
+      true,
     ] ).draw( false );
-  } );
 
-// Automatically add a first row of data
-$('#addRow').click();
+  } );
 
   var tblSln = $('#solutions').DataTable( {
-    data: getDataTbl(solutions),
+    data: [],
     destroy: true,
     paging: true,
     scrollY: true,
@@ -160,14 +215,29 @@ $('#addRow').click();
     }
   } );
 
-  // TODO: change to update based on any input changes
+  // TODO: change to update based on any slider input changes
   $('#slider-dimless').mouseup(function () {
+    updateSolutions();
+  });
+
+  $('.ui-spinner-button').click(function() { $(this).siblings('input').change(); });
+
+  $(':input').change(function () {
+    updateSolutions();
+  });
+
+  // recalc the solutions, clear the floor plan, update the solutions table
+  function updateSolutions() {
     calcSolutions();
     drawRoom();
     tblSln.clear();
     tblSln.rows.add(getDataTbl(solutions));
     tblSln.draw();
-  });
+    //TODO: need to handle case where no solutions are available
+    $('#solutions tbody tr:eq(0)').click();
+  };
+  calcSolutions();
+  drawRoom();
 } );
 
 
@@ -177,15 +247,15 @@ function calcSolutions(){
   // console.log(`unitsSI is ${unitsSI}`);
   // lims.numFans.max = parseInt(document.getElementById("maxNumFans").value);
   // lims.dimensionlessDiameter.max = parseInt($( "#slider-dimless" ).slider( "values", 1 ));
-  room1 = new Room(12,90,50)
-  console.log(room1)
+  room = new Room(hei.value,len.value,wid.value)
+  console.log(room)
 
-  fans = [
-    new Fan('BestFanEver1!', 4, 5100, true),
-    new Fan('BestFanEver2!', 6, 9100, true),
-    new Fan('BestFanEver3!', 8, 12100, false),
-    new Fan('BestFanEver3!', 12, 20000, false),
-  ]
+  // fans = [
+  //   new Fan('TypeA', 1.2192,   2.611757, true),
+  //   new Fan('TypeB', 1.319784, 2.258268, true),
+  //   new Fan('TypeC', 1.524,    3.765196, true),
+  //   new Fan('TypeD', 1.524,    3.826077, true),
+  // ]
   console.log(fans)
 
   /* function to ensure that the resulting size of the fan 'cell' in either the
@@ -197,8 +267,8 @@ function calcSolutions(){
     value <= lims.cellSize.max*Math.sqrt(lims.aspectRatio.max);
   }
   candidateNumFans = Array.from(Array(lims.numFans.max).keys()).map(n => n + 1)
-  var validNumFansX = candidateNumFans.map(n => room1.sizeX/n).filter(testLims).map(n => room1.sizeX / n);
-  var validNumFansY = candidateNumFans.map(n => room1.sizeY/n).filter(testLims).map(n => room1.sizeY / n);
+  var validNumFansX = candidateNumFans.map(n => room.sizeX/n).filter(testLims).map(n => room.sizeX / n);
+  var validNumFansY = candidateNumFans.map(n => room.sizeY/n).filter(testLims).map(n => room.sizeY / n);
   console.log(`Valid number of fans in X direction:  ${validNumFansX}`)
   console.log("Valid number of fans in Y direction: " + validNumFansY)
   console.log("Total number of cases: " + (validNumFansX.length * validNumFansY.length))
@@ -213,7 +283,7 @@ function calcSolutions(){
   for (i = 0; i < validNumFansX.length; i++) {
     for (j = 0; j < validNumFansY.length; j++) {
       // instantiate a candidate solution
-      candidate = new Layout(validNumFansX[i],validNumFansY[j], room1);
+      candidate = new Layout(validNumFansX[i],validNumFansY[j], room);
       // test to see if it meets validity criteria
       if (candidate.aspectRatio <= lims.aspectRatio.min){
         failAspectRatio[0]++;
@@ -240,17 +310,10 @@ function calcSolutions(){
   console.log(layouts);
   console.log("Total number of viable layouts: " + layouts.length);
 
-
   var mins = layouts.map(function(elt) { return elt.validDiameters()[0]; });
   var maxes = layouts.map(function(elt) { return elt.validDiameters()[1]; });
   var anyLayout = [Math.min.apply(null, mins), Math.max.apply(null, maxes)];
   console.log("Fan diameter must be within this range to have a valid layout: " + anyLayout);
-
-  solution1 = new Solution(layouts[0], fans[0])
-  console.log(solution1.clearanceX())
-  console.log(solution1.clearanceY())
-  console.log(solution1.airspeeds())
-
 
   /* create an array of all candidate solutions that fit within the limitations
   that relate interactions between layout and fan objects.
@@ -308,7 +371,7 @@ function drawRoom() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // draw the room in plan
     ctx.beginPath();
-    ctx.rect(10,10, room1.sizeX*5,room1.sizeY*5);
+    ctx.rect(10,10, room.sizeX*5,room.sizeY*5);
     ctx.stroke();
   } else {
     alert("Your browser doesn't support HTML 5 Canvas");

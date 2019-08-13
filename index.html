@@ -24,41 +24,55 @@
 <body>
   <div id='all_content'>
     <h1>CBE Fan Tool</h1>
-
-    <div id="left_content" style="background-color: #DCE7F7;">
-      <h2>Settings</h2>
-      <div id="units" style="margin-bottom:7px; padding-top:6px; float:left;" class='in'>
-          Units:&nbsp
+    <div id="left_content">
+      <div style="text-align: center;vertical-align: middle; margin: 5px">
+        <label for="units1">Metric</label>
+        <input type="radio" name="units" id="units1" checked>
+        <label for="units2">Imperial</label>
+        <input type="radio" name="units" id="units2">
       </div>
-
-      <div style='margin-bottom:5px; float:right; margin-bottom:7px; padding-top:10px;'>
-        <label for="radio-1">Metric</label>
-        <input type="radio" name="radio-1" id="radio-1" checked style="width:200px; float:right; margin-right:14px;margin-bottom:5px;">
-        <label for="radio-2">Imperial</label>
-        <input type="radio" name="radio-1" id="radio-2" style="width:200px; float:right; margin-right:14px;margin-bottom:5px;">
-      </div>
-      <br>
-      <br>
-      <p>... more settings</p>
-      <h2>Inputs</h2>
-      <span>
-        <label for="dimless">Fan dimensionless diameter:</label>
-        <input type="text" id="dimless" readonly style="border:0;
-        color:#2A4583; background-color : #cccccc; font-weight:bold;">
-        <div id="slider-dimless" class='slider'></div>
-      </span>
-      <span>
-        <label for="bladeHeight">Fan blade height:</label>
-        <input type="text" id="bladeHeight" readonly style="border:0;
-        color:#2A4583; background-color : #cccccc; font-weight:bold;">
-        <div id="slider-bladeHeight" class='slider'></div>
-      </span>
-      <p>... more inputs</p>
-      <span>
-        <label>Fan selection</label>
-        <button type="button" id="addFan" style='float:right;'>Add fan</button>
-      </span>
-      <table id="fans" class="compact order-column hover stripe" width="95%"></table>
+      <div id="accordion">
+        <h2>Room inputs</h2>
+        <div id="accordion_content">
+          <label for="len">Length</label>
+          <input id="len" name="len" value="35"></input>
+          <br>
+          <label for="wid">Width</label>
+          <input id="wid" name="wid" value="25" ></input>
+          <br>
+          <label for="hei">Height</label>
+          <input id="hei" name="hei" value="4"></input>
+        </div>
+        <h2>Fan inputs</h2>
+        <div id="accordion_content">
+            <label>Fan selection</label>
+            <button type="button" id="addFan" style='float:right;'>Add fan</button>
+          <div>
+            <table id="fans" class="compact order-column hover stripe" width="90%"></table>
+          </div>
+        </div>
+        <h2>Advanced settings</h2>
+        <div id="accordion_content">
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="dimless">Fan dimensionless diameter:</label>
+            <input type="text" id="dimless" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-dimless" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="cellSize">Cell size:</label>
+            <input type="text" id="cellSize" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-cellSize" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="aspectRatio">Max cell aspect ratio:</label>
+            <input type="text" id="aspectRatio" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-aspectRatio-min"></div>
+        </div>
+      </div><!--id="accordion"-->
     </div><!--id="left_content"-->
 
 

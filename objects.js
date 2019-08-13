@@ -9,7 +9,7 @@ function Room(ceilingHeight, sizeX, sizeY) {
 };
 
 /* object to represent a candidate fan type */
-function Fan(type, diameter, airflow, bladeHeight, meetsUL507) {
+function Fan(type, diameter, airflow, meetsUL507) {
   this.type = type;
   this.diameter = diameter;
   this.airflow = airflow;
