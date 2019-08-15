@@ -54,7 +54,7 @@ function Solution(layout, fan){
   this.dr = this.fan.diameter/this.layout.r;
   this.cd = this.layout.room.ceilingHeight/this.fan.diameter;
   this.do = this.fan.diameter/1.7;
-  this.hd = this.bladeHeight/this.fan.diameter;
+  this.hd = 2/this.fan.diameter;
   this.clearanceX = function(){
     return (this.layout.cellSizeX - this.fan.diameter) / 2;
   }
@@ -65,7 +65,8 @@ function Solution(layout, fan){
     lowest = 0.9 * this.dr - 0.017 * this.cd + 0.11 * this.do/1.7 + 1*0.024 + 0.047;
     areaWeightedAverage = 0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do/1.7 + 1*0.024 + 0.25;
     highest = -0.18 * this.hd - 1*0.1 + 1.3;
-    return [lowest,areaWeightedAverage,highest];
+    uniformity = 1 - ((highest-lowest)/highest);
+    return [lowest,areaWeightedAverage,highest,uniformity];
   }
   this.validBladeHeightRange = function(){
     this.fan.meetsUL507 ? min = 7 : min = 10;

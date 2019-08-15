@@ -32,8 +32,9 @@ var lims = {
 }
 
 room = [];
-fans = [];
+candidateFans = []
 solutions = [];
+isSIunits = true;
 
 // // get parameters from the url
 // var url = new URL(document.URL);
@@ -104,15 +105,13 @@ $(document).ready(function() {
     values: [ lims.cellSize.min, lims.cellSize.max ],
     step: 0.1,
     slide: function( event, ui ) {
-      // TODO: Can inject units based display here using:
-      // if ($("[name='units']")[0].checked){
+
       $( "#cellSize" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
       lims.cellSize.max = ui.values[ 1 ];
       lims.cellSize.min = ui.values[ 0 ];
     }
   });
-  // TODO: Can inject units based display here using:
-  // if ($("[name='units']")[0].checked){
+
   $( "#cellSize" ).val( $( "#slider-cellSize" ).slider( "values", 0 ) +
   " - " + $( "#slider-cellSize" ).slider( "values", 1 ));
 
@@ -127,6 +126,7 @@ $(document).ready(function() {
     }
   });
   $( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) );
+
 
   $( ":radio" ).checkboxradio({
     icon: false
@@ -156,8 +156,8 @@ $(document).ready(function() {
     }],
     columns: [
       { title: "Name" },
-      { title: "D" },
-      { title: "Q" },
+      { title: "D (m)" },
+      { title: "Q (m³/s)" },
       { title: "UL507" }
     ]
   } );
@@ -169,9 +169,9 @@ $(document).ready(function() {
 
   // update fans object and calculate solutions when a fan is selected/deseleccted
   $('#fans tbody').on( 'click', function () {
-    fans =[]
+    candidateFans =[]
     tblFans.rows('.selected').data().each( function(row,index) {
-      fans.push(new Fan(...row))
+      candidateFans.push(new Fan(...row))
     });
     updateSolutions();
   } );
@@ -197,10 +197,17 @@ $(document).ready(function() {
     info: true,
     lengthChange: false,
     pageLength: 10,
+    columnDefs: [{
+      targets: [2,3,4,5],
+      render: $.fn.dataTable.render.number(',', '.', 2)
+    }],
     columns: [
-      { title: "# fans (X)" },
-      { title: "# fans (Y)" },
-      { title: "Fan diameter" }
+      { title: "Fan type" },
+      { title: "# fans" },
+      { title: "Min airspeed (m/s)" },
+      { title: "Avg airspeed (m/s)" },
+      { title: "Max airspeed (m/s)" },
+      { title: "Unifomity" }
     ]
   } );
 
@@ -230,14 +237,69 @@ $(document).ready(function() {
   function updateSolutions() {
     calcSolutions();
     drawRoom();
-    tblSln.clear();
-    tblSln.rows.add(getDataTbl(solutions));
-    tblSln.draw();
-    //TODO: need to handle case where no solutions are available
-    $('#solutions tbody tr:eq(0)').click();
+    updateSlnTable();
   };
+
+  function updateSlnTable(){
+    tblSln.clear();
+    tblData = [];
+    for (i of solutions){
+      tblData.push([
+        i.fan.type,
+        i.layout.numFans(),
+        (isSIunits) ? i.airspeeds()[0] : i.airspeeds()[0] * 196.85,
+        (isSIunits) ? i.airspeeds()[1] : i.airspeeds()[1] * 196.85,
+        (isSIunits) ? i.airspeeds()[2] : i.airspeeds()[2] * 196.85,
+        i.airspeeds()[3]
+      ]);
+    }
+    tblSln.rows.add(tblData);
+    tblSln.draw();
+    // select first solution if any solutions exist
+    if (solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
+  };
+
+  // if someone wants to change to units
+  $("[name='units']").on( 'click', function () {
+    changeUnits();
+  });
+
+  function changeUnits () {
+    isSIunits  = $("[name='units']")[0].checked
+    // update table column names
+
+    if (isSIunits) {
+      $(tblFans.column(1).header()).text('D (m)');
+      $(tblFans.column(2).header()).text('Q (m3/s)');
+      $(tblSln.column(2).header()).text('Min airspeed (m/s)');
+      $(tblSln.column(3).header()).text('Avg airspeed (m/s)');
+      $(tblSln.column(4).header()).text('Max airspeed (m/s)');
+      // update the data in each column
+      tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+        var data = this.data();
+        data[1] /= 3.2808;
+        data[2] /= 2118.88;
+        this.data(data);
+      });
+    } else {
+      $(tblFans.column(1).header()).text('D (ft)');
+      $(tblFans.column(2).header()).text('Q (cfm)');
+      $(tblSln.column(2).header()).text('Min airspeed (fpm)');
+      $(tblSln.column(3).header()).text('Avg airspeed (fpm)');
+      $(tblSln.column(4).header()).text('Max airspeed (fpm)');
+      // update the data in each column
+      tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+        var data = this.data();
+        data[1] *= 3.2808;
+        data[2] *= 2118.88;
+        this.data(data);
+      });
+    }
+  };
+
   calcSolutions();
   drawRoom();
+
 } );
 
 
@@ -249,14 +311,7 @@ function calcSolutions(){
   // lims.dimensionlessDiameter.max = parseInt($( "#slider-dimless" ).slider( "values", 1 ));
   room = new Room(hei.value,len.value,wid.value)
   console.log(room)
-
-  // fans = [
-  //   new Fan('TypeA', 1.2192,   2.611757, true),
-  //   new Fan('TypeB', 1.319784, 2.258268, true),
-  //   new Fan('TypeC', 1.524,    3.765196, true),
-  //   new Fan('TypeD', 1.524,    3.826077, true),
-  // ]
-  console.log(fans)
+  console.log(candidateFans)
 
   /* function to ensure that the resulting size of the fan 'cell' in either the
   X  or Y direction is within the limits of the underlying data set.
@@ -321,9 +376,9 @@ function calcSolutions(){
   solutions = [];
   failDimensionlessDiameter = [0,0];
   for (i = 0; i < layouts.length; i++) {
-    for (j = 0; j < fans.length; j++) {
+    for (j = 0; j < candidateFans.length; j++) {
       // instantiate a candidate solution
-      candidate = new Solution(layouts[i],fans[j]);
+      candidate = new Solution(layouts[i],candidateFans[j]);
       // test to see if it meets validity criteria
       if (candidate.dr <= lims.dimensionlessDiameter.min){
         failDimensionlessDiameter[0]++;
@@ -353,13 +408,13 @@ function calcSolutions(){
 }
 
 
-function getDataTbl(solutions){
-  tblData = [];
-  for (i of solutions){
-    tblData.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
-  }
-  return tblData;
-}
+// function getDataTbl(solutions){
+//   tblData = [];
+//   for (i of solutions){
+//     tblData.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
+//   }
+//   return tblData;
+// }
 
 
 function drawRoom() {
