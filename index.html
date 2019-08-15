@@ -34,14 +34,24 @@
       <div id="accordion">
         <h2>Room inputs</h2>
         <div id="accordion_content">
-          <label for="len">Length</label>
-          <input id="len" name="len" value="35"></input>
-          <br>
-          <label for="wid">Width</label>
-          <input id="wid" name="wid" value="25" ></input>
-          <br>
-          <label for="hei">Height</label>
-          <input id="hei" name="hei" value="4"></input>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="len">Length:</label>
+            <input type="text" id="len" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-len-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="wid">Width:</label>
+            <input type="text" id="wid" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-wid-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="hei">Height:</label>
+            <input type="text" id="hei" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-hei-min" class='slider'></div>
         </div>
         <h2>Fan inputs</h2>
         <div id="accordion_content">

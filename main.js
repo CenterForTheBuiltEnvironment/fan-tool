@@ -64,24 +64,6 @@ $(document).ready(function() {
     collapsible: true,
     heightStyle: "content"
   });
-  $( "#len" ).spinner({
-    step: 0.1,
-    min: 4.5,
-    max: 100,
-    numberFormat: "n"
-  });
-  $( "#wid" ).spinner({
-    step: 0.1,
-    min: 4.5,
-    max: 100,
-    numberFormat: "n"
-  });
-  $( "#hei" ).spinner({
-    step: 0.1,
-    min: 2.7,
-    max: 4.5,
-    numberFormat: "n"
-  });
 
   $( "#slider-dimless" ).slider({
     range: true,
@@ -126,6 +108,42 @@ $(document).ready(function() {
     }
   });
   $( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) );
+
+  $( "#slider-len-min" ).slider({
+    range: "min",
+    value: 25,
+    min: 4.5,
+    max: 100,
+    step: 0.1,
+    slide: function( event, ui ) {
+      $( "#len" ).val( "" + ui.value );
+    }
+  });
+  $( "#len" ).val( "" + $( "#slider-len-min" ).slider( "value" ) );
+
+  $( "#slider-wid-min" ).slider({
+    range: "min",
+    value: 20,
+    min: 4.5,
+    max: 100,
+    step: 0.1,
+    slide: function( event, ui ) {
+      $( "#wid" ).val( "" + ui.value );
+    }
+  });
+  $( "#wid" ).val( "" + $( "#slider-wid-min" ).slider( "value" ) );
+
+  $( "#slider-hei-min" ).slider({
+    range: "min",
+    value: 3,
+    min: 2.7,
+    max: 4.5,
+    step: 0.1,
+    slide: function( event, ui ) {
+      $( "#hei" ).val( "" + ui.value );
+    }
+  });
+  $( "#hei" ).val( "" + $( "#slider-hei-min" ).slider( "value" ) );
 
 
   $( ":radio" ).checkboxradio({
@@ -222,8 +240,7 @@ $(document).ready(function() {
     }
   } );
 
-  // TODO: change to update based on any slider input changes
-  $('#slider-dimless').mouseup(function () {
+  $('.ui-slider').mouseup(function () {
     updateSolutions();
   });
 
@@ -309,7 +326,11 @@ function calcSolutions(){
   // console.log(`unitsSI is ${unitsSI}`);
   // lims.numFans.max = parseInt(document.getElementById("maxNumFans").value);
   // lims.dimensionlessDiameter.max = parseInt($( "#slider-dimless" ).slider( "values", 1 ));
-  room = new Room(hei.value,len.value,wid.value)
+  room = new Room(
+    $( "#slider-hei-min" ).slider("value"),
+    $( "#slider-len-min" ).slider("value"),
+    $( "#slider-wid-min" ).slider("value")
+  )
   console.log(room)
   console.log(candidateFans)
 
