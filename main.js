@@ -116,10 +116,9 @@ $(document).ready(function() {
     max: 100,
     step: 0.1,
     slide: function( event, ui ) {
-      $( "#len" ).val( "" + ui.value );
+      updateSliderDisplays();
     }
   });
-  $( "#len" ).val( "" + $( "#slider-len-min" ).slider( "value" ) );
 
   $( "#slider-wid-min" ).slider({
     range: "min",
@@ -255,6 +254,7 @@ $(document).ready(function() {
     calcSolutions();
     drawRoom();
     updateSlnTable();
+    updateSliderDisplays();
   };
 
   function updateSlnTable(){
@@ -280,6 +280,15 @@ $(document).ready(function() {
   $("[name='units']").on( 'click', function () {
     changeUnits();
   });
+
+  function updateSliderDisplays(){
+    // TODO: generalize this for any slider, grouped by unit type
+    if (isSIunits) {
+      $( "#len" ).val( $( "#slider-len-min" ).slider( "value" ) + " m" );
+    } else {
+      $( "#len" ).val( ($( "#slider-len-min" ).slider( "value" )*3.2808).toFixed(1) + " ft" );
+    }
+  }
 
   function changeUnits () {
     isSIunits  = $("[name='units']")[0].checked
@@ -312,10 +321,11 @@ $(document).ready(function() {
         this.data(data);
       });
     }
+    updateSliderDisplays();
   };
 
-  calcSolutions();
-  drawRoom();
+  // calculate solutions for the initial condition
+  updateSolutions();
 
 } );
 
