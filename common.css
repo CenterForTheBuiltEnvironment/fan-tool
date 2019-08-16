@@ -7,6 +7,11 @@
   clear: both;
 }
 
+#header {
+  width: 988px;
+  height: 90px;
+}
+
 #left_content {
   width: 305px;
   height: 902px;
@@ -53,11 +58,13 @@ input {
 
 h1 {
   color: #2A4583;
-  font-size: 32px;
+  font-size: 40px;
   font-family: sans-serif;
   text-align: center;
-  margin-bottom: 5px;
-  padding-top: 10px;
+  vertical-align: middle;
+  line-height: 80px;
+  /* margin-top: 25px; */
+  /* padding-top: 10px; */
 }
 
 
