@@ -39,7 +39,8 @@
   border-radius: 5px;
 }
 
-input {
+/* all inputs within all_content div */
+#all_content input {
   float: right;
   margin-right: 5px;
   width: 80px;

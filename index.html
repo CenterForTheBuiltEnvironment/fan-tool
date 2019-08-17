@@ -19,6 +19,8 @@
   <script src="/libs/underscore.min.js" defer></script>
   <script src="objects.js" defer></script>
   <script src="main.js" defer></script>
+  <script src="modalform.js" defer></script>
+
 </head>
 
 <body>
@@ -62,7 +64,7 @@
         <div id="accordion_content">
           <div>
             <label>Fan selection</label>
-            <button type="button" id="addFan" style='float:right;'>Add fan</button>
+            <button type="button" id="add-fan" style='float:right;'>Add fan</button>
           </div>
           <div>
             <table id="fans" class="compact order-column hover stripe" width="90%"></table>
@@ -92,7 +94,6 @@
       </div><!--id="accordion"-->
     </div><!--id="left_content"-->
 
-
     <div id="right_content">
       <h2 style="text-align:center;">Solutions</h2>
 
@@ -100,15 +101,33 @@
 
       <h2 style="text-align:center;">Plan view</h2>
       <canvas id = "canv" width = "674 px" height = "500 px"></canvas>
-
     </div><!--id="right_content"-->
-
-    <!-- svg example -->
-    <!-- <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 600">
-    <desc>Red rectangle shape</desc>
-    <rect x="10" y="10" width="100" height="100" fill="#c00"  />
-  </svg> -->
 </div> <!--id="all_content"-->
+
+
+<!-- form for adding a new fan  -->
+<div id="dialog-form" title="Add a new fan">
+  <p class="validateTips">All form fields are required.</p>
+    <form>
+    <fieldset>
+      <label for="newtype">Fan type (name)</label>
+      <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <label for="newdiameter">Fan diameter</label>
+      <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <label for="newairflow">Fan rated airflow</label>
+      <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <input type="checkbox" id="ul507" name="ul507" checked>
+      <label for="ul507">UL 507 Compliant</label>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+
+
 </body>
 
 </html>
