@@ -29,7 +29,7 @@
       <img src="https://cbe.berkeley.edu/wp-content/uploads/2018/10/CBE-logo-2018.png"
       alt="Center for the Built Environment" id="logo"
       width="204" height="78" style='float:left;'>
-      <h1>CBE Fan Tool</h1>
+      <h1>CBE Fan Tool<span style='color: red'> (partly functional mockup)</span></h1>
     </div>
     <div id="left_content">
       <div style="text-align: center;vertical-align: middle; margin: 5px">
@@ -42,56 +42,56 @@
         <h2>Room inputs</h2>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="len">Length:</label>
+            <label for="len" title="The length of the room">Length:</label>
             <input type="text" id="len" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-len-min" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="wid">Width:</label>
+            <label for="wid" title="The width of the room">Width:</label>
             <input type="text" id="wid" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-wid-min" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="hei">Height:</label>
+            <label for="hei" title="The floor to ceiling height of the room">Height:</label>
             <input type="text" id="hei" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-hei-min" class='slider'></div>
         </div>
-        <h2>Fan inputs</h2>
-        <div id="accordion_content">
-          <div>
-            <label>Fan selection</label>
-            <button type="button" id="add-fan" style='float:right;'>Add fan</button>
-          </div>
-          <div>
-            <table id="fans" class="compact order-column hover stripe" width="90%"></table>
-          </div>
-        </div>
         <h2>Advanced settings</h2>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="dimless">Fan dimensionless diameter:</label>
-            <input type="text" id="dimless" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-dimless" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="cellSize">Cell size:</label>
+            <label for="cellSize"  title="Acceptable range of sizes of each individual cell" >Cell size:</label>
             <input type="text" id="cellSize" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-cellSize" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="aspectRatio">Max cell aspect ratio:</label>
+            <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size.">Fan dimensionless diameter:</label>
+            <input type="text" id="dimless" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-dimless" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width)">Max cell aspect ratio:</label>
             <input type="text" id="aspectRatio" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-aspectRatio-min" class='slider'></div>
         </div>
       </div><!--id="accordion"-->
+      <h2>Fan inputs</h2>
+      <div id="accordion_content">
+        <div>
+          <label>Fan selection</label>
+          <button type="button" id="add-fan" style='float:right;'>Add fan</button>
+        </div>
+        <div>
+          <table id="fans" class="compact order-column hover stripe" width="90%"></table>
+        </div>
+      </div>
     </div><!--id="left_content"-->
 
     <div id="right_content">
@@ -111,12 +111,15 @@
     <form>
     <fieldset>
       <label for="newtype">Fan type</label>
+      <br>
       <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
       <p></p>
       <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
+      <br>
       <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
       <p></p>
       <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
+       <br>
       <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
       <p></p>
       <input type="checkbox" id="ul507" name="ul507" checked>

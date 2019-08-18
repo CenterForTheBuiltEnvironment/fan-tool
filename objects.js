@@ -1,3 +1,9 @@
+// this file contains the objects used for identifying solutions
+// for a given room, set of candidate fans, and range of acceptable conditions
+// defined by a addUser
+//
+// all objects store data in SI units (without prefixes)
+
 /* object to represent the dimensions of a cuboid room */
 function Room(ceilingHeight, sizeX, sizeY) {
   this.ceilingHeight = ceilingHeight;
@@ -14,6 +20,7 @@ function Fan(type, diameter, airflow, meetsUL507) {
   this.diameter = diameter;
   this.airflow = airflow;
   this.meetsUL507 = meetsUL507;
+  this.fanAirSpeed = this.airflow/(Math.PI * Math.pow(this.diameter,2)/4);
 };
 
 /* Layout object represents a potential design layout
@@ -21,11 +28,12 @@ including the room characteristics and the number of fans */
 function Layout(numFansX, numFansY, room){
   this.numFansX = numFansX;
   this.numFansY = numFansY;
-  this.room =  room;
+  this.room = room;
   this.cellSizeX = this.room.sizeX / this.numFansX;
   this.cellSizeY = this.room.sizeY / this.numFansY;
   this.cellArea = this.cellSizeX * this.cellSizeY;
   this.r = Math.sqrt(this.cellArea);
+  // TODO redefine throughout to always > 1
   this.aspectRatio = this.cellSizeX/this.cellSizeY;
   this.numFans =  function(){
     return this.numFansX * this.numFansY;
@@ -43,8 +51,6 @@ function Layout(numFansX, numFansY, room){
     return vds;
   }
 }
-// layout1 = new Layout(3,2, room1, fans[1]);
-// console.log(layout1);
 
 /* Solution object represents a potential design solution
 including the room, layout and fan characteristics */
@@ -62,9 +68,9 @@ function Solution(layout, fan){
     return (this.layout.cellSizeY - this.fan.diameter) / 2;
   }
   this.airspeeds = function(){
-    lowest = 0.9 * this.dr - 0.017 * this.cd + 0.11 * this.do/1.7 + 1*0.024 + 0.047;
-    areaWeightedAverage = 0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do/1.7 + 1*0.024 + 0.25;
-    highest = -0.18 * this.hd - 1*0.1 + 1.3;
+    lowest = this.fan.fanAirSpeed * (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + 1*0.024 + 0.047);
+    areaWeightedAverage = this.fan.fanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + 1*0.024 + 0.25);
+    highest = this.fan.fanAirSpeed * (-0.18 * this.hd - 1*0.1 + 1.3);
     uniformity = 1 - ((highest-lowest)/highest);
     return [lowest,areaWeightedAverage,highest,uniformity];
   }
@@ -74,5 +80,3 @@ function Solution(layout, fan){
     return {'min' : min, 'max' : max,}
   }
 }
-// solution1 = new Solution(layouts[0], fans[0])
-// console.log(solution1.airspeeds())

@@ -34,8 +34,12 @@ var lims = {
 room = [];
 candidateFans = []
 solutions = [];
-isSIunits = true;
-scale = 1;
+selectedSolution = [];
+
+isSIunits = true
+
+// globally store the pixel scaling factor for canvas
+scale = 0;
 
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
@@ -78,16 +82,33 @@ function toStringWithDisplayUnits (valueSI, measurement){
 //   })
 // }
 
+
+/// once all content has loaded, perform first solutions calc
 $(document).ready(function() {
+  /// initial best guess at  unit system based on user browser language
+  if (navigator.language == "en-US") {
+    $("[name='units']").trigger( 'click');
+    changeUnits();
+  };
   updateSliderDisplays();
-  drawRoom();
+  updateSolutions();
 });
 
+
+// defines left pane accordion setup
 $( "#accordion" ).accordion({
   collapsible: true,
   heightStyle: "content"
 });
 
+
+// add tooltips (based on 'title')
+$( function() {
+  $( document ).tooltip();
+} );
+
+
+// add all sliders (double values - ranges)
 $( "#slider-dimless" ).slider({
   range: true,
   min: 0.15,
@@ -117,6 +138,8 @@ $( "#slider-cellSize" ).slider({
   }
 });
 
+
+// add all sliders (single values)
 $( "#slider-aspectRatio-min" ).slider({
   range: "min",
   value: 1.25,
@@ -131,9 +154,9 @@ $( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) )
 
 $( "#slider-len-min" ).slider({
   range: "min",
-  value: 25,
+  value: 6.1,
   min: 4.5,
-  max: 100,
+  max: 50,
   step: 0.1,
   slide: function( event, ui ) {
     updateSliderDisplays();
@@ -142,9 +165,9 @@ $( "#slider-len-min" ).slider({
 
 $( "#slider-wid-min" ).slider({
   range: "min",
-  value: 20,
+  value: 12.2,
   min: 4.5,
-  max: 100,
+  max: 50,
   step: 0.1,
   slide: function( event, ui ) {
     updateSliderDisplays();
@@ -161,7 +184,6 @@ $( "#slider-hei-min" ).slider({
     updateSliderDisplays();
   }
 });
-
 
 $( ":radio" ).checkboxradio({
   icon: false
@@ -202,25 +224,23 @@ $('#fans tbody').on( 'click', 'tr', function () {
   $(this).toggleClass('selected');
 } );
 
-// update fans object and calculate solutions when a fan is selected/deseleccted
+// whenever a fan is selected/deselected
+// update fans object and calculate solutions
 $('#fans tbody').on( 'click', function () {
-  candidateFans =[]
+  candidateFans =[];
   tblFans.rows('.selected').data().each( function(row,index) {
-    candidateFans.push(new Fan(...row))
+    var t = row[0];
+    var d = row[1];
+    var a = row[2];
+    var u = row[3];
+    if (!isSIunits){
+      // convert units to SI before creating fan objects
+      d *= math.unit("1 ft").toNumber("m");
+      a *= math.unit("1 cfm").toNumber("m3/s");
+    }
+    candidateFans.push(new Fan(t,d,a,u));
   });
   updateSolutions();
-} );
-
-// add a fan using a jQuery modal form to input new fan on button click
-$('#addFan').on( 'click', function () {
-  // replace with jQuery modal form to input new fan
-  tblFans.row.add( [
-    "Ex",
-    2,
-    9.9,
-    true,
-  ] ).draw( false );
-
 } );
 
 var tblSln = $('#solutions').DataTable( {
@@ -242,7 +262,8 @@ var tblSln = $('#solutions').DataTable( {
     { title: "Min airspeed (m/s)" },
     { title: "Avg airspeed (m/s)" },
     { title: "Max airspeed (m/s)" },
-    { title: "Unifomity" }
+    { title: "Uniformity" },
+    { title: "Cell aspect ratio" },
   ]
 } );
 
@@ -270,10 +291,13 @@ $('#solutions tbody').on( 'click', function () {
 } );
 
 $('.ui-slider').click(function () {
+  updateSliderDisplays();
   updateSolutions();
 });
 
-$('.ui-spinner-button').click(function() { $(this).siblings('input').change(); });
+// $('.ui-spinner-button').click(function() {
+//   $(this).siblings('input').change();
+// });
 
 $(':input').change(function () {
   updateSolutions();
@@ -282,9 +306,9 @@ $(':input').change(function () {
 // recalc the solutions, clear the floor plan, update the solutions table
 function updateSolutions() {
   calcSolutions();
+  drawRoom();
   updateSlnTable();
 };
-
 
 function updateSlnTable(){
   tblSln.clear();
@@ -297,7 +321,8 @@ function updateSlnTable(){
       i.airspeeds()[0] * conv,
       i.airspeeds()[1] * conv,
       i.airspeeds()[2] * conv,
-      i.airspeeds()[3]
+      i.airspeeds()[3],
+      i.layout.aspectRatio,
     ]);
   }
   tblSln.rows.add(tblData);
@@ -368,17 +393,12 @@ function changeUnits () {
 
 
 function calcSolutions(){
-  // unitsSI = document.getElementById("unitsSI").checked
-  // console.log(`unitsSI is ${unitsSI}`);
-  // lims.numFans.max = parseInt(document.getElementById("maxNumFans").value);
-  // lims.dimensionlessDiameter.max = parseInt($( "#slider-dimless" ).slider( "values", 1 ));
+  // instantiate a new room object using the selected dimensions
   room = new Room(
     $( "#slider-hei-min" ).slider("value"),
     $( "#slider-len-min" ).slider("value"),
     $( "#slider-wid-min" ).slider("value")
   )
-  console.log(room)
-  console.log(candidateFans)
 
   /* function to ensure that the resulting size of the fan 'cell' in either the
   X  or Y direction is within the limits of the underlying data set.
