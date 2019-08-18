@@ -16,11 +16,11 @@
   <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="https://unpkg.com/mathjs/dist/math.min.js"></script>
   <script src="/libs/underscore.min.js" defer></script>
   <script src="objects.js" defer></script>
   <script src="main.js" defer></script>
   <script src="modalform.js" defer></script>
-
 </head>
 
 <body>
@@ -110,13 +110,13 @@
   <p class="validateTips">All form fields are required.</p>
     <form>
     <fieldset>
-      <label for="newtype">Fan type (name)</label>
+      <label for="newtype">Fan type</label>
       <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
       <p></p>
-      <label for="newdiameter">Fan diameter</label>
+      <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
       <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
       <p></p>
-      <label for="newairflow">Fan rated airflow</label>
+      <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
       <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
       <p></p>
       <input type="checkbox" id="ul507" name="ul507" checked>

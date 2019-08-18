@@ -37,6 +37,24 @@ solutions = [];
 isSIunits = true;
 scale = 1;
 
+// create common imperial unit defintions
+math.createUnit('cfm', '1 ft*ft*ft/min');
+math.createUnit('fpm', '1 ft/min');
+// create function that returns an input SI unit as a string with units
+// in the selected unit system
+function toStringWithDisplayUnits (valueSI, measurement){
+  if (measurement = "distance"){
+    return math.format(math.unit(valueSI,"m").to(isSIunits ? "m" : "ft"),3);
+  };
+  if (measurement = "flowrate"){
+    return math.format(math.unit(valueSI,"m^3/s").to(isSIunits ? "m^3/s" : "cfm"),3);
+  };
+  if (measurement = "speed"){
+    return math.format(math.unit(valueSI,"m/s").to(isSIunits ? "m/s" : "fpm"),3);
+  };
+};
+
+
 // // get parameters from the url
 // var url = new URL(document.URL);
 // var query_string = url.search;
@@ -61,8 +79,8 @@ scale = 1;
 // }
 
 $(document).ready(function() {
-  // calculate solutions for the initial condition
-  updateSolutions();
+  updateSliderDisplays();
+  drawRoom();
 });
 
 $( "#accordion" ).accordion({
@@ -92,15 +110,12 @@ $( "#slider-cellSize" ).slider({
   values: [ lims.cellSize.min, lims.cellSize.max ],
   step: 0.1,
   slide: function( event, ui ) {
-
-    $( "#cellSize" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+    //TODO change data structure to [min,max] instead of .min and .max
     lims.cellSize.max = ui.values[ 1 ];
     lims.cellSize.min = ui.values[ 0 ];
+    updateSliderDisplays();
   }
 });
-
-$( "#cellSize" ).val( $( "#slider-cellSize" ).slider( "values", 0 ) +
-" - " + $( "#slider-cellSize" ).slider( "values", 1 ));
 
 $( "#slider-aspectRatio-min" ).slider({
   range: "min",
@@ -132,10 +147,9 @@ $( "#slider-wid-min" ).slider({
   max: 100,
   step: 0.1,
   slide: function( event, ui ) {
-    $( "#wid" ).val( "" + ui.value );
+    updateSliderDisplays();
   }
 });
-$( "#wid" ).val( "" + $( "#slider-wid-min" ).slider( "value" ) );
 
 $( "#slider-hei-min" ).slider({
   range: "min",
@@ -144,10 +158,9 @@ $( "#slider-hei-min" ).slider({
   max: 4.5,
   step: 0.1,
   slide: function( event, ui ) {
-    $( "#hei" ).val( "" + ui.value );
+    updateSliderDisplays();
   }
 });
-$( "#hei" ).val( "" + $( "#slider-hei-min" ).slider( "value" ) );
 
 
 $( ":radio" ).checkboxradio({
@@ -177,7 +190,7 @@ var tblFans = $('#fans').DataTable( {
     render: $.fn.dataTable.render.number(',', '.', 2)
   }],
   columns: [
-    { title: "Name" },
+    { title: "Type" },
     { title: "D (m)" },
     { title: "Q (m³/s)" },
     { title: "UL507" }
@@ -245,6 +258,7 @@ $('#solutions tbody').on( 'click', 'tr', function () {
 
 // update selected solution
 $('#solutions tbody').on( 'click', function () {
+  drawRoom();
   if (tblSln.rows('.selected').data().length > 0 ){
     f = tblSln.rows('.selected').data()[0][0];
     n = tblSln.rows('.selected').data()[0][1];
@@ -255,7 +269,7 @@ $('#solutions tbody').on( 'click', function () {
   };
 } );
 
-$('.ui-slider').mouseup(function () {
+$('.ui-slider').click(function () {
   updateSolutions();
 });
 
@@ -268,21 +282,21 @@ $(':input').change(function () {
 // recalc the solutions, clear the floor plan, update the solutions table
 function updateSolutions() {
   calcSolutions();
-  drawRoom();
   updateSlnTable();
-  updateSliderDisplays();
 };
+
 
 function updateSlnTable(){
   tblSln.clear();
   tblData = [];
+  conv = (isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
   for (i of solutions){
     tblData.push([
       i.fan.type,
       i.layout.numFans(),
-      (isSIunits) ? i.airspeeds()[0] : i.airspeeds()[0] * 196.85,
-      (isSIunits) ? i.airspeeds()[1] : i.airspeeds()[1] * 196.85,
-      (isSIunits) ? i.airspeeds()[2] : i.airspeeds()[2] * 196.85,
+      i.airspeeds()[0] * conv,
+      i.airspeeds()[1] * conv,
+      i.airspeeds()[2] * conv,
       i.airspeeds()[3]
     ]);
   }
@@ -299,11 +313,20 @@ $("[name='units']").on( 'click', function () {
 
 function updateSliderDisplays(){
   // TODO: general
-  if (isSIunits) {
-    $( "#len" ).val( $( "#slider-len-min" ).slider( "value" ) + " m" );
-  } else {
-    $( "#len" ).val( ($( "#slider-len-min" ).slider( "value" )*3.2808).toFixed(1) + " ft" );
-  }
+  $( "#wid" ).val(toStringWithDisplayUnits($( "#slider-wid-min" ).slider( "value" ),"distance"))
+  $( "#len" ).val(toStringWithDisplayUnits($( "#slider-len-min" ).slider( "value" ),"distance"))
+  $( "#hei" ).val(toStringWithDisplayUnits($( "#slider-hei-min" ).slider( "value" ),"distance"))
+  // if (isSIunits) {
+  //   $( "#len" ).val( $( "#slider-len-min" ).slider( "value" ) + " m" );
+  // } else {
+  //   $( "#len" ).val( ($( "#slider-len-min" ).slider( "value" )*3.2808).toFixed(1) + " ft" );
+  // }
+
+  $( "#cellSize" ).val(
+     toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 0 ), "distance")
+      +  " - " +
+     toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 1 ), "distance")
+   );
 }
 
 function changeUnits () {
@@ -312,15 +335,15 @@ function changeUnits () {
 
   if (isSIunits) {
     $(tblFans.column(1).header()).text('D (m)');
-    $(tblFans.column(2).header()).text('Q (m3/s)');
+    $(tblFans.column(2).header()).text('Q (m³/s)');
     $(tblSln.column(2).header()).text('Min airspeed (m/s)');
     $(tblSln.column(3).header()).text('Avg airspeed (m/s)');
     $(tblSln.column(4).header()).text('Max airspeed (m/s)');
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] /= 3.2808;
-      data[2] /= 2118.88;
+      data[1] *= math.unit("1 ft").toNumber("m");
+      data[2] *= math.unit("1 cfm").toNumber("m^3/s");
       this.data(data);
     });
   } else {
@@ -332,8 +355,8 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] *= 3.2808;
-      data[2] *= 2118.88;
+      data[1] *= math.unit("1 m").toNumber("ft");
+      data[2] *= math.unit("1 m3/s").toNumber("cfm");
       this.data(data);
     });
   }
@@ -489,14 +512,14 @@ function drawFans(sln) {
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d')
     //clear plan after each solution selection
-    drawRoom();
     // display basic information about the layout
     ctx.font = '14px serif';
     ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
 
     // add diameter
+
     ctx.fillText(
-      sln.fan.diameter.toFixed(1) + " m",
+      toStringWithDisplayUnits(sln.fan.diameter, "distance"),
       10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
       10 + scale*(0.5*(sln.layout.cellSizeY))
     );

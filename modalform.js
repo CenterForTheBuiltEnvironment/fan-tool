@@ -83,5 +83,12 @@ $( function() {
 
   $( "#add-fan" ).button().on( "click", function() {
     dialog.dialog( "open" );
+    if (isSIunits) {
+        $("#distance-unit").text("(m)")
+        $("#airflow-unit").text("(m³/s)")
+    } else {
+        $("#distance-unit").text("(ft)")
+        $("#airflow-unit").text("(cfm)")
+    }
   });
 } );
