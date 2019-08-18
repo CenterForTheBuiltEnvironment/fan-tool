@@ -1,45 +1,53 @@
-/* define the limits within which this design method applies
-given the limitations of the underlying experiment dataset*/
-var lims = {
-  'cellSize': {
-    'min' : 4.572,
-    'max' : 15.24,
-  },
-  'numFans':{
-    'min' : 1,
-    'max' : 10,
-  },
-  'diameter':{
-    'min' : 1.2192,
-    'max' : 4.2672,
-  },
-  'bladeHeight' : {
-    'min' : 2.1336,
-    'max' : 4.2672,
-  },
-  'ceilingHeight' : {
-    'min' : 2.7432,
-    'max' : 4.572,
-  },
-  'dimensionlessDiameter':{
-    'min' : 0.2,
-    'max' : 0.5,
-  },
-  'aspectRatio' : {
-    'min' : 3/4,
-    'max' : 4/3,
-  },
+// save parameter state on button click
+$( "#save" ).button().on( "click", function() {
+  localStorage.setItem('parameters', JSON.stringify(p));
+  alert("State saved")
+});
+
+// load parameter state from local session storage
+$( "#load" ).button().on( "click", function() {
+  var parameters = localStorage.getItem('parameters');
+  p = JSON.parse(parameters);
+
+  // set sliders to parameter values, update sliders, and calc solutions
+  $("#slider-wid-min").slider('value',p.width)
+  $("#slider-len-min").slider('value',p.length)
+  $("#slider-hei-min").slider('value',p.height)
+  $("#slider-aspectRatio-min").slider('value',p.aspectRatio)
+
+  $("#slider-dimless").slider('values', 0, p.dimensionlessDiameter[0])
+  $("#slider-dimless").slider('values', 1, p.dimensionlessDiameter[1])
+  $("#slider-cellSize").slider('values', 0, p.cellSize[0])
+  $("#slider-cellSize").slider('values', 1, p.cellSize[1])
+
+  updateSliderDisplays();
+  updateSolutions();
+});
+
+$( "#share" ).button().on( "click", function() {
+  //button = true;
+});
+
+// define default parameter state
+p = {
+  'cellSize': [4.572, 15.24],
+  'numFans':[1,10],
+  'diameter':[1.2192, 4.2672],
+  'bladeHeight' : [2.1336, 4.2672],
+  'ceilingHeight' : [2.7432, 4.572],
+  'dimensionlessDiameter':[0.2, 0.5],
+  "length" : 6.1,
+  "width" : 12.3,
+  "height" : 3,
+  "aspectRatio" : 1.25,
+  "isSIunits" : true,
+  "scale" : 0,   // globally store the pixel scaling factor for canvas
+  "room" : [], // TODO: no need to save
+  "candidateFans" : [], // TODO: no need to save
+  "solutions" : [], // TODO: no need to save
+  "selectedSolution" : [], // TODO: no need to save
 }
 
-room = [];
-candidateFans = []
-solutions = [];
-selectedSolution = [];
-
-isSIunits = true
-
-// globally store the pixel scaling factor for canvas
-scale = 0;
 
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
@@ -48,48 +56,48 @@ math.createUnit('fpm', '1 ft/min');
 // in the selected unit system
 function toStringWithDisplayUnits (valueSI, measurement){
   if (measurement = "distance"){
-    return math.format(math.unit(valueSI,"m").to(isSIunits ? "m" : "ft"),3);
+    return math.format(math.unit(valueSI,"m").to(p.isSIunits ? "m" : "ft"),3);
   };
   if (measurement = "flowrate"){
-    return math.format(math.unit(valueSI,"m^3/s").to(isSIunits ? "m^3/s" : "cfm"),3);
+    return math.format(math.unit(valueSI,"m^3/s").to(p.isSIunits ? "m^3/s" : "cfm"),3);
   };
   if (measurement = "speed"){
-    return math.format(math.unit(valueSI,"m/s").to(isSIunits ? "m/s" : "fpm"),3);
+    return math.format(math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm"),3);
   };
 };
 
 
-// // get parameters from the url
-// var url = new URL(document.URL);
-// var query_string = url.search;
-// var search_params = new URLSearchParams(query_string);
-// var id = search_params.get('id');
-// // output : 100
-// console.log(id);
-//
-// var uri = "file:///D:/Android/Projects/ipack-schedule/www/visit.html?uname=&date=10/01/2016%2013:00:00"
-//
-// var vars = getVars(uri)
-// document.write(JSON.stringify(vars))
-//
-// function getVars(uri) {
-//   var s = uri.split("?")
-//   if (s.length == 1) return []
-//
-//   var parts = s[1].split("&")
-//   return parts.map(function(el) {
-//     return el.split("=").map(function(el){return decodeURIComponent(el)})
-//   })
-// }
+// get parameters from the url
+var url = new URL(document.URL);
+var query_string = url.search;
+var search_params = new URLSearchParams(query_string);
+var id = search_params.get('id');
+// output : 100
+console.log(id);
+
+var uri = "file:///D:/Android/Projects/ipack-schedule/www/visit.html?uname=&date=10/01/2016%2013:00:00"
+
+var vars = getVars(uri)
+document.write(JSON.stringify(vars))
+
+function getVars(uri) {
+  var s = uri.split("?")
+  if (s.length == 1) return []
+
+  var parts = s[1].split("&")
+  return parts.map(function(el) {
+    return el.split("=").map(function(el){return decodeURIComponent(el)})
+  })
+}
 
 
 /// once all content has loaded, perform first solutions calc
 $(document).ready(function() {
-  /// initial best guess at  unit system based on user browser language
-  if (navigator.language == "en-US") {
-    $("[name='units']").trigger( 'click');
-    changeUnits();
-  };
+  // initial best guess at  unit system based on user browser language
+  // if (navigator.language == "en-US") {
+  //   $("[name='units']").trigger( 'click');
+  //   changeUnits();
+  // };
   updateSliderDisplays();
   updateSolutions();
 });
@@ -113,12 +121,11 @@ $( "#slider-dimless" ).slider({
   range: true,
   min: 0.15,
   max: 0.60,
-  values: [ lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max ],
+  values: p.dimensionlessDiameter,
   step: 0.01,
   slide: function( event, ui ) {
+    p.dimensionlessDiameter = ui.values;
     $( "#dimless" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
-    lims.dimensionlessDiameter.max = ui.values[ 1 ];
-    lims.dimensionlessDiameter.min = ui.values[ 0 ];
   }
 });
 $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
@@ -128,12 +135,10 @@ $( "#slider-cellSize" ).slider({
   range: true,
   min: 4.5,
   max: 15.24,
-  values: [ lims.cellSize.min, lims.cellSize.max ],
+  values: p.cellSize,
   step: 0.1,
   slide: function( event, ui ) {
-    //TODO change data structure to [min,max] instead of .min and .max
-    lims.cellSize.max = ui.values[ 1 ];
-    lims.cellSize.min = ui.values[ 0 ];
+    p.cellSize = ui.values;
     updateSliderDisplays();
   }
 });
@@ -142,11 +147,12 @@ $( "#slider-cellSize" ).slider({
 // add all sliders (single values)
 $( "#slider-aspectRatio-min" ).slider({
   range: "min",
-  value: 1.25,
+  value: p.aspectRatio,
   min: 1,
   max: 1.5,
   step: 0.01,
   slide: function( event, ui ) {
+    p.aspectRatio = ui.value;
     $( "#aspectRatio" ).val( "" + ui.value );
   }
 });
@@ -154,33 +160,36 @@ $( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) )
 
 $( "#slider-len-min" ).slider({
   range: "min",
-  value: 6.1,
+  value: p.length,
   min: 4.5,
   max: 50,
   step: 0.1,
   slide: function( event, ui ) {
+    p.length = ui.value;
     updateSliderDisplays();
   }
 });
 
 $( "#slider-wid-min" ).slider({
   range: "min",
-  value: 12.2,
+  value: p.width,
   min: 4.5,
   max: 50,
   step: 0.1,
   slide: function( event, ui ) {
+    p.width = ui.value;
     updateSliderDisplays();
   }
 });
 
 $( "#slider-hei-min" ).slider({
   range: "min",
-  value: 3,
+  value: p.height,
   min: 2.7,
   max: 4.5,
   step: 0.1,
   slide: function( event, ui ) {
+    p.height = ui.value;
     updateSliderDisplays();
   }
 });
@@ -227,18 +236,18 @@ $('#fans tbody').on( 'click', 'tr', function () {
 // whenever a fan is selected/deselected
 // update fans object and calculate solutions
 $('#fans tbody').on( 'click', function () {
-  candidateFans =[];
+  p.candidateFans =[];
   tblFans.rows('.selected').data().each( function(row,index) {
     var t = row[0];
     var d = row[1];
     var a = row[2];
     var u = row[3];
-    if (!isSIunits){
+    if (!p.isSIunits){
       // convert units to SI before creating fan objects
       d *= math.unit("1 ft").toNumber("m");
       a *= math.unit("1 cfm").toNumber("m3/s");
     }
-    candidateFans.push(new Fan(t,d,a,u));
+    p.candidateFans.push(new Fan(t,d,a,u));
   });
   updateSolutions();
 } );
@@ -246,8 +255,8 @@ $('#fans tbody').on( 'click', function () {
 var tblSln = $('#solutions').DataTable( {
   data: [],
   destroy: true,
-  paging: true,
-  scrollY: true,
+  paging: false,
+  scrollY: "200px",
   searching: false,
   info: true,
   lengthChange: false,
@@ -283,14 +292,14 @@ $('#solutions tbody').on( 'click', function () {
   if (tblSln.rows('.selected').data().length > 0 ){
     f = tblSln.rows('.selected').data()[0][0];
     n = tblSln.rows('.selected').data()[0][1];
-    for (sln of solutions){
+    for (sln of p.solutions){
       // TODO - resolve issue if two matching slns (same type, 7 x 8 vs 8x7 fans)
       if (sln.fan.type == f && sln.layout.numFans() == n) drawFans(sln);
     };
   };
 } );
 
-$('.ui-slider').click(function () {
+$('.ui-slider').mouseup(function () {
   updateSliderDisplays();
   updateSolutions();
 });
@@ -313,8 +322,8 @@ function updateSolutions() {
 function updateSlnTable(){
   tblSln.clear();
   tblData = [];
-  conv = (isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
-  for (i of solutions){
+  conv = (p.isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
+  for (i of p.solutions){
     tblData.push([
       i.fan.type,
       i.layout.numFans(),
@@ -328,7 +337,7 @@ function updateSlnTable(){
   tblSln.rows.add(tblData);
   tblSln.draw();
   // select first solution if any solutions exist
-  if (solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
+  if (p.solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
 };
 
 // if someone wants to change to units
@@ -341,24 +350,24 @@ function updateSliderDisplays(){
   $( "#wid" ).val(toStringWithDisplayUnits($( "#slider-wid-min" ).slider( "value" ),"distance"))
   $( "#len" ).val(toStringWithDisplayUnits($( "#slider-len-min" ).slider( "value" ),"distance"))
   $( "#hei" ).val(toStringWithDisplayUnits($( "#slider-hei-min" ).slider( "value" ),"distance"))
-  // if (isSIunits) {
+  // if (p.isSIunits) {
   //   $( "#len" ).val( $( "#slider-len-min" ).slider( "value" ) + " m" );
   // } else {
   //   $( "#len" ).val( ($( "#slider-len-min" ).slider( "value" )*3.2808).toFixed(1) + " ft" );
   // }
 
   $( "#cellSize" ).val(
-     toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 0 ), "distance")
-      +  " - " +
-     toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 1 ), "distance")
-   );
+    toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 0 ), "distance")
+    +  " - " +
+    toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 1 ), "distance")
+  );
 }
 
 function changeUnits () {
-  isSIunits  = $("[name='units']")[0].checked
+  p.isSIunits  = $("[name='units']")[0].checked
   // update table column names
 
-  if (isSIunits) {
+  if (p.isSIunits) {
     $(tblFans.column(1).header()).text('D (m)');
     $(tblFans.column(2).header()).text('Q (m³/s)');
     $(tblSln.column(2).header()).text('Min airspeed (m/s)');
@@ -394,7 +403,7 @@ function changeUnits () {
 
 function calcSolutions(){
   // instantiate a new room object using the selected dimensions
-  room = new Room(
+  p.room = new Room(
     $( "#slider-hei-min" ).slider("value"),
     $( "#slider-len-min" ).slider("value"),
     $( "#slider-wid-min" ).slider("value")
@@ -405,12 +414,12 @@ function calcSolutions(){
   Avoids looping through an unecessarily large array of 2d Layout objects
   */
   testLims = function(value, index, testArray, )  {
-    return value >= lims.cellSize.min*Math.sqrt(lims.aspectRatio.min) &&
-    value <= lims.cellSize.max*Math.sqrt(lims.aspectRatio.max);
+    return value >= p.cellSize[0]*Math.sqrt(1/p.aspectRatio) &&
+    value <= p.cellSize[1]*Math.sqrt(p.aspectRatio);
   }
-  candidateNumFans = Array.from(Array(lims.numFans.max).keys()).map(n => n + 1)
-  var validNumFansX = candidateNumFans.map(n => room.sizeX/n).filter(testLims).map(n => room.sizeX / n);
-  var validNumFansY = candidateNumFans.map(n => room.sizeY/n).filter(testLims).map(n => room.sizeY / n);
+  candidateNumFans = Array.from(Array(p.numFans[1]).keys()).map(n => n + 1)
+  var validNumFansX = candidateNumFans.map(n => p.room.sizeX/n).filter(testLims).map(n => p.room.sizeX / n);
+  var validNumFansY = candidateNumFans.map(n => p.room.sizeY/n).filter(testLims).map(n => p.room.sizeY / n);
   console.log(`Valid number of fans in X direction:  ${validNumFansX}`)
   console.log("Valid number of fans in Y direction: " + validNumFansY)
   console.log("Total number of cases: " + (validNumFansX.length * validNumFansY.length))
@@ -420,26 +429,22 @@ function calcSolutions(){
   that relate to interactions between room and room objects.
   */
   layouts = [];
-  failAspectRatio = [0,0];
+  failAspectRatio = 0;
   failCellSize = [0,0];
   for (i = 0; i < validNumFansX.length; i++) {
     for (j = 0; j < validNumFansY.length; j++) {
       // instantiate a candidate solution
-      candidate = new Layout(validNumFansX[i],validNumFansY[j], room);
+      candidate = new Layout(validNumFansX[i],validNumFansY[j], p.room);
       // test to see if it meets validity criteria
-      if (candidate.aspectRatio <= lims.aspectRatio.min){
-        failAspectRatio[0]++;
+      if (candidate.aspectRatio >= p.aspectRatio){
+        failAspectRatio++;
         continue;
       };
-      if (candidate.aspectRatio >= lims.aspectRatio.max){
-        failAspectRatio[1]++;
-        continue;
-      };
-      if (candidate.r <= lims.cellSize.min){
+      if (candidate.r <= p.cellSize[0]){
         failCellSize[0]++;
         continue;
       };
-      if (candidate.r >= lims.cellSize.max){
+      if (candidate.r >= p.cellSize[1]){
         failCellSize[1]++;
         continue;
       };
@@ -460,30 +465,30 @@ function calcSolutions(){
   /* create an array of all candidate solutions that fit within the limitations
   that relate interactions between layout and fan objects.
   */
-  solutions = [];
+  p.solutions = [];
   failDimensionlessDiameter = [0,0];
   for (i = 0; i < layouts.length; i++) {
-    for (j = 0; j < candidateFans.length; j++) {
+    for (j = 0; j < p.candidateFans.length; j++) {
       // instantiate a candidate solution
-      candidate = new Solution(layouts[i],candidateFans[j]);
+      candidate = new Solution(layouts[i],p.candidateFans[j]);
       // test to see if it meets validity criteria
-      if (candidate.dr <= lims.dimensionlessDiameter.min){
+      if (candidate.dr <= p.dimensionlessDiameter[0]){
         failDimensionlessDiameter[0]++;
         continue;
       };
-      if (candidate.dr >= lims.dimensionlessDiameter.max){
+      if (candidate.dr >= p.dimensionlessDiameter[1]){
         failDimensionlessDiameter[1]++;
         continue;
       };
       //TODO:  add constraints based on airspeed
-      solutions.push(candidate);
+      p.solutions.push(candidate);
     };
   };
   console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
-  console.log(solutions);
-  console.log("Total number of viable solutions: " + solutions.length);
+  console.log(p.solutions);
+  console.log("Total number of viable solutions: " + p.solutions.length);
 
-  var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
+  var numsFans = p.solutions.map(function(elt) {return elt.layout.numFans();});
 
   /* TODO Develop methods to select for various design cases given
   a set of constraints:
@@ -495,9 +500,9 @@ function calcSolutions(){
 }
 
 
-// function getDataTbl(solutions){
+// function getDataTbl(p.solutions){
 //   tblData = [];
-//   for (i of solutions){
+//   for (i of p.solutions){
 //     tblData.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
 //   }
 //   return tblData;
@@ -511,13 +516,13 @@ function drawRoom() {
     var ctx = canvas.getContext('2d')
     //clear plan after each solution selection
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    scale = Math.min(
-      (canvas.width-20)/room.sizeX,
-      (canvas.height-20)/room.sizeY
+    p.scale = Math.min(
+      (canvas.width-20)/p.room.sizeX,
+      (canvas.height-20)/p.room.sizeY
     );
     // draw the room in plan
     ctx.beginPath();
-    ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
+    ctx.rect(10,10, p.room.sizeX*p.scale,p.room.sizeY*p.scale);
     ctx.stroke();
   } else {
     alert("Your browser doesn't support HTML 5 Canvas");
@@ -540,8 +545,8 @@ function drawFans(sln) {
 
     ctx.fillText(
       toStringWithDisplayUnits(sln.fan.diameter, "distance"),
-      10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
-      10 + scale*(0.5*(sln.layout.cellSizeY))
+      10 + p.scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
+      10 + p.scale*(0.5*(sln.layout.cellSizeY))
     );
 
     //draw 'fans'
@@ -551,9 +556,9 @@ function drawFans(sln) {
       for (j = 0; j < sln.layout.numFansY; j++){
         ctx.beginPath();
         ctx.arc(
-          10 + scale*(i + 0.5)*sln.layout.cellSizeX,
-          10 + scale*(j + 0.5)*sln.layout.cellSizeY,
-          sln.fan.diameter*scale/2, 0, 2 * Math.PI);
+          10 + p.scale*(i + 0.5)*sln.layout.cellSizeX,
+          10 + p.scale*(j + 0.5)*sln.layout.cellSizeY,
+          sln.fan.diameter*p.scale/2, 0, 2 * Math.PI);
           ctx.stroke();
         }
       }

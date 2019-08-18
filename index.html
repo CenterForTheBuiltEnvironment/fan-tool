@@ -92,6 +92,11 @@
           <table id="fans" class="compact order-column hover stripe" width="90%"></table>
         </div>
       </div>
+      <br>
+      <button type="button" id="save"> Save </button>
+      <button type="button" id="load"> Load </button>
+      <button type="button" id="share"> Share </button>
+
     </div><!--id="left_content"-->
 
     <div id="right_content">
@@ -102,33 +107,33 @@
       <h2 style="text-align:center;">Plan view</h2>
       <canvas id = "canv" width = "674 px" height = "500 px"></canvas>
     </div><!--id="right_content"-->
-</div> <!--id="all_content"-->
+  </div> <!--id="all_content"-->
 
 
-<!-- form for adding a new fan  -->
-<div id="dialog-form" title="Add a new fan">
-  <p class="validateTips">All form fields are required.</p>
+  <!-- form for adding a new fan  -->
+  <div id="dialog-form" title="Add a new fan">
+    <p class="validateTips">All form fields are required.</p>
     <form>
-    <fieldset>
-      <label for="newtype">Fan type</label>
-      <br>
-      <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
-      <br>
-      <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
-       <br>
-      <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <input type="checkbox" id="ul507" name="ul507" checked>
-      <label for="ul507">UL 507 Compliant</label>
-      <!-- Allow form submission with keyboard without duplicating the dialog button -->
-      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-    </fieldset>
-  </form>
-</div>
+      <fieldset>
+        <label for="newtype">Fan type</label>
+        <br>
+        <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
+        <br>
+        <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
+        <br>
+        <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <input type="checkbox" id="ul507" name="ul507" checked>
+        <label for="ul507">UL 507 Compliant</label>
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
+  </div>
 
 
 </body>

@@ -34,20 +34,20 @@ function Layout(numFansX, numFansY, room){
   this.cellArea = this.cellSizeX * this.cellSizeY;
   this.r = Math.sqrt(this.cellArea);
   // TODO redefine throughout to always > 1
-  this.aspectRatio = this.cellSizeX/this.cellSizeY;
+  this.aspectRatio = Math.max(this.cellSizeX/this.cellSizeY, this.cellSizeY/this.cellSizeX);
   this.numFans =  function(){
     return this.numFansX * this.numFansY;
   };
   this.validDiameters = function(){
     //returns valid diameter based on dimensionless diameter
     // and diameter constraints
-    vds = [lims.dimensionlessDiameter.min, lims.dimensionlessDiameter.max].map(n => n * this.r);
+    vds = [p.dimensionlessDiameter[0], p.dimensionlessDiameter[1]].map(n => n * this.r);
     maxDul507True = (this.room.ceilingHeight - 7)/0.2;
     maxDul507False = (this.room.ceilingHeight - 10)/0.2;
     if (vds[1] > maxDul507True) vds[1] = maxDul507True;
     if (vds[1] > 7 && vds[1] > maxDul507False) vds[1] = maxDul507False;
-    if (vds[0] < lims.diameter.min) vds[0] = lims.diameter.min;
-    if (vds[0] > lims.diameter.max) vds[1] = lims.diameter.max;
+    if (vds[0] < p.diameter[0]) vds[0] = p.diameter[0];
+    if (vds[0] > p.diameter[1]) vds[1] = p.diameter[1];
     return vds;
   }
 }

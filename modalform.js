@@ -83,7 +83,7 @@ $( function() {
 
   $( "#add-fan" ).button().on( "click", function() {
     dialog.dialog( "open" );
-    if (isSIunits) {
+    if (p.isSIunits) {
         $("#distance-unit").text("(m)")
         $("#airflow-unit").text("(m³/s)")
     } else {
