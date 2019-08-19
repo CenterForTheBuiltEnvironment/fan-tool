@@ -1,13 +1,38 @@
+/// once all content has loaded, perform first solutions calc
+$(document).ready(function() {
+  // initial best guess at  unit system based on user browser language
+  if (navigator.language == "en-US") {
+    $("#units2").trigger("click");
+  };
+  updateSliderDisplays();
+  updateSolutions();
+});
+
 // save parameter state on button click
 $( "#save" ).button().on( "click", function() {
+  // store fan data in parameters
+  p.fanTableData = tblFans.data();
+  tblData = [];
+  for (i=0; i< tblFans.data().length; i++){
+    tblData.push(tblFans.data()[i]);
+  }
+  p.fanTableData = tblData;
   localStorage.setItem('parameters', JSON.stringify(p));
-  alert("State saved")
+  alert("State saved in local browser session.")
 });
 
 // load parameter state from local session storage
 $( "#load" ).button().on( "click", function() {
-  var parameters = localStorage.getItem('parameters');
-  p = JSON.parse(parameters);
+  var stored = localStorage.getItem('parameters');
+  //saved_p = JSON.parse(stored);
+  //handle case where saved unit system don't match current displayed unit system
+  if (JSON.parse(stored).isSIunits){
+    $("#units1").trigger("click");
+  } else{
+    $("#units2").trigger("click");
+  }
+  // load saved parameters
+  p = JSON.parse(stored);
 
   // set sliders to parameter values, update sliders, and calc solutions
   $("#slider-wid-min").slider('value',p.width)
@@ -20,16 +45,62 @@ $( "#load" ).button().on( "click", function() {
   $("#slider-cellSize").slider('values', 0, p.cellSize[0])
   $("#slider-cellSize").slider('values', 1, p.cellSize[1])
 
+  // reload fan data into table
+  tblFans.clear();
+  tblData = [];
+  for (i=0; i< p.fanTableData.length; i++){
+    tblData.push(p.fanTableData[i]);
+  }
+  tblFans.rows.add(tblData);
+  tblFans.draw();
+  if (JSON.parse(stored).selectedCandidateFanIDs.length >0 ) {
+    for (i in JSON.parse(stored).selectedCandidateFanIDs) {
+      // note here that it has to be the IDS in the saved state, as
+      // the table updates on click, as does the state stored in p
+      $('#fans tbody tr:eq(' + JSON.parse(stored).selectedCandidateFanIDs[i] + ')').click();
+    }
+  }
   updateSliderDisplays();
   updateSolutions();
+  if (JSON.parse(stored).selectedSolutionID >0 ) {
+      // note here that it has to be the IDS in the saved state, as
+      // the table updates on click, as does the state stored in p
+      $('#solutions tbody tr:eq(' + JSON.parse(stored).selectedSolutionID + ')').click();
+  }
+
 });
+
+
 
 $( "#share" ).button().on( "click", function() {
-  //button = true;
+  //TODO: save (i.e. copy) parameters in URL and load from same
+  // // get parameters from the url
+  // var url = new URL(document.URL);
+  // var query_string = url.search;
+  // var search_params = new URLSearchParams(query_string);
+  // var id = search_params.get('id');
+  // // output : 100
+  // console.log(id);
+  //
+  // var uri = "file:///D:/Android/Projects/ipack-schedule/www/visit.html?uname=&date=10/01/2016%2013:00:00"
+  //
+  // var vars = getVars(uri)
+  // document.write(JSON.stringify(vars))
+  //
+  // function getVars(uri) {
+  //   var s = uri.split("?")
+  //   if (s.length == 1) return []
+  //
+  //   var parts = s[1].split("&")
+  //   return parts.map(function(el) {
+  //     return el.split("=").map(function(el){return decodeURIComponent(el)})
+  //   })
+  // }
 });
 
+
 // define default parameter state
-p = {
+p_default = {
   'cellSize': [4.572, 15.24],
   'numFans':[1,10],
   'diameter':[1.2192, 4.2672],
@@ -42,12 +113,24 @@ p = {
   "aspectRatio" : 1.25,
   "isSIunits" : true,
   "scale" : 0,   // globally store the pixel scaling factor for canvas
+  "fanTableData" : [
+    ['TypeA', 1.2192,   2.611757, true],
+    ['TypeB', 1.319784, 2.258268, true],
+    ['TypeC', 1.524,    3.765196, true],
+    ['TypeD', 1.524,    3.826077, true],
+    ['TypeE', 2.1336,   7.734745, true],
+    ['TypeF', 2.4384,   13.80304, false],
+    ['TypeG', 2.4384,   16.57101, false],
+    ['TypeH', 3.048,    20.91151, false],
+    ['TypeI', 4.2672,   25.30817, false]
+  ],
   "room" : [], // TODO: no need to save
   "candidateFans" : [], // TODO: no need to save
   "solutions" : [], // TODO: no need to save
-  "selectedSolution" : [], // TODO: no need to save
+  "selectedSolutionID" : [],
+  "selectedCandidateFanIDs" :[],
 }
-
+p = p_default;
 
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
@@ -65,43 +148,6 @@ function toStringWithDisplayUnits (valueSI, measurement){
     return math.format(math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm"),3);
   };
 };
-
-
-// get parameters from the url
-var url = new URL(document.URL);
-var query_string = url.search;
-var search_params = new URLSearchParams(query_string);
-var id = search_params.get('id');
-// output : 100
-console.log(id);
-
-var uri = "file:///D:/Android/Projects/ipack-schedule/www/visit.html?uname=&date=10/01/2016%2013:00:00"
-
-var vars = getVars(uri)
-document.write(JSON.stringify(vars))
-
-function getVars(uri) {
-  var s = uri.split("?")
-  if (s.length == 1) return []
-
-  var parts = s[1].split("&")
-  return parts.map(function(el) {
-    return el.split("=").map(function(el){return decodeURIComponent(el)})
-  })
-}
-
-
-/// once all content has loaded, perform first solutions calc
-$(document).ready(function() {
-  // initial best guess at  unit system based on user browser language
-  // if (navigator.language == "en-US") {
-  //   $("[name='units']").trigger( 'click');
-  //   changeUnits();
-  // };
-  updateSliderDisplays();
-  updateSolutions();
-});
-
 
 // defines left pane accordion setup
 $( "#accordion" ).accordion({
@@ -199,19 +245,10 @@ $( ":radio" ).checkboxradio({
 });
 
 var tblFans = $('#fans').DataTable( {
-  data: [
-    ['TypeA', 1.2192,   2.611757, true],
-    ['TypeB', 1.319784, 2.258268, true],
-    ['TypeC', 1.524,    3.765196, true],
-    ['TypeD', 1.524,    3.826077, true],
-    ['TypeE', 2.1336,   7.734745, true],
-    ['TypeF', 2.4384,   13.80304, false],
-    ['TypeG', 2.4384,   16.57101, false],
-    ['TypeH', 3.048,    20.91151, false],
-    ['TypeI', 4.2672,   25.30817, false]
-  ],
+  data: p.fanTableData,
   destroy: true,
   scrollY: "200px",
+  stateSave: true,
   scrollCollapse: true,
   paging: false,
   searching: false,
@@ -236,6 +273,7 @@ $('#fans tbody').on( 'click', 'tr', function () {
 // whenever a fan is selected/deselected
 // update fans object and calculate solutions
 $('#fans tbody').on( 'click', function () {
+  p.selectedCandidateFanIDs = tblFans.rows('.selected')[0]
   p.candidateFans =[];
   tblFans.rows('.selected').data().each( function(row,index) {
     var t = row[0];
@@ -290,12 +328,8 @@ $('#solutions tbody').on( 'click', 'tr', function () {
 $('#solutions tbody').on( 'click', function () {
   drawRoom();
   if (tblSln.rows('.selected').data().length > 0 ){
-    f = tblSln.rows('.selected').data()[0][0];
-    n = tblSln.rows('.selected').data()[0][1];
-    for (sln of p.solutions){
-      // TODO - resolve issue if two matching slns (same type, 7 x 8 vs 8x7 fans)
-      if (sln.fan.type == f && sln.layout.numFans() == n) drawFans(sln);
-    };
+    p.selectedSolutionID = tblSln.rows('.selected')[0][0]
+    drawFans();
   };
 } );
 
@@ -310,6 +344,14 @@ $('.ui-slider').mouseup(function () {
 
 $(':input').change(function () {
   updateSolutions();
+});
+
+$("#units1").change(function () {
+  changeUnits();
+});
+
+$("#units2").change(function () {
+  changeUnits();
 });
 
 // recalc the solutions, clear the floor plan, update the solutions table
@@ -331,7 +373,7 @@ function updateSlnTable(){
       i.airspeeds()[1] * conv,
       i.airspeeds()[2] * conv,
       i.airspeeds()[3],
-      i.layout.aspectRatio,
+      i.layout.aspectRatio.toFixed(2),
     ]);
   }
   tblSln.rows.add(tblData);
@@ -340,10 +382,10 @@ function updateSlnTable(){
   if (p.solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
 };
 
-// if someone wants to change to units
-$("[name='units']").on( 'click', function () {
-  changeUnits();
-});
+// // if someone wants to change to units
+// $("[name='units']").on( 'click', function () {
+//   changeUnits();
+// });
 
 function updateSliderDisplays(){
   // TODO: general
@@ -530,7 +572,7 @@ function drawRoom() {
 }
 
 
-function drawFans(sln) {
+function drawFans() {
   //TODO: review pros/cons of doing this with SVG instead of canvas
   var canvas = document.getElementById('canv');
   // Execute only if canvas is supported
@@ -539,6 +581,7 @@ function drawFans(sln) {
     //clear plan after each solution selection
     // display basic information about the layout
     ctx.font = '14px serif';
+    sln = p.solutions[p.selectedSolutionID];
     ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
 
     // add diameter

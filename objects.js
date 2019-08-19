@@ -36,7 +36,7 @@ function Layout(numFansX, numFansY, room){
   // TODO redefine throughout to always > 1
   this.aspectRatio = Math.max(this.cellSizeX/this.cellSizeY, this.cellSizeY/this.cellSizeX);
   this.numFans =  function(){
-    return this.numFansX * this.numFansY;
+    return parseInt(this.numFansX * this.numFansY, 10);
   };
   this.validDiameters = function(){
     //returns valid diameter based on dimensionless diameter
