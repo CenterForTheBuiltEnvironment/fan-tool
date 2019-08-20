@@ -32,14 +32,21 @@
       <h1>CBE Fan Tool<span style='color: red'> (partly functional mockup)</span></h1>
     </div>
     <div id="left_content">
-      <div style="text-align: center;vertical-align: middle; margin: 5px">
+      <div style="text-align: center; padding-top: 5px;">
+        State:
+        <button type="button" id="save"> Save </button>
+        <button type="button" id="load"> Load </button>
+        <button type="button" id="share"> Share </button>
+      </div>
+      <div style="text-align: center; padding: 5px 0px 5px 0px;">
+        Units:
         <label for="units1">Metric</label>
         <input type="radio" name="units" id="units1" checked>
         <label for="units2">Imperial</label>
         <input type="radio" name="units" id="units2">
       </div>
       <div id="accordion">
-        <h2>Room inputs</h2>
+        <h2>Room dimensions</h2>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
             <label for="len" title="The length of the room">Length:</label>
@@ -60,80 +67,153 @@
           </div>
           <div id="slider-hei-min" class='slider'></div>
         </div>
-        <h2>Advanced settings</h2>
+
+        <h2>Fan inputs</h2>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="cellSize"  title="Acceptable range of sizes of each individual cell" >Cell size:</label>
-            <input type="text" id="cellSize" readonly style="border:0;
+            <label for="num-fans"  title="Acceptable range of number of fans in the X (row) or Y (column) direction" ># fans in row or column :</label>
+            <input type="text" id="num-fans" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
-          <div id="slider-cellSize" class='slider'></div>
+          <div id="slider-num-fans" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size.">Fan dimensionless diameter:</label>
-            <input type="text" id="dimless" readonly style="border:0;
+            <label for="blade-height"  title="Acceptable range blade heights" >Blade height:</label>
+            <input type="text" id="blade-height" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
-          <div id="slider-dimless" class='slider'></div>
+          <div id="slider-blade-height" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width)">Max cell aspect ratio:</label>
-            <input type="text" id="aspectRatio" readonly style="border:0;
+            <label for="fan-speed-min" title="The fan speed as a percentage of maximum">Fan speed:</label>
+            <input type="text" id="fan-speed-min" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
-          <div id="slider-aspectRatio-min" class='slider'></div>
+          <div id="slider-fan-speed-min" class='slider'></div>
         </div>
-      </div><!--id="accordion"-->
-      <h2>Fan inputs</h2>
-      <div id="accordion_content">
-        <div>
-          <label>Fan selection</label>
-          <button type="button" id="add-fan" style='float:right;'>Add fan</button>
+
+        <h2>Air speeds</h2>
+        <div id="accordion_content">
+          <div style="text-align: center;vertical-align: middle; margin: 5px">
+            <label for="posture1">Seated</label>
+            <input type="radio" name="posture" id="posture1" checked>
+            <label for="posture2">Standing</label>
+            <input type="radio" name="posture" id="posture2">
+          </div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="min-air-speed" title="The range of acceptable minimum airspeeds">Minimum air speed:</label>
+            <input type="text" id="min-air-speed" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-min-air-speed" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="avg-air-speed" title="The range of acceptable area-weighted room average airspeeds">Average air speed:</label>
+            <input type="text" id="avg-air-speed" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-avg-air-speed" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="uniformity" title="The range of acceptable uniformity">Uniformity:</label>
+            <input type="text" id="uniformity" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-uniformity" class='slider'></div>
         </div>
-        <div>
-          <table id="fans" class="compact order-column hover stripe" width="90%"></table>
-        </div>
+
+
+        <h2>Display settings</h2>
+        <div id="accordion_content">
+          <div style="text-align: center;vertical-align: middle; margin: 5px">
+            <label for="view1">Floor plan</label>
+            <input type="radio" name="view" id="view1" checked>
+            <label for="view2">Cell plan</label>
+            <input type="radio" name="view" id="view2">
+            <label for="view3">Section</label>
+            <input type="radio" name="view" id="view3">
+          </div>
+          <!-- <div style="text-align: center;vertical-align: middle; margin: 5px">
+          <span> Grid: </span>
+          <label for="grid1">On</label>
+          <input type="radio" name="grid" id="grid1" checked>
+          <label for="grid2">Off</label>
+          <input type="radio" name="grid" id="grid2">
+        </div> -->
       </div>
+
+      <h2>Advanced settings</h2>
+      <div id="accordion_content">
+        <div style="margin: 10px 0px 10px 0px;">
+          <label for="cellSize"  title="Acceptable range of sizes of each individual cell" >Cell size:</label>
+          <input type="text" id="cellSize" readonly style="border:0;
+          color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        </div>
+        <div id="slider-cellSize" class='slider'></div>
+        <div style="margin: 10px 0px 10px 0px;">
+          <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size.">Diameter to room size ratio:</label>
+          <input type="text" id="dimless" readonly style="border:0;
+          color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        </div>
+        <div id="slider-dimless" class='slider'></div>
+        <div style="margin: 10px 0px 10px 0px;">
+          <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width)">Max cell aspect ratio:</label>
+          <input type="text" id="aspectRatio" readonly style="border:0;
+          color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        </div>
+        <div id="slider-aspectRatio-min" class='slider'></div>
+        <div style="margin: 10px 0px 10px 0px;">
+          <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter">Min mount distance:</label>
+          <input type="text" id="mount-distance" readonly style="border:0;
+          color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        </div>
+        <div id="slider-mount-distance-max" class='slider'></div>
+      </div>
+    </div><!--id="accordion"-->
+
+      <div style="border: 1px solid #cccccc; border-radius: 5px; text-align:center;">
+        <h2>Fan selection</h2>
+        <span style=' text-align:center;'>
+        <button type="button" id="reset-fans">Select all</button>
+        <button type="button" id="add-fan" >Add</button>
+        <button type="button" id="delete-fans">Delete</button>
+        <button type="button" id="reset-fans">Reset</button>
+      </span>
+        <table id="fans" class="compact order-column hover stripe" width="90%"></table>
+      </div>
+  </div><!--id="left_content"-->
+
+  <div id="right_content">
+    <h2 style="text-align:center;">Solutions</h2>
+
+    <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
+
+    <h2 style="text-align:center;">Plan view</h2>
+    <canvas id = "canv" width = "674 px" height = "500 px"></canvas>
+  </div><!--id="right_content"-->
+</div> <!--id="all_content"-->
+
+
+<!-- form for adding a new fan  -->
+<div id="dialog-form" title="Add a new fan">
+  <p class="validateTips">All form fields are required.</p>
+  <form>
+    <fieldset>
+      <label for="newtype">Fan type</label>
       <br>
-      <button type="button" id="save"> Save </button>
-      <button type="button" id="load"> Load </button>
-      <button type="button" id="share"> Share </button>
-
-    </div><!--id="left_content"-->
-
-    <div id="right_content">
-      <h2 style="text-align:center;">Solutions</h2>
-
-      <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
-
-      <h2 style="text-align:center;">Plan view</h2>
-      <canvas id = "canv" width = "674 px" height = "500 px"></canvas>
-    </div><!--id="right_content"-->
-  </div> <!--id="all_content"-->
-
-
-  <!-- form for adding a new fan  -->
-  <div id="dialog-form" title="Add a new fan">
-    <p class="validateTips">All form fields are required.</p>
-    <form>
-      <fieldset>
-        <label for="newtype">Fan type</label>
-        <br>
-        <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
-        <br>
-        <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
-        <br>
-        <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <input type="checkbox" id="ul507" name="ul507" checked>
-        <label for="ul507">UL 507 Compliant</label>
-        <!-- Allow form submission with keyboard without duplicating the dialog button -->
-        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-      </fieldset>
-    </form>
-  </div>
+      <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
+      <br>
+      <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
+      <br>
+      <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
+      <p></p>
+      <input type="checkbox" id="ul507" name="ul507" checked>
+      <label for="ul507">UL 507 Compliant</label>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
 
 
 </body>

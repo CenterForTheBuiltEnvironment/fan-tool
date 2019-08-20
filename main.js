@@ -31,6 +31,12 @@ $( "#load" ).button().on( "click", function() {
   } else{
     $("#units2").trigger("click");
   }
+  if (JSON.parse(stored).isSeated){
+    $("#posture1").trigger("click");
+  } else{
+    $("#posture2").trigger("click");
+  }
+
   // load saved parameters
   p = JSON.parse(stored);
 
@@ -63,9 +69,9 @@ $( "#load" ).button().on( "click", function() {
   updateSliderDisplays();
   updateSolutions();
   if (JSON.parse(stored).selectedSolutionID >0 ) {
-      // note here that it has to be the IDS in the saved state, as
-      // the table updates on click, as does the state stored in p
-      $('#solutions tbody tr:eq(' + JSON.parse(stored).selectedSolutionID + ')').click();
+    // note here that it has to be the IDS in the saved state, as
+    // the table updates on click, as does the state stored in p
+    $('#solutions tbody tr:eq(' + JSON.parse(stored).selectedSolutionID + ')').click();
   }
 
 });
@@ -102,17 +108,22 @@ $( "#share" ).button().on( "click", function() {
 // define default parameter state
 p_default = {
   'cellSize': [4.572, 15.24],
+  'minAirSpeed': [0.5, 2.0],
+  'avgAirSpeed': [0.6, 2.0],
+  'uniformity': [0.3, 1.0],
   'numFans':[1,10],
   'diameter':[1.2192, 4.2672],
-  'bladeHeight' : [2.1336, 4.2672],
+  'bladeHeight' : [2.2, 4],
   'ceilingHeight' : [2.7432, 4.572],
   'dimensionlessDiameter':[0.2, 0.5],
   "length" : 6.1,
   "width" : 12.3,
   "height" : 3,
   "aspectRatio" : 1.25,
+  "mountDistance" : 0.2,
+  "fanSpeed" : 100,
   "isSIunits" : true,
-  "scale" : 0,   // globally store the pixel scaling factor for canvas
+  "isSeated" : true,
   "fanTableData" : [
     ['TypeA', 1.2192,   2.611757, true],
     ['TypeB', 1.319784, 2.258268, true],
@@ -124,29 +135,45 @@ p_default = {
     ['TypeH', 3.048,    20.91151, false],
     ['TypeI', 4.2672,   25.30817, false]
   ],
-  "room" : [], // TODO: no need to save
-  "candidateFans" : [], // TODO: no need to save
-  "solutions" : [], // TODO: no need to save
   "selectedSolutionID" : [],
   "selectedCandidateFanIDs" :[],
 }
-p = p_default;
+var p = p_default;
+
+// initialize empty objects to hold objects generated from the above parameter
+// selection
+var room = [];
+var candidateFans = [];
+var solutions = [];
+var scale = 0;
 
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
 math.createUnit('fpm', '1 ft/min');
 // create function that returns an input SI unit as a string with units
 // in the selected unit system
-function toStringWithDisplayUnits (valueSI, measurement){
-  if (measurement = "distance"){
-    return math.format(math.unit(valueSI,"m").to(p.isSIunits ? "m" : "ft"),3);
-  };
-  if (measurement = "flowrate"){
-    return math.format(math.unit(valueSI,"m^3/s").to(p.isSIunits ? "m^3/s" : "cfm"),3);
-  };
-  if (measurement = "speed"){
-    return math.format(math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm"),3);
-  };
+function unitToString (valueSI, measurement, displayUnit=true){
+  if (displayUnit){
+    if (measurement === "distance"){
+      return math.format(math.unit(valueSI,"m").to(p.isSIunits ? "m" : "ft"),3);
+    };
+    if (measurement === "flowrate"){
+      return math.format(math.unit(valueSI,"m^3/s").to(p.isSIunits ? "m^3/s" : "cfm"),3);
+    };
+    if (measurement === "speed"){
+      return math.format(math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm"),3);
+    };
+  } else {
+      if (measurement === "distance"){
+        return math.unit(valueSI,"m").to(p.isSIunits ? "m" : "ft").toNumber().toFixed(1);
+      };
+      if (measurement === "flowrate"){
+        return math.unit(valueSI,"m^3/s").to(p.isSIunits ? "m^3/s" : "cfm").toNumber().toFixed(1);
+      };
+      if (measurement === "speed"){
+        return math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm").toNumber().toFixed(p.isSIunits ? 2 : 0);
+      };
+  }
 };
 
 // defines left pane accordion setup
@@ -177,6 +204,33 @@ $( "#slider-dimless" ).slider({
 $( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
 " - " + $( "#slider-dimless" ).slider( "values", 1 ));
 
+$( "#slider-num-fans" ).slider({
+  range: true,
+  min: 1,
+  max: 10,
+  values: p.numFans,
+  step: 1,
+  slide: function( event, ui ) {
+    p.numFans = ui.values;
+    $( "#num-fans" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+  }
+});
+$( "#num-fans" ).val( $( "#slider-num-fans" ).slider( "values", 0 ) +
+" - " + $( "#slider-num-fans" ).slider( "values", 1 ));
+
+$( "#slider-blade-height" ).slider({
+  range: true,
+  min: 2.15,
+  max: 4.5,
+  values: p.bladeHeight,
+  step: 0.05,
+  slide: function( event, ui ) {
+    p.bladeHeight = ui.values;
+    updateSliderDisplays();
+  }
+});
+
+
 $( "#slider-cellSize" ).slider({
   range: true,
   min: 4.5,
@@ -189,6 +243,43 @@ $( "#slider-cellSize" ).slider({
   }
 });
 
+$( "#slider-min-air-speed" ).slider({
+  range: true,
+  min: 0.2,
+  max: 2.0,
+  values: p.minAirSpeed,
+  step: 0.05,
+  slide: function( event, ui ) {
+    p.minAirSpeed = ui.values;
+    updateSliderDisplays();
+  }
+});
+
+$( "#slider-avg-air-speed" ).slider({
+  range: true,
+  min: 0.2,
+  max: 2.0,
+  values: p.avgAirSpeed,
+  step: 0.05,
+  slide: function( event, ui ) {
+    p.avgAirSpeed = ui.values;
+    updateSliderDisplays();
+  }
+});
+
+$( "#slider-uniformity" ).slider({
+  range: true,
+  min: 0.0,
+  max: 1.0,
+  values: p.uniformity,
+  step: 0.05,
+  slide: function( event, ui ) {
+    p.uniformity = ui.values;
+    $( "#uniformity" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+  }
+});
+$( "#uniformity" ).val( $( "#slider-uniformity" ).slider( "values", 0 ) +
+" - " + $( "#slider-uniformity" ).slider( "values", 1 ));
 
 // add all sliders (single values)
 $( "#slider-aspectRatio-min" ).slider({
@@ -199,10 +290,38 @@ $( "#slider-aspectRatio-min" ).slider({
   step: 0.01,
   slide: function( event, ui ) {
     p.aspectRatio = ui.value;
-    $( "#aspectRatio" ).val( "" + ui.value );
+    $( "#aspectRatio" ).val( ui.value );
   }
 });
-$( "#aspectRatio" ).val( "" + $( "#slider-aspectRatio-min" ).slider( "value" ) );
+$( "#aspectRatio" ).val( $( "#slider-aspectRatio-min" ).slider( "value" ) );
+
+$( "#slider-mount-distance-max" ).slider({
+  range: "max",
+  value: p.mountDistance,
+  min: 0,
+  max: 1,
+  step: 0.01,
+  slide: function( event, ui ) {
+    p.mountDistance = ui.value;
+    $( "#mount-distance" ).val( ui.value );
+  }
+});
+$( "#mount-distance" ).val( $( "#slider-mount-distance-max" ).slider( "value" ) );
+
+
+$( "#slider-fan-speed-min" ).slider({
+  range: "min",
+  value: p.fanSpeed,
+  min: 10,
+  max: 100,
+  step: 1,
+  slide: function( event, ui ) {
+    p.fanSpeed = ui.value;
+    $( "#fan-speed-min" ).val( ui.value + "%" );
+  }
+});
+$( "#fan-speed-min" ).val( $( "#slider-fan-speed-min" ).slider( "value" ) + "%" );
+
 
 $( "#slider-len-min" ).slider({
   range: "min",
@@ -274,7 +393,7 @@ $('#fans tbody').on( 'click', 'tr', function () {
 // update fans object and calculate solutions
 $('#fans tbody').on( 'click', function () {
   p.selectedCandidateFanIDs = tblFans.rows('.selected')[0]
-  p.candidateFans =[];
+  candidateFans =[];
   tblFans.rows('.selected').data().each( function(row,index) {
     var t = row[0];
     var d = row[1];
@@ -285,7 +404,7 @@ $('#fans tbody').on( 'click', function () {
       d *= math.unit("1 ft").toNumber("m");
       a *= math.unit("1 cfm").toNumber("m3/s");
     }
-    p.candidateFans.push(new Fan(t,d,a,u));
+    candidateFans.push(new Fan(t,d,a,u));
   });
   updateSolutions();
 } );
@@ -347,11 +466,23 @@ $(':input').change(function () {
 });
 
 $("#units1").change(function () {
+  p.isSIunits = $("#units1")[0].checked;
   changeUnits();
 });
 
 $("#units2").change(function () {
+  p.isSIunits = $("#units1")[0].checked;
   changeUnits();
+});
+
+$("#posture1").change(function () {
+  p.isSeated = $("#posture1")[0].checked;
+  updateSolutions();
+});
+
+$("#posture2").change(function () {
+  p.isSeated = $("#posture1")[0].checked;
+  updateSolutions();
 });
 
 // recalc the solutions, clear the floor plan, update the solutions table
@@ -365,7 +496,7 @@ function updateSlnTable(){
   tblSln.clear();
   tblData = [];
   conv = (p.isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
-  for (i of p.solutions){
+  for (i of solutions){
     tblData.push([
       i.fan.type,
       i.layout.numFans(),
@@ -379,7 +510,7 @@ function updateSlnTable(){
   tblSln.rows.add(tblData);
   tblSln.draw();
   // select first solution if any solutions exist
-  if (p.solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
+  if (solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
 };
 
 // // if someone wants to change to units
@@ -388,20 +519,29 @@ function updateSlnTable(){
 // });
 
 function updateSliderDisplays(){
-  // TODO: general
-  $( "#wid" ).val(toStringWithDisplayUnits($( "#slider-wid-min" ).slider( "value" ),"distance"))
-  $( "#len" ).val(toStringWithDisplayUnits($( "#slider-len-min" ).slider( "value" ),"distance"))
-  $( "#hei" ).val(toStringWithDisplayUnits($( "#slider-hei-min" ).slider( "value" ),"distance"))
-  // if (p.isSIunits) {
-  //   $( "#len" ).val( $( "#slider-len-min" ).slider( "value" ) + " m" );
-  // } else {
-  //   $( "#len" ).val( ($( "#slider-len-min" ).slider( "value" )*3.2808).toFixed(1) + " ft" );
-  // }
+  $( "#wid" ).val(unitToString($( "#slider-wid-min" ).slider( "value" ),"distance"))
+  $( "#len" ).val(unitToString($( "#slider-len-min" ).slider( "value" ),"distance"))
+  $( "#hei" ).val(unitToString($( "#slider-hei-min" ).slider( "value" ),"distance"))
 
   $( "#cellSize" ).val(
-    toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 0 ), "distance")
+    unitToString($( "#slider-cellSize" ).slider( "values", 0 ), "distance",false)
     +  " - " +
-    toStringWithDisplayUnits($( "#slider-cellSize" ).slider( "values", 1 ), "distance")
+    unitToString($( "#slider-cellSize" ).slider( "values", 1 ), "distance")
+  );
+  $( "#blade-height" ).val(
+    unitToString($( "#slider-blade-height" ).slider( "values", 0 ), "distance",false)
+    +  " - " +
+    unitToString($( "#slider-blade-height" ).slider( "values", 1 ), "distance")
+  );
+  $( "#min-air-speed" ).val(
+    unitToString($( "#slider-min-air-speed" ).slider( "values", 0 ), "speed",false)
+    +  " - " +
+    unitToString($( "#slider-min-air-speed" ).slider( "values", 1 ), "speed")
+  );
+  $( "#avg-air-speed" ).val(
+    unitToString($( "#slider-avg-air-speed" ).slider( "values", 0 ), "speed",false)
+    +  " - " +
+    unitToString($( "#slider-avg-air-speed" ).slider( "values", 1 ), "speed")
   );
 }
 
@@ -437,6 +577,7 @@ function changeUnits () {
     });
   }
   updateSliderDisplays();
+  updateSlnTable();
 };
 
 
@@ -445,7 +586,7 @@ function changeUnits () {
 
 function calcSolutions(){
   // instantiate a new room object using the selected dimensions
-  p.room = new Room(
+  room = new Room(
     $( "#slider-hei-min" ).slider("value"),
     $( "#slider-len-min" ).slider("value"),
     $( "#slider-wid-min" ).slider("value")
@@ -460,12 +601,9 @@ function calcSolutions(){
     value <= p.cellSize[1]*Math.sqrt(p.aspectRatio);
   }
   candidateNumFans = Array.from(Array(p.numFans[1]).keys()).map(n => n + 1)
-  var validNumFansX = candidateNumFans.map(n => p.room.sizeX/n).filter(testLims).map(n => p.room.sizeX / n);
-  var validNumFansY = candidateNumFans.map(n => p.room.sizeY/n).filter(testLims).map(n => p.room.sizeY / n);
-  console.log(`Valid number of fans in X direction:  ${validNumFansX}`)
-  console.log("Valid number of fans in Y direction: " + validNumFansY)
-  console.log("Total number of cases: " + (validNumFansX.length * validNumFansY.length))
-
+  var validNumFansX = candidateNumFans.map(n => room.sizeX/n).filter(testLims).map(n => room.sizeX / n);
+  var validNumFansY = candidateNumFans.map(n => room.sizeY/n).filter(testLims).map(n => room.sizeY / n);
+  // console.log(`Valid number of fans in X direction:  ${validNumFansX}`)
 
   /* create an array of all candidate layouts that fit within the limitations
   that relate to interactions between room and room objects.
@@ -476,7 +614,7 @@ function calcSolutions(){
   for (i = 0; i < validNumFansX.length; i++) {
     for (j = 0; j < validNumFansY.length; j++) {
       // instantiate a candidate solution
-      candidate = new Layout(validNumFansX[i],validNumFansY[j], p.room);
+      candidate = new Layout(validNumFansX[i],validNumFansY[j], room);
       // test to see if it meets validity criteria
       if (candidate.aspectRatio >= p.aspectRatio){
         failAspectRatio++;
@@ -499,20 +637,15 @@ function calcSolutions(){
   console.log(layouts);
   console.log("Total number of viable layouts: " + layouts.length);
 
-  var mins = layouts.map(function(elt) { return elt.validDiameters()[0]; });
-  var maxes = layouts.map(function(elt) { return elt.validDiameters()[1]; });
-  var anyLayout = [Math.min.apply(null, mins), Math.max.apply(null, maxes)];
-  console.log("Fan diameter must be within this range to have a valid layout: " + anyLayout);
-
   /* create an array of all candidate solutions that fit within the limitations
   that relate interactions between layout and fan objects.
   */
-  p.solutions = [];
+  solutions = [];
   failDimensionlessDiameter = [0,0];
   for (i = 0; i < layouts.length; i++) {
-    for (j = 0; j < p.candidateFans.length; j++) {
+    for (j = 0; j < candidateFans.length; j++) {
       // instantiate a candidate solution
-      candidate = new Solution(layouts[i],p.candidateFans[j]);
+      candidate = new Solution(layouts[i],candidateFans[j]);
       // test to see if it meets validity criteria
       if (candidate.dr <= p.dimensionlessDiameter[0]){
         failDimensionlessDiameter[0]++;
@@ -523,14 +656,14 @@ function calcSolutions(){
         continue;
       };
       //TODO:  add constraints based on airspeed
-      p.solutions.push(candidate);
+      solutions.push(candidate);
     };
   };
   console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
-  console.log(p.solutions);
-  console.log("Total number of viable solutions: " + p.solutions.length);
+  console.log(solutions);
+  console.log("Total number of viable solutions: " + solutions.length);
 
-  var numsFans = p.solutions.map(function(elt) {return elt.layout.numFans();});
+  var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
 
   /* TODO Develop methods to select for various design cases given
   a set of constraints:
@@ -542,9 +675,9 @@ function calcSolutions(){
 }
 
 
-// function getDataTbl(p.solutions){
+// function getDataTbl(solutions){
 //   tblData = [];
-//   for (i of p.solutions){
+//   for (i of solutions){
 //     tblData.push([i.layout.numFansX, i.layout.numFansY, i.fan.diameter]);
 //   }
 //   return tblData;
@@ -558,13 +691,13 @@ function drawRoom() {
     var ctx = canvas.getContext('2d')
     //clear plan after each solution selection
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    p.scale = Math.min(
-      (canvas.width-20)/p.room.sizeX,
-      (canvas.height-20)/p.room.sizeY
+    scale = Math.min(
+      (canvas.width-20)/room.sizeX,
+      (canvas.height-20)/room.sizeY
     );
     // draw the room in plan
     ctx.beginPath();
-    ctx.rect(10,10, p.room.sizeX*p.scale,p.room.sizeY*p.scale);
+    ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
     ctx.stroke();
   } else {
     alert("Your browser doesn't support HTML 5 Canvas");
@@ -581,15 +714,15 @@ function drawFans() {
     //clear plan after each solution selection
     // display basic information about the layout
     ctx.font = '14px serif';
-    sln = p.solutions[p.selectedSolutionID];
+    sln = solutions[p.selectedSolutionID];
     ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
 
     // add diameter
 
     ctx.fillText(
-      toStringWithDisplayUnits(sln.fan.diameter, "distance"),
-      10 + p.scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
-      10 + p.scale*(0.5*(sln.layout.cellSizeY))
+      unitToString(sln.fan.diameter, "distance"),
+      10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
+      10 + scale*(0.5*(sln.layout.cellSizeY))
     );
 
     //draw 'fans'
@@ -599,9 +732,9 @@ function drawFans() {
       for (j = 0; j < sln.layout.numFansY; j++){
         ctx.beginPath();
         ctx.arc(
-          10 + p.scale*(i + 0.5)*sln.layout.cellSizeX,
-          10 + p.scale*(j + 0.5)*sln.layout.cellSizeY,
-          sln.fan.diameter*p.scale/2, 0, 2 * Math.PI);
+          10 + scale*(i + 0.5)*sln.layout.cellSizeX,
+          10 + scale*(j + 0.5)*sln.layout.cellSizeY,
+          sln.fan.diameter*scale/2, 0, 2 * Math.PI);
           ctx.stroke();
         }
       }

@@ -38,18 +38,6 @@ function Layout(numFansX, numFansY, room){
   this.numFans =  function(){
     return parseInt(this.numFansX * this.numFansY, 10);
   };
-  this.validDiameters = function(){
-    //returns valid diameter based on dimensionless diameter
-    // and diameter constraints
-    vds = [p.dimensionlessDiameter[0], p.dimensionlessDiameter[1]].map(n => n * this.r);
-    maxDul507True = (this.room.ceilingHeight - 7)/0.2;
-    maxDul507False = (this.room.ceilingHeight - 10)/0.2;
-    if (vds[1] > maxDul507True) vds[1] = maxDul507True;
-    if (vds[1] > 7 && vds[1] > maxDul507False) vds[1] = maxDul507False;
-    if (vds[0] < p.diameter[0]) vds[0] = p.diameter[0];
-    if (vds[0] > p.diameter[1]) vds[1] = p.diameter[1];
-    return vds;
-  }
 }
 
 /* Solution object represents a potential design solution
@@ -68,9 +56,9 @@ function Solution(layout, fan){
     return (this.layout.cellSizeY - this.fan.diameter) / 2;
   }
   this.airspeeds = function(){
-    lowest = this.fan.fanAirSpeed * (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + 1*0.024 + 0.047);
-    areaWeightedAverage = this.fan.fanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + 1*0.024 + 0.25);
-    highest = this.fan.fanAirSpeed * (-0.18 * this.hd - 1*0.1 + 1.3);
+    lowest = this.fan.fanAirSpeed * (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047);
+    areaWeightedAverage = this.fan.fanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);
+    highest = this.fan.fanAirSpeed * (-0.18 * this.hd - p.isSeated*0.1 + 1.3);
     uniformity = 1 - ((highest-lowest)/highest);
     return [lowest,areaWeightedAverage,highest,uniformity];
   }
