@@ -15,12 +15,12 @@ function Room(ceilingHeight, sizeX, sizeY) {
 };
 
 /* object to represent a candidate fan type */
-function Fan(type, diameter, airflow, meetsUL507) {
+function Fan(type, diameter, airflow, meetsUL507, percentFanSpeed) {
   this.type = type;
   this.diameter = diameter;
   this.airflow = airflow;
   this.meetsUL507 = meetsUL507;
-  this.fanAirSpeed = this.airflow/(Math.PI * Math.pow(this.diameter,2)/4);
+  this.maxFanAirSpeed = this.airflow/(Math.PI * Math.pow(this.diameter,2)/4);
 };
 
 /* Layout object represents a potential design layout
@@ -42,29 +42,48 @@ function Layout(numFansX, numFansY, room){
 
 /* Solution object represents a potential design solution
 including the room, layout and fan characteristics */
-function Solution(layout, fan){
+function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   this.layout = layout;
   this.fan = fan;
+  this.percentFanSpeed = percentFanSpeed;
   this.dr = this.fan.diameter/this.layout.r;
   this.cd = this.layout.room.ceilingHeight/this.fan.diameter;
   this.do = this.fan.diameter/1.7;
-  this.hd = 2/this.fan.diameter;
+  this.bladeHeightRange = bladeHeight;
+  // this.isBladeLowest = isBladeLowest;
+  this.mdMin = mdMin;
   this.clearanceX = function(){
     return (this.layout.cellSizeX - this.fan.diameter) / 2;
   }
   this.clearanceY = function(){
     return (this.layout.cellSizeY - this.fan.diameter) / 2;
   }
-  this.airspeeds = function(){
-    lowest = this.fan.fanAirSpeed * (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047);
-    areaWeightedAverage = this.fan.fanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);
-    highest = this.fan.fanAirSpeed * (-0.18 * this.hd - p.isSeated*0.1 + 1.3);
+  this.calcBladeHeightRange = function(){
+    // constrain min blade height based on UL507 requirement
+    this.fan.meetsUL507 ? min = 2.1336 : min = 3.048;
+    // constrain max blade height based on mount distance (avoiding starvation)
+    max = this.layout.room.ceilingHeight - (this.mdMin * this.fan.diameter);
+    // constrain min/max blade height based on user input ranges
+    if (this.bladeHeightRange[0] > min ) min = this.bladeHeightRange[0];
+    if (max > this.bladeHeightRange[1]) max = this.bladeHeightRange[1];
+    mean = (min+max)/2
+    return {'pass': (max-min) >= 0, 'min': min, 'max' : max, 'mean' : mean};
+  }
+  this.validBladeHeightRange = this.calcBladeHeightRange();
+  this.hd = this.validBladeHeightRange['mean']/this.fan.diameter;
+  this.calcAirspeeds = function(){
+    lowest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
+    (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047);
+
+    areaWeightedAverage = this.percentFanSpeed * 0.01 *
+    this.fan.maxFanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);
+
+    highest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
+    (-0.18 * this.hd - p.isSeated*0.1 + 1.3);
+
     uniformity = 1 - ((highest-lowest)/highest);
+
     return [lowest,areaWeightedAverage,highest,uniformity];
   }
-  this.validBladeHeightRange = function(){
-    this.fan.meetsUL507 ? min = 7 : min = 10;
-    max = this.layout.room.ceilingHeight - 0.2 * this.fan.diameter;
-    return {'min' : min, 'max' : max,}
-  }
+  this.airspeeds = this.calcAirspeeds();
 }

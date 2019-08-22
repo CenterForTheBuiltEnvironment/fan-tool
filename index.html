@@ -68,29 +68,23 @@
           <div id="slider-hei-min" class='slider'></div>
         </div>
 
-        <h2>Fan inputs</h2>
+        <h2>Fan constraints</h2>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="num-fans"  title="Acceptable range of number of fans in the X (row) or Y (column) direction" ># fans in row or column :</label>
+            <label for="num-fans"  title="Acceptable range of number of fans in the X (row) or Y (column) direction" ># fans in X or Y direction :</label>
             <input type="text" id="num-fans" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-num-fans" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="blade-height"  title="Acceptable range blade heights" >Blade height:</label>
-            <input type="text" id="blade-height" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-blade-height" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="fan-speed-min" title="The fan speed as a percentage of maximum">Fan speed:</label>
+            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum. i.e. rpm as a percentage of maximum rpm">Maximum fan speed:</label>
             <input type="text" id="fan-speed-min" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-fan-speed-min" class='slider'></div>
         </div>
 
-        <h2>Air speeds</h2>
+        <h2>Target air speed constraints</h2>
         <div id="accordion_content">
           <div style="text-align: center;vertical-align: middle; margin: 5px">
             <label for="posture1">Seated</label>
@@ -99,81 +93,72 @@
             <input type="radio" name="posture" id="posture2">
           </div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="min-air-speed" title="The range of acceptable minimum airspeeds">Minimum air speed:</label>
+            <label for="min-air-speed" title="The range of acceptable minimum airspeed in the room">Minimum air speed:</label>
             <input type="text" id="min-air-speed" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-min-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="avg-air-speed" title="The range of acceptable area-weighted room average airspeeds">Average air speed:</label>
+            <label for="avg-air-speed" title="The range of acceptable area-weighted average airspeed in the room">Average air speed:</label>
             <input type="text" id="avg-air-speed" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-avg-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="uniformity" title="The range of acceptable uniformity">Uniformity:</label>
+            <label for="max-air-speed" title="The range of acceptable maximum airspeed in the room">Maximum air speed:</label>
+            <input type="text" id="max-air-speed" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-max-air-speed" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="uniformity" title="The range of acceptable uniformity in the room">Uniformity:</label>
             <input type="text" id="uniformity" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-uniformity" class='slider'></div>
         </div>
 
-
-        <h2>Display settings</h2>
-        <div id="accordion_content">
-          <div style="text-align: center;vertical-align: middle; margin: 5px">
-            <label for="view1">Floor plan</label>
-            <input type="radio" name="view" id="view1" checked>
-            <label for="view2">Cell plan</label>
-            <input type="radio" name="view" id="view2">
-            <label for="view3">Section</label>
-            <input type="radio" name="view" id="view3">
-          </div>
-          <!-- <div style="text-align: center;vertical-align: middle; margin: 5px">
-          <span> Grid: </span>
-          <label for="grid1">On</label>
-          <input type="radio" name="grid" id="grid1" checked>
-          <label for="grid2">Off</label>
-          <input type="radio" name="grid" id="grid2">
-        </div> -->
-      </div>
-
-      <h2>Advanced settings</h2>
+      <h2>Advanced contraints</h2>
       <div id="accordion_content">
         <div style="margin: 10px 0px 10px 0px;">
-          <label for="cellSize"  title="Acceptable range of sizes of each individual cell" >Cell size:</label>
+          <label for="cellSize"  title="Acceptable range of sizes of each individual cell. A cell is defined as the square root of the floor area that is closest to a particular fan." >Cell size:</label>
           <input type="text" id="cellSize" readonly style="border:0;
           color:#2A4583; background-color : #cccccc; font-weight:bold;">
         </div>
         <div id="slider-cellSize" class='slider'></div>
         <div style="margin: 10px 0px 10px 0px;">
-          <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size.">Diameter to room size ratio:</label>
+          <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size. The default settings (0.2-0.5) are the recommended range of sizes, and also span the range of sizes tested in the laboratory experiments that were used to develop the model underlying this tool.">Diameter to cell size ratio:</label>
           <input type="text" id="dimless" readonly style="border:0;
           color:#2A4583; background-color : #cccccc; font-weight:bold;">
         </div>
         <div id="slider-dimless" class='slider'></div>
         <div style="margin: 10px 0px 10px 0px;">
-          <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width)">Max cell aspect ratio:</label>
+          <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width). The underlying experimental data is from square test cells. For non-square cells, the tool uses the square root of the floor area as the representative length of the cell. The further the aspect ratio is from 1, the less accurate the tool's air speed predictions are, particularly when predicting the lowest airspeed, and the uniformity in the room. Both of these are probably lower than predicted by the tool in these cases. ">Maximum cell aspect ratio:</label>
           <input type="text" id="aspectRatio" readonly style="border:0;
           color:#2A4583; background-color : #cccccc; font-weight:bold;">
         </div>
         <div id="slider-aspectRatio-min" class='slider'></div>
         <div style="margin: 10px 0px 10px 0px;">
-          <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter">Min mount distance:</label>
+          <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it begins to affect the performance of the fan, and the total airflow is lower than the rated airflow. Above values of 0.2, there is little to no effect.">Minimum mount distance:</label>
           <input type="text" id="mount-distance" readonly style="border:0;
           color:#2A4583; background-color : #cccccc; font-weight:bold;">
         </div>
         <div id="slider-mount-distance-max" class='slider'></div>
+        <div style="margin: 10px 0px 10px 0px;">
+          <label for="blade-height"  title="Acceptable range of blade heights. This is an additional constraint to those based on UL507 blade height requirements, and minimum mount distance requirements." >Blade height:</label>
+          <input type="text" id="blade-height" readonly style="border:0;
+          color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        </div>
+        <div id="slider-blade-height" class='slider'></div>
       </div>
     </div><!--id="accordion"-->
 
       <div style="border: 1px solid #cccccc; border-radius: 5px; text-align:center;">
         <h2>Fan selection</h2>
         <span style=' text-align:center;'>
-        <button type="button" id="reset-fans">Select all</button>
         <button type="button" id="add-fan" >Add</button>
-        <button type="button" id="delete-fans">Delete</button>
-        <button type="button" id="reset-fans">Reset</button>
+        <button type="button" id="delete-fan">Delete</button>
+        <button type="button" id="reset-fan">Reset</button>
       </span>
         <table id="fans" class="compact order-column hover stripe" width="90%"></table>
       </div>
@@ -183,8 +168,20 @@
     <h2 style="text-align:center;">Solutions</h2>
 
     <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
+    <!-- <h2 style="text-align:center;">Display</h2> -->
+      <div style="text-align: center; margin: 5px">
+        <span>  Display: </span>
+        <label for="view1">Floor plan</label>
+        <input type="radio" name="view" id="view1" checked>
+        <label for="view2">Cell plan</label>
+        <input type="radio" name="view" id="view2">
+        <label for="view3">Section</label>
+        <input type="radio" name="view" id="view3">
+      </span>
+    </div>
 
-    <h2 style="text-align:center;">Plan view</h2>
+
+
     <canvas id = "canv" width = "674 px" height = "500 px"></canvas>
   </div><!--id="right_content"-->
 </div> <!--id="all_content"-->
@@ -197,15 +194,15 @@
     <fieldset>
       <label for="newtype">Fan type</label>
       <br>
-      <input type="text" name="newtype" id="newtype" value="TypeX" class="text ui-widget-content ui-corner-all">
+      <input type="text" name="newtype" id="newtype" value="YourFan" class="text ui-widget-content ui-corner-all">
       <p></p>
       <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
       <br>
-      <input type="text" name="newdiameter" id="newdiameter" value="4.0" class="text ui-widget-content ui-corner-all">
+      <input type="text" name="newdiameter" id="newdiameter" value="" class="text ui-widget-content ui-corner-all">
       <p></p>
       <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
       <br>
-      <input type="text" name="newairflow" id="newairflow" value="24.0" class="text ui-widget-content ui-corner-all">
+      <input type="text" name="newairflow" id="newairflow" value="" class="text ui-widget-content ui-corner-all">
       <p></p>
       <input type="checkbox" id="ul507" name="ul507" checked>
       <label for="ul507">UL 507 Compliant</label>
