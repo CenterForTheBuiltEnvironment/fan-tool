@@ -625,11 +625,9 @@ function changeUnits () {
 // calculate the new set of solutions given the user inputs
 function calcSolutions(){
   // instantiate a new room object using the selected dimensions
-  room = new Room(
-    $( "#slider-hei-min" ).slider("value"),
-    $( "#slider-len-min" ).slider("value"),
-    $( "#slider-wid-min" ).slider("value")
-  )
+  room = new Room($( "#slider-hei-min" ).slider("value"),
+  $( "#slider-len-min" ).slider("value"),
+  $( "#slider-wid-min" ).slider("value"))
 
   /* function to ensure that the resulting size of the fan 'cell' in either the
   X  or Y direction is within the limits of the underlying data set.
@@ -689,126 +687,297 @@ function calcSolutions(){
   for (i = 0; i < layouts.length; i++) {
     for (j = 0; j < candidateFans.length; j++) {
       // instantiate a candidate solution
-      candidate = new Solution(
-        layouts[i],
-        candidateFans[j],
-        p.fanSpeed,
-        p.bladeHeight,
-        p.mountDistance);
-        // test to see if it meets validity criteria
-        if (candidate.dr <= p.dimensionlessDiameter[0]){
-          failDimensionlessDiameter[0]++;
-          continue;
-        };
-        if (candidate.dr >= p.dimensionlessDiameter[1]){
-          failDimensionlessDiameter[1]++;
-          continue;
-        };
-        if (candidate.airspeeds[0] <= p.minAirSpeed[0]){
-          failMinAirspeed[0]++;
-          continue;
-        };
-        if (candidate.airspeeds[0] >= p.minAirSpeed[1]){
-          failMinAirspeed[1]++;
-          continue;
-        };
-        if (candidate.airspeeds[1] <= p.avgAirSpeed[0]){
-          failAvgAirspeed[0]++;
-          continue;
-        };
-        if (candidate.airspeeds[1] >= p.avgAirSpeed[1]){
-          failAvgAirspeed[1]++;
-          continue;
-        };
-        if (candidate.airspeeds[3] <= p.uniformity[0]){
-          failUniformity[0]++;
-          continue;
-        };
-        if (candidate.airspeeds[3] >= p.uniformity[1]){
-          failUniformity[1]++;
-          continue;
-        };
-        if (!candidate.validBladeHeightRange['pass']) {
-          continue;
-        };
-        solutions.push(candidate);
+      candidate = new Solution(layouts[i],candidateFans[j],p.fanSpeed,p.bladeHeight,p.mountDistance);
+      // test to see if it meets validity criteria
+      if (candidate.dr <= p.dimensionlessDiameter[0]){
+        failDimensionlessDiameter[0]++;
+        continue;
       };
+      if (candidate.dr >= p.dimensionlessDiameter[1]){
+        failDimensionlessDiameter[1]++;
+        continue;
+      };
+      if (candidate.airspeeds[0] <= p.minAirSpeed[0]){
+        failMinAirspeed[0]++;
+        continue;
+      };
+      if (candidate.airspeeds[0] >= p.minAirSpeed[1]){
+        failMinAirspeed[1]++;
+        continue;
+      };
+      if (candidate.airspeeds[1] <= p.avgAirSpeed[0]){
+        failAvgAirspeed[0]++;
+        continue;
+      };
+      if (candidate.airspeeds[1] >= p.avgAirSpeed[1]){
+        failAvgAirspeed[1]++;
+        continue;
+      };
+      if (candidate.airspeeds[3] <= p.uniformity[0]){
+        failUniformity[0]++;
+        continue;
+      };
+      if (candidate.airspeeds[3] >= p.uniformity[1]){
+        failUniformity[1]++;
+        continue;
+      };
+      if (!candidate.validBladeHeightRange['pass']) {
+        continue;
+      };
+      solutions.push(candidate);
     };
-    console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
-    console.log(solutions);
-    console.log("Total number of viable solutions: " + solutions.length);
+  };
+  console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
+  console.log(solutions);
+  console.log("Total number of viable solutions: " + solutions.length);
 
-    var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
+  var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
 
-    /* TODO Develop methods to select for various design cases given
-    a set of constraints:
-    most/least # numFans - potentially also cost based?
-    Smallest/Largest diameter numFans
-    Highest/lowest numFans
-    most/least uniformity ranked based on squareness, larger D/R ratio, larger D
-    */
+  /* TODO Develop methods to select for various design cases given
+  a set of constraints:
+  most/least # numFans - potentially also cost based?
+  Smallest/Largest diameter numFans
+  Highest/lowest numFans
+  most/least uniformity ranked based on squareness, larger D/R ratio, larger D
+  */
+}
+
+
+// draw an empty room
+function drawRoom() {
+  var canvas = document.getElementById('canv');
+  // Execute only if canvas is supported
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d')
+    //clear plan after each solution selection
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    scale = Math.min(
+      (canvas.width-20)/room.sizeX,
+      (canvas.height-20)/room.sizeY
+    );
+    // draw the room in plan
+    ctx.beginPath();
+    ctx.setLineDash([1, 0])
+    ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
+    ctx.stroke();
+    ctx.closePath();
+
+  } else {
+    alert("Your browser doesn't support HTML 5 Canvas");
   }
+}
+
+// draw the fans on the floor plan, along with some information about
+// about the selected solution
+function drawFans() {
+  var canvas = document.getElementById('canv');
+  // Execute only if canvas is supported
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d')
+    // get selected solution
+    sln = solutions[p.selectedSolutionID];
+
+    // scaled sized for fan radius, cellX and cellY
+    fan_rad = scale * sln.fan.diameter / 2
+    cellX = scale * sln.layout.cellSizeX
+    cellY = scale * sln.layout.cellSizeY
+    margin = 10
+    font = 14
+    line_spacing = font + 2
+
+    // display basic information about the layout on top right
+    ctx.font = `${font}px sans-serif`;
+    ctx.textAlign = "right";
+    ctx.fillStyle='black';
+    ctx.fillText(`${sln.layout.numFans()} ${sln.fan.type} fan${sln.layout.numFans() - 1 ? "s" :""}`,
+    room.sizeX*scale,
+    margin + line_spacing);
+
+    // ctx.fillText(`Approximate airspeeds in the room:`,
+    // 2 * margin + room.sizeX*scale,
+    // margin + 3 * line_spacing);
+    //
+    // ctx.fillText(`Minimum: ${unitToString(sln.airspeeds[0], "speed")}`,
+    // 2 * margin + room.sizeX*scale,
+    // margin + 4 * line_spacing);
+    //
+    // ctx.fillText(`Area-weighted average: ${unitToString(sln.airspeeds[1], "speed")}`,
+    // 2 * margin + room.sizeX*scale,
+    // margin + 5 * line_spacing);
+    //
+    // ctx.fillText(`Maximum : ${unitToString(sln.airspeeds[2], "speed")}`,
+    // 2 * margin + room.sizeX*scale,
+    // margin + 6 * line_spacing);
+    //
+    // ctx.fillText(`Uniformity : ${sln.airspeeds[3]}`,
+    // 2 * margin + room.sizeX*scale,
+    // margin + 8 * line_spacing);
 
 
-  // draw an empty room
-  function drawRoom() {
-    var canvas = document.getElementById('canv');
-    // Execute only if canvas is supported
-    if (canvas.getContext) {
-      var ctx = canvas.getContext('2d')
-      //clear plan after each solution selection
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      scale = Math.min(
-        (canvas.width-20)/room.sizeX,
-        (canvas.height-20)/room.sizeY
-      );
-      // draw the room in plan
-      ctx.beginPath();
-      ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
-      ctx.stroke();
-    } else {
-      alert("Your browser doesn't support HTML 5 Canvas");
-    }
-  }
 
-  // draw the fans on the floor plan, along with some information about
-  // about the selected solution
-  function drawFans() {
-    //TODO: review pros/cons of doing this with SVG instead of canvas
-    var canvas = document.getElementById('canv');
-    // Execute only if canvas is supported
-    if (canvas.getContext) {
-      var ctx = canvas.getContext('2d')
-      //clear plan after each solution selection
-      // display basic information about the layout
-      ctx.font = '14px serif';
-      sln = solutions[p.selectedSolutionID];
-      ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
 
-      // add diameter
+    // add diameter and units below-right of first fan
+    ctx.textAlign = "center";
+    ctx.fillStyle='grey';
+    ctx.fillText(
+      `Ø ${unitToString(sln.fan.diameter, "distance")}`,
+      margin + fan_rad + (0.5 * cellX) + (0.75 * font),
+      margin + fan_rad + (0.5 * cellY) + (0.75 * font)
+    );
 
-      ctx.fillText(
-        unitToString(sln.fan.diameter, "distance"),
-        10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
-        10 + scale*(0.5*(sln.layout.cellSizeY))
-      );
+    // add clearanceX to first fan
+    ctx.beginPath();
+    ctx.moveTo(margin, margin + cellY/2);
+    ctx.lineTo(margin + cellX/2 - fan_rad, margin + cellY/2);
+    // ctx.closePath();
+    ctx.lineWidth=1;
+    ctx.strokeStyle='grey';
+    ctx.setLineDash([5,5])
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.fillText(
+      `${unitToString(sln.clearanceX(), "distance")}`,
+      margin + font/2,
+      margin + cellY/2 + 1* font
+    );
+    ctx.fillText(
+      `clear`,
+      margin + font/2,
+      margin + cellY/2 + 2 * font
+    );
 
-      //draw 'fans'
-      i = 0;
-      j = 0;
-      for (i = 0; i < sln.layout.numFansX; i++){
-        for (j = 0; j < sln.layout.numFansY; j++){
-          ctx.beginPath();
-          ctx.arc(
-            10 + scale*(i + 0.5)*sln.layout.cellSizeX,
-            10 + scale*(j + 0.5)*sln.layout.cellSizeY,
-            sln.fan.diameter*scale/2, 0, 2 * Math.PI);
-            ctx.stroke();
-          }
-        }
+    // add clearanceY to first fan
+    ctx.beginPath();
+    ctx.moveTo(margin + cellX/2, margin);
+    ctx.lineTo(margin + cellX/2, margin + cellY/2 - fan_rad);
+    // ctx.closePath();
+    ctx.lineWidth=1;
+    ctx.strokeStyle='grey';
+    ctx.setLineDash([5,5])
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.fillText(
+      `${unitToString(sln.clearanceY(), "distance")}`,
+      margin + cellX/2 + 0.5 * font,
+      margin + font
+    );
+    ctx.fillText(
+      `clear`,
+      margin + cellX/2 + 0.5 * font,
+      margin + 2 * font
+    );
 
-      } else {
-        alert("Your browser doesn't support HTML 5 Canvas");
+    //draw fans and dimensions between fans
+    i = 0;
+    j = 0;
+    inner_rad = fan_rad/30;
+    blades = sln.fan.diameter > 2.2 ? 6 : 3;
+    rot = Math.PI/2*3;
+    step = Math.PI/blades;
+    for (i = 0; i < sln.layout.numFansX; i++){
+      // at least 2 fans in x direction, show on center spacing
+      // between last fan and second last
+      if (i > 0 & i == sln.layout.numFansX - 1){
+        ctx.beginPath();
+        ctx.moveTo(margin + (i - 0.5)*cellX, margin + 0.5*cellY);
+        ctx.lineTo(margin + (i + 0.5)*cellX, margin + 0.5*cellY);
+        // ctx.closePath();
+        ctx.lineWidth=1;
+        ctx.strokeStyle='grey';
+        ctx.setLineDash([5,5])
+        ctx.stroke();
+        ctx.textAlign = "center";
+        ctx.fillStyle='grey';
+        ctx.fillText(
+          `${unitToString(sln.layout.cellSizeX, "distance")}`,
+          margin + i*cellX,
+          margin + font + 0.5*cellY
+        );
+        ctx.fillText(
+          `on center`,
+          margin + i*cellX,
+          margin + 2*font + 0.5*cellY
+        );
       }
 
+      for (j = 0; j < sln.layout.numFansY; j++){
+        // at least 2 fans in y direction, show on center spacing
+        // between last fan and second last
+        if (i == 0 & j > 0 & j == sln.layout.numFansY - 1){
+        ctx.beginPath();
+        ctx.moveTo(margin + 0.5*cellX, margin + (j-0.5)*cellY);
+        ctx.lineTo(margin + 0.5*cellX, margin + (j+0.5)*cellY);
+        // ctx.closePath();
+        ctx.lineWidth=1;
+        ctx.strokeStyle='grey';
+        ctx.setLineDash([5,5])
+        ctx.stroke();
+        ctx.textAlign = "left";
+        ctx.fillStyle='grey';
+        ctx.fillText(
+          `${unitToString(sln.layout.cellSizeY, "distance")}`,
+          margin + 0.5 *font + 0.5*cellX,
+          margin - 0.5*font + j*cellY
+        );
+        ctx.fillText(
+          `on center`,
+          margin + 0.5 *font +0.5*cellX,
+          margin + 0.5*font + j*cellY
+        );
+        }
+
+
+
+        // center of each fan
+        cx = margin + (i + 0.5)*cellX;
+        cy = margin + (j + 0.5)*cellY;
+
+        // draw blades
+        var x = cx;
+        var y = cy;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - fan_rad)
+        for(b = 0; b < blades; b++){
+          x=cx + Math.cos(rot) * fan_rad;
+          y=cy + Math.sin(rot) * fan_rad;
+          ctx.lineTo(x, y)
+          rot += step
+
+          x= cx + Math.cos(rot) * inner_rad;
+          y= cy + Math.sin(rot) * inner_rad;
+          ctx.lineTo(x, y)
+          rot += step
+        }
+        ctx.lineTo(cx, cy - fan_rad);
+        ctx.closePath();
+        ctx.lineWidth=4;
+        ctx.strokeStyle='grey';
+        ctx.setLineDash([])
+        ctx.stroke();
+        ctx.fillStyle='grey';
+        ctx.fill();
+
+        // inner circle (fan hub, circle 1/10 fan diameter)
+        ctx.beginPath();
+        ctx.arc(cx, cy, fan_rad/10, 0, 2 * Math.PI);
+        ctx.lineWidth=1;
+        ctx.strokeStyle='black';
+        ctx.setLineDash([])
+        ctx.stroke();
+        ctx.fillStyle='lightblue';
+        ctx.fill();
+        ctx.fillStyle='black';
+
+        // outer circle (blade tip path)
+        ctx.beginPath();
+        ctx.arc(cx, cy, fan_rad, 0, 2 * Math.PI);
+        ctx.setLineDash([1, 3])
+        ctx.stroke();+
+        ctx.setLineDash([]);
+
+      }
     }
+  } else {
+    alert("Your browser doesn't support HTML 5 Canvas");
+  }
+}
