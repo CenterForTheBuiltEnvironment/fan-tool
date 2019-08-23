@@ -150,6 +150,15 @@ var scale = 0;
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
 math.createUnit('fpm', '1 ft/min');
+math.createUnit( {
+  degC: {
+    prefixes: 'long'
+  },
+  degF: '1.8 * degC'
+},
+{
+  override: true
+})
 // create function that returns an input SI unit as a string with units
 // in the selected unit system
 function unitToString (valueSI, measurement, displayUnit=true){
@@ -163,6 +172,9 @@ function unitToString (valueSI, measurement, displayUnit=true){
     if (measurement === "speed"){
       return math.format(math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm"),3);
     };
+    if (measurement === "deltaT"){
+      return p.isSIunits ? valueSI.toFixed(1) + " °C" : (valueSI * 1.8).toFixed(1) + " °F" ;
+    };
   } else {
     if (measurement === "distance"){
       return math.unit(valueSI,"m").to(p.isSIunits ? "m" : "ft").toNumber().toFixed(1);
@@ -172,6 +184,9 @@ function unitToString (valueSI, measurement, displayUnit=true){
     };
     if (measurement === "speed"){
       return math.unit(valueSI,"m/s").to(p.isSIunits ? "m/s" : "fpm").toNumber().toFixed(p.isSIunits ? 2 : 0);
+    };
+    if (measurement === "deltaT"){
+      return p.isSIunits ? valueSI.toFixed(1) : (valueSI * 1.8).toFixed(1);
     };
   }
 };
@@ -539,7 +554,7 @@ function updateSlnTable(){
       i.airspeeds[0] * conv,
       i.airspeeds[1] * conv,
       i.airspeeds[2] * conv,
-      i.airspeeds[3],
+      i.uniformity,
       i.layout.aspectRatio.toFixed(2),
     ]);
   }
@@ -713,11 +728,11 @@ function calcSolutions(){
         failAvgAirspeed[1]++;
         continue;
       };
-      if (candidate.airspeeds[3] <= p.uniformity[0]){
+      if (candidate.uniformity <= p.uniformity[0]){
         failUniformity[0]++;
         continue;
       };
-      if (candidate.airspeeds[3] >= p.uniformity[1]){
+      if (candidate.uniformity >= p.uniformity[1]){
         failUniformity[1]++;
         continue;
       };
@@ -793,6 +808,13 @@ function drawFans() {
     room.sizeX*scale,
     margin + line_spacing);
 
+    ctx.fillText(`At max fan speed can increase`,
+    room.sizeX*scale,
+    margin + room.sizeY*scale - 2 * line_spacing);
+    ctx.fillText(`temperature by ${unitToString(sln.tempDiffs[0], "deltaT")}`,
+    room.sizeX*scale,
+    margin + room.sizeY*scale - 1 * line_spacing);
+
     // ctx.fillText(`Approximate airspeeds in the room:`,
     // 2 * margin + room.sizeX*scale,
     // margin + 3 * line_spacing);
@@ -809,7 +831,7 @@ function drawFans() {
     // 2 * margin + room.sizeX*scale,
     // margin + 6 * line_spacing);
     //
-    // ctx.fillText(`Uniformity : ${sln.airspeeds[3]}`,
+    // ctx.fillText(`Uniformity : ${sln.uniformity`,
     // 2 * margin + room.sizeX*scale,
     // margin + 8 * line_spacing);
 

@@ -80,10 +80,36 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
 
     highest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
     (-0.18 * this.hd - p.isSeated*0.1 + 1.3);
-
-    uniformity = 1 - ((highest-lowest)/highest);
-
-    return [lowest,areaWeightedAverage,highest,uniformity];
+    return [lowest,areaWeightedAverage,highest];
   }
   this.airspeeds = this.calcAirspeeds();
+  this.uniformity =  1 - ((this.airspeeds[2]-this.airspeeds[0])/this.airspeeds[2]);
+  this.tempDiffs = this.airspeeds.map(airspeedToTempDiff);
+
+}
+
+function airspeedToTempDiff(airspeed){
+  // difference in operative temp (air temp = mean radiant temp)
+  // to maintain the same SET at standard conditions
+  // as air speed increases (and no other variables change).
+  // see R script in repo for more information
+  // Call:
+  // lm(formula = eqn_data$delta_ta_c ~ log(eqn_data$vel_mps))
+  //
+  // Residuals:
+  //      Min       1Q   Median       3Q      Max
+  // -0.26870 -0.05399  0.01651  0.06621  0.08706
+  //
+  // Coefficients:
+  //                       Estimate Std. Error t value Pr(>|t|)
+  // (Intercept)           3.083109   0.005652   545.5   <2e-16 ***
+  // log(eqn_data$vel_mps) 1.551196   0.008971   172.9   <2e-16 ***
+  // ---
+  // Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  //
+  // Residual standard error: 0.07604 on 182 degrees of freedom
+  // Multiple R-squared:  0.9939,	Adjusted R-squared:  0.9939
+  // F-statistic: 2.99e+04 on 1 and 182 DF,  p-value: < 2.2e-16
+  //
+  return 3.083109 + 1.551196 * Math.log(airspeed);
 }
