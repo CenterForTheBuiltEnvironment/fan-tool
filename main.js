@@ -808,12 +808,12 @@ function drawFans() {
     room.sizeX*scale,
     margin + line_spacing);
 
-    ctx.fillText(`At max fan speed can increase`,
+    ctx.fillText(`Temperatures can be ~${unitToString(sln.tempDiffs[0], "deltaT")} higher`,
     room.sizeX*scale,
-    margin + room.sizeY*scale - 2 * line_spacing);
-    ctx.fillText(`temperature by ${unitToString(sln.tempDiffs[0], "deltaT")}`,
+    margin + room.sizeY*scale - 1.5 * line_spacing);
+    ctx.fillText(`while maintaining equivalent comfort.`,
     room.sizeX*scale,
-    margin + room.sizeY*scale - 1 * line_spacing);
+    margin + room.sizeY*scale - 0.5 * line_spacing);
 
     // ctx.fillText(`Approximate airspeeds in the room:`,
     // 2 * margin + room.sizeX*scale,
