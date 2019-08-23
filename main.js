@@ -7,7 +7,7 @@ $(document).ready(function() {
     stored = atob(url_components[1]);
     loadStateFromJSON(stored);
   } else {
-    var p = p_default;
+    // var p = p_default;
     // initial guess at unit system based on user browser language
     if (navigator.language == "en-US") {
       $("#units2").trigger("click");
@@ -20,7 +20,7 @@ $(document).ready(function() {
 // save parameter state on button click
 $( "#save" ).button().on( "click", function() {
   // store fan data in parameters
-  p.fanTableData = tblFans.data();
+  p.fanTableData = tblFans.data().toArray();
   localStorage.setItem('parameters', JSON.stringify(p));
   alert("State saved in local browser session.")
 });
@@ -98,12 +98,14 @@ function loadStateFromJSON(storedJSON){
     $('#solutions tbody tr:eq(' + JSON.parse(storedJSON).selectedSolutionID + ')').click();
   }
 
+  p = JSON.parse(storedJSON);
+
 }
 
 
 
 // define default parameter state
-p_default = {
+const p_default = {
   'cellSize': [4.572, 15.24],
   'minAirSpeed': [0.5, 4.0],
   'avgAirSpeed': [0.5, 4.0],
