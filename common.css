@@ -13,11 +13,12 @@
 }
 
 #left_content {
-  width: 305px;
+  width: 295px;
   height: 902px;
   top: 0;
   left: 0px;
   float: left;
+  padding: 5px 5px 5px 5px;
   border-radius: 5px;
   background-color: #DCE7F7;
 }
@@ -29,7 +30,7 @@
 }
 
 #right_content {
-  width: 678px;
+  width: 670px;
   height: 900px;
   top: 0;
   left: 605px;
