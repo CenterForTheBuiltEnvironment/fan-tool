@@ -1,9 +1,18 @@
 /// once all content has loaded, perform first solutions calc
 $(document).ready(function() {
-  // initial best guess at  unit system based on user browser language
-  if (navigator.language == "en-US") {
-    $("#units2").trigger("click");
-  };
+  // load parameters from url query string if represent
+  // otherwise use default parameters
+  url_components = document.URL.split("?")
+  if (url_components.length > 1) {
+    stored = atob(url_components[1]);
+    loadStateFromJSON(stored);
+  } else {
+    var p = p_default;
+    // initial guess at unit system based on user browser language
+    if (navigator.language == "en-US") {
+      $("#units2").trigger("click");
+    };
+  }
   updateSliderDisplays();
   updateSolutions();
 });
@@ -18,91 +27,79 @@ $( "#save" ).button().on( "click", function() {
 
 // load parameter state from local session storage
 $( "#load" ).button().on( "click", function() {
-  var stored = localStorage.getItem('parameters');
+  loadStateFromJSON(localStorage.getItem('parameters'));
+});
+
+$( "#share" ).button().on( "click", function() {
+  var b64p = btoa(JSON.stringify(p));
+  url_components = document.URL.split("?")
+  new_url = url_components[0] + "?" + b64p
+  copyToClipboard(new_url)
+});
+
+
+// prompt user to copy from prompt to clipboard
+function copyToClipboard(text) {
+  window.prompt("Copy to clipboard: Ctrl+C (or Cmd+C on Apple/Mac)", text);
+}
+
+function loadStateFromJSON(storedJSON){
   //saved_p = JSON.parse(stored);
   //handle case where saved unit system don't match current displayed unit system
-  if (JSON.parse(stored).isSIunits){
+  if (JSON.parse(storedJSON).isSIunits){
     $("#units1").trigger("click");
   } else{
     $("#units2").trigger("click");
   }
-  if (JSON.parse(stored).isSeated){
+  if (JSON.parse(storedJSON).isSeated){
     $("#posture1").trigger("click");
   } else{
     $("#posture2").trigger("click");
   }
 
-  // load saved parameters
-  p = JSON.parse(stored);
-
   // set sliders to parameter values, update sliders, and calc solutions
   // set single value sliders
-  $("#slider-wid-min").slider('value',p.width)
-  $("#slider-len-min").slider('value',p.length)
-  $("#slider-hei-min").slider('value',p.height)
-  $("#slider-aspectRatio-min").slider('value',p.aspectRatio)
-  $("#slider-fan-speed-min").slider('value',p.fanSpeed)
-  $("#slider-uniformity").slider('value',p.uniformity)
-  $("#slider-mount-distance-max").slider('value',p.mountDistance)
+  $("#slider-wid-min").slider('value',JSON.parse(storedJSON).width)
+  $("#slider-len-min").slider('value',JSON.parse(storedJSON).length)
+  $("#slider-hei-min").slider('value',JSON.parse(storedJSON).height)
+  $("#slider-aspectRatio-min").slider('value',JSON.parse(storedJSON).aspectRatio)
+  $("#slider-fan-speed-min").slider('value',JSON.parse(storedJSON).fanSpeed)
+  $("#slider-mount-distance-max").slider('value',JSON.parse(storedJSON).mountDistance)
   // set doal value sliders
-  $("#slider-dimless").slider('values', 0, p.dimensionlessDiameter[0])
-  $("#slider-dimless").slider('values', 1, p.dimensionlessDiameter[1])
-  $("#slider-cellSize").slider('values', 0, p.cellSize[0])
-  $("#slider-cellSize").slider('values', 1, p.cellSize[1])
-  $("#slider-numFans").slider('values', 0, p.cellSize[0])
-  $("#slider-numFans").slider('values', 1, p.cellSize[1])
-  $("#slider-min-air-speed").slider('values', 0, p.minAirSpeed[0])
-  $("#slider-min-air-speed").slider('values', 1, p.minAirSpeed[1])
-  $("#slider-avg-air-speed").slider('values', 0, p.avgAirSpeed[0])
-  $("#slider-avg-air-speed").slider('values', 1, p.avgAirSpeed[1])
-  $("#slider-max-air-speed").slider('values', 0, p.maxAirSpeed[0])
-  $("#slider-max-air-speed").slider('values', 1, p.maxAirSpeed[1])
-  $("#slider-blade-height").slider('values', 0, p.bladeHeight[0])
-  $("#slider-blade-height").slider('values', 1, p.bladeHeight[1])
+  $("#slider-dimless").slider('values', 0, JSON.parse(storedJSON).dimensionlessDiameter[0])
+  $("#slider-dimless").slider('values', 1, JSON.parse(storedJSON).dimensionlessDiameter[1])
+  $("#slider-cellSize").slider('values', 0, JSON.parse(storedJSON).cellSize[0])
+  $("#slider-cellSize").slider('values', 1, JSON.parse(storedJSON).cellSize[1])
+  $("#slider-num-fans").slider('values', 0, JSON.parse(storedJSON).numFans[0])
+  $("#slider-num-fans").slider('values', 1, JSON.parse(storedJSON).numFans[1])
+  $("#slider-uniformity").slider('values', 0, JSON.parse(storedJSON).uniformity[0])
+  $("#slider-uniformity").slider('values', 1, JSON.parse(storedJSON).uniformity[1])
+  $("#slider-min-air-speed").slider('values', 0, JSON.parse(storedJSON).minAirSpeed[0])
+  $("#slider-min-air-speed").slider('values', 1, JSON.parse(storedJSON).minAirSpeed[1])
+  $("#slider-avg-air-speed").slider('values', 0, JSON.parse(storedJSON).avgAirSpeed[0])
+  $("#slider-avg-air-speed").slider('values', 1, JSON.parse(storedJSON).avgAirSpeed[1])
+  $("#slider-max-air-speed").slider('values', 0, JSON.parse(storedJSON).maxAirSpeed[0])
+  $("#slider-max-air-speed").slider('values', 1, JSON.parse(storedJSON).maxAirSpeed[1])
+  $("#slider-blade-height").slider('values', 0, JSON.parse(storedJSON).bladeHeight[0])
+  $("#slider-blade-height").slider('values', 1, JSON.parse(storedJSON).bladeHeight[1])
 
   // reload fan data into table
   tblFans.clear();
-  tblFans.rows.add(p.fanTableData).draw();
-  if (JSON.parse(stored).selectedCandidateFanIDs.length >0 ) {
-    for (i in JSON.parse(stored).selectedCandidateFanIDs) {
-      $('#fans tbody tr:eq(' + JSON.parse(stored).selectedCandidateFanIDs[i] + ')').click();
+  tblFans.rows.add(JSON.parse(storedJSON).fanTableData).draw();
+  if (JSON.parse(storedJSON).selectedCandidateFanIDs.length >0 ) {
+    for (i in JSON.parse(storedJSON).selectedCandidateFanIDs) {
+      $('#fans tbody tr:eq(' + JSON.parse(storedJSON).selectedCandidateFanIDs[i] + ')').click();
     }
   }
   updateSliderDisplays();
   updateSolutions();
   // reselect chosen solution
-  if (JSON.parse(stored).selectedSolutionID >0 ) {
-    $('#solutions tbody tr:eq(' + JSON.parse(stored).selectedSolutionID + ')').click();
+  if (JSON.parse(storedJSON).selectedSolutionID >0 ) {
+    $('#solutions tbody tr:eq(' + JSON.parse(storedJSON).selectedSolutionID + ')').click();
   }
 
-});
+}
 
-$( "#share" ).button().on( "click", function() {
-  alert("Not yet implemented - will allow users to copy a url that recreates the current state of the web tool")
-  //TODO: save (i.e. copy) parameters in URL and load from same
-  // // get parameters from the url
-  // var url = new URL(document.URL);
-  // var query_string = url.search;
-  // var search_params = new URLSearchParams(query_string);
-  // var id = search_params.get('id');
-  // // output : 100
-  // console.log(id);
-  //
-  // var uri = "file:///D:/Android/Projects/ipack-schedule/www/visit.html?uname=&date=10/01/2016%2013:00:00"
-  //
-  // var vars = getVars(uri)
-  // document.write(JSON.stringify(vars))
-  //
-  // function getVars(uri) {
-  //   var s = uri.split("?")
-  //   if (s.length == 1) return []
-  //
-  //   var parts = s[1].split("&")
-  //   return parts.map(function(el) {
-  //     return el.split("=").map(function(el){return decodeURIComponent(el)})
-  //   })
-  // }
-});
 
 
 // define default parameter state
@@ -219,6 +216,20 @@ $( "#slider-num-fans" ).slider({
 $( "#num-fans" ).val( $( "#slider-num-fans" ).slider( "values", 0 ) +
 " - " + $( "#slider-num-fans" ).slider( "values", 1 ));
 
+$( "#slider-uniformity" ).slider({
+  range: true,
+  min: 0.0,
+  max: 1.0,
+  values: p.uniformity,
+  step: 0.05,
+  slide: function( event, ui ) {
+    p.uniformity = ui.values;
+    $( "#uniformity" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+  }
+});
+$( "#uniformity" ).val( $( "#slider-uniformity" ).slider( "values", 0 ) +
+" - " + $( "#slider-uniformity" ).slider( "values", 1 ));
+
 $( "#slider-blade-height" ).slider({
   range: true,
   min: 2.15,
@@ -279,20 +290,6 @@ $( "#slider-max-air-speed" ).slider({
     updateSliderDisplays();
   }
 });
-
-$( "#slider-uniformity" ).slider({
-  range: true,
-  min: 0.0,
-  max: 1.0,
-  values: p.uniformity,
-  step: 0.05,
-  slide: function( event, ui ) {
-    p.uniformity = ui.values;
-    $( "#uniformity" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
-  }
-});
-$( "#uniformity" ).val( $( "#slider-uniformity" ).slider( "values", 0 ) +
-" - " + $( "#slider-uniformity" ).slider( "values", 1 ));
 
 // add all sliders (single values)
 $( "#slider-aspectRatio-min" ).slider({
@@ -450,8 +447,8 @@ function updateCandidateFans(){
 var tblSln = $('#solutions').DataTable( {
   data: [],
   language: {
-        emptyTable: "No solutions. Please ensure you have selected at least one fan type. Relax constraints if needed."
-    },
+    emptyTable: "No solutions. Please ensure you have selected at least one fan type. Relax constraints if needed."
+  },
   destroy: true,
   paging: false,
   scrollY: "200px",
@@ -696,120 +693,120 @@ function calcSolutions(){
         p.fanSpeed,
         p.bladeHeight,
         p.mountDistance);
-      // test to see if it meets validity criteria
-      if (candidate.dr <= p.dimensionlessDiameter[0]){
-        failDimensionlessDiameter[0]++;
-        continue;
+        // test to see if it meets validity criteria
+        if (candidate.dr <= p.dimensionlessDiameter[0]){
+          failDimensionlessDiameter[0]++;
+          continue;
+        };
+        if (candidate.dr >= p.dimensionlessDiameter[1]){
+          failDimensionlessDiameter[1]++;
+          continue;
+        };
+        if (candidate.airspeeds[0] <= p.minAirSpeed[0]){
+          failMinAirspeed[0]++;
+          continue;
+        };
+        if (candidate.airspeeds[0] >= p.minAirSpeed[1]){
+          failMinAirspeed[1]++;
+          continue;
+        };
+        if (candidate.airspeeds[1] <= p.avgAirSpeed[0]){
+          failAvgAirspeed[0]++;
+          continue;
+        };
+        if (candidate.airspeeds[1] >= p.avgAirSpeed[1]){
+          failAvgAirspeed[1]++;
+          continue;
+        };
+        if (candidate.airspeeds[3] <= p.uniformity[0]){
+          failUniformity[0]++;
+          continue;
+        };
+        if (candidate.airspeeds[3] >= p.uniformity[1]){
+          failUniformity[1]++;
+          continue;
+        };
+        if (!candidate.validBladeHeightRange['pass']) {
+          continue;
+        };
+        solutions.push(candidate);
       };
-      if (candidate.dr >= p.dimensionlessDiameter[1]){
-        failDimensionlessDiameter[1]++;
-        continue;
-      };
-      if (candidate.airspeeds[0] <= p.minAirSpeed[0]){
-        failMinAirspeed[0]++;
-        continue;
-      };
-      if (candidate.airspeeds[0] >= p.minAirSpeed[1]){
-        failMinAirspeed[1]++;
-        continue;
-      };
-      if (candidate.airspeeds[1] <= p.avgAirSpeed[0]){
-        failAvgAirspeed[0]++;
-        continue;
-      };
-      if (candidate.airspeeds[1] >= p.avgAirSpeed[1]){
-        failAvgAirspeed[1]++;
-        continue;
-      };
-      if (candidate.airspeeds[3] <= p.uniformity[0]){
-        failUniformity[0]++;
-        continue;
-      };
-      if (candidate.airspeeds[3] >= p.uniformity[1]){
-        failUniformity[1]++;
-        continue;
-      };
-      if (!candidate.validBladeHeightRange['pass']) {
-        continue;
-      };
-      solutions.push(candidate);
     };
-  };
-  console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
-  console.log(solutions);
-  console.log("Total number of viable solutions: " + solutions.length);
+    console.log(failDimensionlessDiameter + " failed on [min, max] dimensionless diameter");
+    console.log(solutions);
+    console.log("Total number of viable solutions: " + solutions.length);
 
-  var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
+    var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
 
-  /* TODO Develop methods to select for various design cases given
-  a set of constraints:
-  most/least # numFans - potentially also cost based?
-  Smallest/Largest diameter numFans
-  Highest/lowest numFans
-  most/least uniformity ranked based on squareness, larger D/R ratio, larger D
-  */
-}
-
-
-// draw an empty room
-function drawRoom() {
-  var canvas = document.getElementById('canv');
-  // Execute only if canvas is supported
-  if (canvas.getContext) {
-    var ctx = canvas.getContext('2d')
-    //clear plan after each solution selection
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    scale = Math.min(
-      (canvas.width-20)/room.sizeX,
-      (canvas.height-20)/room.sizeY
-    );
-    // draw the room in plan
-    ctx.beginPath();
-    ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
-    ctx.stroke();
-  } else {
-    alert("Your browser doesn't support HTML 5 Canvas");
+    /* TODO Develop methods to select for various design cases given
+    a set of constraints:
+    most/least # numFans - potentially also cost based?
+    Smallest/Largest diameter numFans
+    Highest/lowest numFans
+    most/least uniformity ranked based on squareness, larger D/R ratio, larger D
+    */
   }
-}
 
-// draw the fans on the floor plan, along with some information about
-// about the selected solution
-function drawFans() {
-  //TODO: review pros/cons of doing this with SVG instead of canvas
-  var canvas = document.getElementById('canv');
-  // Execute only if canvas is supported
-  if (canvas.getContext) {
-    var ctx = canvas.getContext('2d')
-    //clear plan after each solution selection
-    // display basic information about the layout
-    ctx.font = '14px serif';
-    sln = solutions[p.selectedSolutionID];
-    ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
 
-    // add diameter
-
-    ctx.fillText(
-      unitToString(sln.fan.diameter, "distance"),
-      10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
-      10 + scale*(0.5*(sln.layout.cellSizeY))
-    );
-
-    //draw 'fans'
-    i = 0;
-    j = 0;
-    for (i = 0; i < sln.layout.numFansX; i++){
-      for (j = 0; j < sln.layout.numFansY; j++){
-        ctx.beginPath();
-        ctx.arc(
-          10 + scale*(i + 0.5)*sln.layout.cellSizeX,
-          10 + scale*(j + 0.5)*sln.layout.cellSizeY,
-          sln.fan.diameter*scale/2, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
-      }
-
+  // draw an empty room
+  function drawRoom() {
+    var canvas = document.getElementById('canv');
+    // Execute only if canvas is supported
+    if (canvas.getContext) {
+      var ctx = canvas.getContext('2d')
+      //clear plan after each solution selection
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      scale = Math.min(
+        (canvas.width-20)/room.sizeX,
+        (canvas.height-20)/room.sizeY
+      );
+      // draw the room in plan
+      ctx.beginPath();
+      ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
+      ctx.stroke();
     } else {
       alert("Your browser doesn't support HTML 5 Canvas");
     }
-
   }
+
+  // draw the fans on the floor plan, along with some information about
+  // about the selected solution
+  function drawFans() {
+    //TODO: review pros/cons of doing this with SVG instead of canvas
+    var canvas = document.getElementById('canv');
+    // Execute only if canvas is supported
+    if (canvas.getContext) {
+      var ctx = canvas.getContext('2d')
+      //clear plan after each solution selection
+      // display basic information about the layout
+      ctx.font = '14px serif';
+      sln = solutions[p.selectedSolutionID];
+      ctx.fillText(sln.layout.numFans() + " " + sln.fan.type + " fans", 14, 28);
+
+      // add diameter
+
+      ctx.fillText(
+        unitToString(sln.fan.diameter, "distance"),
+        10 + scale*(0.5*(sln.layout.cellSizeX - 0.5 * sln.fan.diameter)),
+        10 + scale*(0.5*(sln.layout.cellSizeY))
+      );
+
+      //draw 'fans'
+      i = 0;
+      j = 0;
+      for (i = 0; i < sln.layout.numFansX; i++){
+        for (j = 0; j < sln.layout.numFansY; j++){
+          ctx.beginPath();
+          ctx.arc(
+            10 + scale*(i + 0.5)*sln.layout.cellSizeX,
+            10 + scale*(j + 0.5)*sln.layout.cellSizeY,
+            sln.fan.diameter*scale/2, 0, 2 * Math.PI);
+            ctx.stroke();
+          }
+        }
+
+      } else {
+        alert("Your browser doesn't support HTML 5 Canvas");
+      }
+
+    }
