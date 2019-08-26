@@ -510,7 +510,7 @@ $('#solutions tbody').on( 'click', function () {
 
 // update inputs associated with slider movement and
 // update the solutions based on the new inputs
-$('.ui-slider').mouseup(function () {
+$('.ui-slider').on("slidestop", function () {
   updateSliderDisplays();
   updateSolutions();
 });
