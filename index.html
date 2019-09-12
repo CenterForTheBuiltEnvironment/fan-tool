@@ -31,16 +31,17 @@
       alt="Center for the Built Environment" id="logo"
       width="204" height="78" style='float:left;'>
       <h1>CBE Fan Tool<span style='color: red'> (ALPHA version)</span></h1>
+      <h2>
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">About</a> |
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">FAQs</a> |
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">User Guide</a>
+      </h2>
     </div>
     <div id="left_content">
-      <div style="text-align:center;">
-        <h2><a href="https://centerforthebuiltenvironment.github.io/fan-tool/">Documentation (TBD)</a></h2>
-      </div>
-      <div style="text-align: center; padding-top: 5px;">
-        State
+      <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey">
         <button type="button" id="save">Save</button>
         <button type="button" id="load">Restore save</button>
-        <button type="button" id="share">Share</button>
+        <button type="button" id="share">Share link</button>
       </div>
       <div style="text-align: center; padding: 5px 0px 5px 0px;">
         Units
@@ -50,7 +51,7 @@
         <input type="radio" name="units" id="units2">
       </div>
       <div id="accordion">
-        <h2>Room dimensions</h2>
+        <h3>Room dimensions</h3>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
             <label for="len" title="The length of the room">Length</label>
@@ -72,7 +73,7 @@
           <div id="slider-hei-min" class='slider'></div>
         </div>
 
-        <h2>Fan constraints</h2>
+        <h3>Fan constraints</h3>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
             <label for="num-fans"  title="Acceptable range of number of fans in the X (row) or Y (column) direction" ># fans in X or Y direction</label>
@@ -88,7 +89,7 @@
           <div id="slider-fan-speed-min" class='slider'></div>
         </div>
 
-        <h2>Target air speed constraints</h2>
+        <h3>Target air speed constraints</h3>
         <div id="accordion_content">
           <div style="text-align: center;vertical-align: middle; margin: 5px">
             <label for="posture1">Seated</label>
@@ -122,7 +123,7 @@
           <div id="slider-uniformity" class='slider'></div>
         </div>
 
-        <h2>Advanced constraints</h2>
+        <h3>Advanced constraints</h3>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
             <label for="cellSize"  title="Acceptable range of sizes of each individual cell. A cell is defined as the square root of the floor area that is closest to a particular fan." >Cell size</label>
@@ -143,7 +144,7 @@
           </div>
           <div id="slider-aspectRatio-min" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it begins to affect the performance of the fan, and the total airflow is lower than the rated airflow. Above values of 0.2, there is little to no effect.">Minimum mount distance</label>
+            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it begins to affect the performance of the fan, decreasing the actual airflow compared to the rated airflow. Above values of 0.2, there is little to no effect.">Minimum mount distance</label>
             <input type="text" id="mount-distance" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
@@ -158,7 +159,7 @@
       </div><!--id="accordion"-->
 
       <div style="text-align:center; padding-top:5px;">
-        <h2>Fan selection</h2>
+        <h3>Candidate fan selection</h3>
         <span style=' text-align:center;'>
           <button type="button" id="add-fan" >Add</button>
           <button type="button" id="delete-fan">Delete</button>
@@ -169,7 +170,7 @@
     </div><!--id="left_content"-->
 
     <div id="right_content">
-      <h2 style="text-align:center;">Solutions</h2>
+      <h3 style="text-align:center;">Solutions</h3>
 
       <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
       <!-- <h2 style="text-align:center;">Display</h2> -->
@@ -184,9 +185,8 @@
       </span>
     </div>
 
-
-
     <canvas id = "canv" width = "666 px" height = "540px" ></canvas>
+
   </div><!--id="right_content"-->
 </div> <!--id="all_content"-->
 

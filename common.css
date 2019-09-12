@@ -10,11 +10,12 @@
 #header {
   width: 988px;
   height: 90px;
+  text-align: center;
 }
 
 #left_content {
   width: 295px;
-  height: 902px;
+  height: 900px;
   top: 0;
   left: 0px;
   float: left;
@@ -63,24 +64,23 @@ h1 {
   font-size: 35px;
   font-family: sans-serif;
   text-align: center;
-  vertical-align: middle;
-  line-height: 80px;
-  /* margin-top: 25px; */
-  /* padding-top: 10px; */
+  padding: 10px 0px 5px 0px;
+  margin: 0px 0px 0px 0px;
+  /* vertical-align: middle; */
 }
 
 
 h2 {
   font-size: 18px;
   text-decoration: bold;
-  padding-left: 5px;
-  padding-top: 5px;
+  padding-left: 0px;
+  padding-top: 0px;
   margin: 0px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 
 h3 {
-  font-size: 19px;
+  font-size: 16px;
   text-decoration: bold;
   padding-left: 5px;
   padding-top: 5px;

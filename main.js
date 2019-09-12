@@ -12,6 +12,12 @@ $(document).ready(function() {
     if (navigator.language == "en-US") {
       $("#units2").trigger("click");
     };
+    // select an example fan for basic demonstration of functionality
+    $('#fans tbody tr:eq(' + 3 + ')').click();
+    $('#fans tbody tr:eq(' + 4 + ')').click();
+    $('#fans tbody tr:eq(' + 6 + ')').click();
+    $('#fans tbody tr:eq(' + 7 + ')').click();
+
   }
   updateSliderDisplays();
   updateSolutions();
@@ -94,7 +100,7 @@ function loadStateFromJSON(storedJSON){
   updateSliderDisplays();
   updateSolutions();
   // reselect chosen solution
-  if (JSON.parse(storedJSON).selectedSolutionID >0 ) {
+  if (JSON.parse(storedJSON).selectedSolutionID >-1 ) {
     $('#solutions tbody tr:eq(' + JSON.parse(storedJSON).selectedSolutionID + ')').click();
   }
 
@@ -107,35 +113,35 @@ function loadStateFromJSON(storedJSON){
 // define default parameter state
 const p_default = {
   'cellSize': [4.572, 15.24],
-  'minAirSpeed': [0.5, 4.0],
-  'avgAirSpeed': [0.5, 4.0],
+  'minAirSpeed': [0.5, 1.5],
+  'avgAirSpeed': [0.5, 2],
   'maxAirSpeed': [0.5, 4.0],
   'uniformity': [0.3, 1.0],
   'numFans':[1,10],
   'diameter':[1.2192, 4.2672],
   'bladeHeight' : [2.1336, 3.048],
-  'ceilingHeight' : [2.7432, 4.572],
-  'dimensionlessDiameter':[0.2, 0.5],
-  "length" : 15,
-  "width" : 18,
+  'dimensionlessDiameter':[0.15, 0.5],
+  "length" : 13,
+  "width" : 16,
   "height" : 3.7,
   "aspectRatio" : 1.25,
   "mountDistance" : 0.2,
   "fanSpeed" : 100,
   "isSIunits" : true,
   "isSeated" : true,
+  "view" : 1,
   "fanTableData" : [
-    ['TypeA', 1.2192,   2.611757, true],
-    ['TypeB', 1.319784, 2.258268, true],
-    ['TypeC', 1.524,    3.765196, true],
-    ['TypeD', 1.524,    3.826077, true],
-    ['TypeE', 2.1336,   7.734745, true],
-    ['TypeF', 2.4384,   13.80304, false],
-    ['TypeG', 2.4384,   16.57101, false],
-    ['TypeH', 3.048,    20.91151, false],
-    ['TypeI', 4.2672,   25.30817, false]
+    ['ExampleA', 1.2192,   2.611757, true],
+    ['ExampleB', 1.319784, 2.258268, true],
+    ['ExampleC', 1.524,    3.765196, true],
+    ['ExampleD', 1.524,    3.826077, true],
+    ['ExampleE', 2.1336,   7.734745, true],
+    ['ExampleF', 2.4384,   13.80304, false],
+    ['ExampleG', 2.4384,   16.57101, false],
+    ['ExampleH', 3.048,    20.91151, false],
+    ['ExampleI', 4.2672,   25.30817, false]
   ],
-  "selectedSolutionID" : [],
+  "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
 }
 var p = p_default;
@@ -150,15 +156,7 @@ var scale = 0;
 // create common imperial unit defintions
 math.createUnit('cfm', '1 ft*ft*ft/min');
 math.createUnit('fpm', '1 ft/min');
-math.createUnit( {
-  degC: {
-    prefixes: 'long'
-  },
-  degF: '1.8 * degC'
-},
-{
-  override: true
-})
+
 // create function that returns an input SI unit as a string with units
 // in the selected unit system
 function unitToString (valueSI, measurement, displayUnit=true){
@@ -207,8 +205,8 @@ $( function() {
 // add all sliders (double values - ranges)
 $( "#slider-dimless" ).slider({
   range: true,
-  min: 0.15,
-  max: 0.60,
+  min: 0.1,
+  max: 0.6,
   values: p.dimensionlessDiameter,
   step: 0.01,
   slide: function( event, ui ) {
@@ -262,8 +260,8 @@ $( "#slider-blade-height" ).slider({
 
 $( "#slider-cellSize" ).slider({
   range: true,
-  min: 4.5,
-  max: 15.24,
+  min: 4.572,
+  max: 18.288,
   values: p.cellSize,
   step: 0.1,
   slide: function( event, ui ) {
@@ -353,8 +351,8 @@ $( "#fan-speed-min" ).val( $( "#slider-fan-speed-min" ).slider( "value" ) + "%" 
 $( "#slider-len-min" ).slider({
   range: "min",
   value: p.length,
-  min: 4.5,
-  max: 50,
+  min: 4.573,
+  max: 40,
   step: 0.1,
   slide: function( event, ui ) {
     p.length = ui.value;
@@ -365,8 +363,8 @@ $( "#slider-len-min" ).slider({
 $( "#slider-wid-min" ).slider({
   range: "min",
   value: p.width,
-  min: 4.5,
-  max: 50,
+  min: 4.573,
+  max: 40,
   step: 0.1,
   slide: function( event, ui ) {
     p.width = ui.value;
@@ -474,7 +472,7 @@ var tblSln = $('#solutions').DataTable( {
   lengthChange: false,
   pageLength: 10,
   columnDefs: [{
-    targets: [2,3,4,5],
+    targets: [2,3,4,5,6],
     render: $.fn.dataTable.render.number(',', '.', 2)
   }],
   columns: [
@@ -483,6 +481,7 @@ var tblSln = $('#solutions').DataTable( {
     { title: "Min airspeed (m/s)" },
     { title: "Avg airspeed (m/s)" },
     { title: "Max airspeed (m/s)" },
+    { title: "Temp increase (°C)" },
     { title: "Uniformity" },
     { title: "Cell aspect ratio" },
   ]
@@ -501,11 +500,13 @@ $('#solutions tbody').on( 'click', 'tr', function () {
 
 // update selected solution and draw it on the display
 $('#solutions tbody').on( 'click', function () {
-  drawRoom();
   if (tblSln.rows('.selected').data().length > 0 ){
     p.selectedSolutionID = tblSln.rows('.selected')[0][0]
-    drawFans();
+    // drawFans();
+  } else{
+    p.selectedSolutionID = -1;
   };
+  updateView();
 } );
 
 // update inputs associated with slider movement and
@@ -533,34 +534,55 @@ $("#posture1, #posture2").change(function () {
   updateSolutions();
 });
 
+$("[id*= view]").change(function () {
+  if ($("#view1")[0].checked){
+    p.view = 1;
+  }
+  if ($("#view2")[0].checked){
+    p.view = 2;
+  }
+  if ($("#view3")[0].checked){
+    p.view = 3;
+  }
+  updateView();
+});
+
 
 // recalculate the solutions, clear the floor plan, update the solutions table
 function updateSolutions() {
   calcSolutions();
-  drawRoom();
   updateSlnTable();
+  updateView();
 };
+
 
 // update the solutions table to match the currently calculated set of
 // solutions
 function updateSlnTable(){
   tblSln.clear();
   tblData = [];
-  conv = (p.isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
+  convSpeed = (p.isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
+  convTempDiff = (p.isSIunits) ? 1 : 1.8;
   for (i of solutions){
     tblData.push([
       i.fan.type,
       i.layout.numFans(),
-      i.airspeeds[0] * conv,
-      i.airspeeds[1] * conv,
-      i.airspeeds[2] * conv,
+      i.airspeeds[0] * convSpeed,
+      i.airspeeds[1] * convSpeed,
+      i.airspeeds[2] * convSpeed,
+      i.tempDiffs[0] * convTempDiff,
       i.uniformity,
       i.layout.aspectRatio.toFixed(2),
     ]);
   }
   tblSln.rows.add(tblData).draw();
   // select first solution if any solutions exist
-  if (solutions.length >0 ) $('#solutions tbody tr:eq(0)').click();
+  if (solutions.length >0 ) {
+    $('#solutions tbody tr:eq(0)').click();
+  } else{
+    p.selectedSolutionID = -1;
+  }
+
 };
 
 
@@ -611,6 +633,7 @@ function changeUnits () {
     $(tblSln.column(2).header()).text('Min airspeed (m/s)');
     $(tblSln.column(3).header()).text('Avg airspeed (m/s)');
     $(tblSln.column(4).header()).text('Max airspeed (m/s)');
+    $(tblSln.column(5).header()).text('Temp increase (°C)');
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
@@ -624,6 +647,7 @@ function changeUnits () {
     $(tblSln.column(2).header()).text('Min airspeed (fpm)');
     $(tblSln.column(3).header()).text('Avg airspeed (fpm)');
     $(tblSln.column(4).header()).text('Max airspeed (fpm)');
+    $(tblSln.column(5).header()).text('Temp increase (°F)');
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
@@ -747,185 +771,164 @@ function calcSolutions(){
   console.log("Total number of viable solutions: " + solutions.length);
 
   var numsFans = solutions.map(function(elt) {return elt.layout.numFans();});
-
-  /* TODO Develop methods to select for various design cases given
-  a set of constraints:
-  most/least # numFans - potentially also cost based?
-  Smallest/Largest diameter numFans
-  Highest/lowest numFans
-  most/least uniformity ranked based on squareness, larger D/R ratio, larger D
-  */
 }
+
+
+//draw the selected view
+function updateView() {
+  var canvas = document.getElementById('canv');
+  if (canvas.getContext) {
+    if (p.view == 1){
+      // plan view
+      drawRoom();
+      if (p.selectedSolutionID >-1) {
+        // if a solution has been selected, draw the fans
+        drawFans();
+      }
+    }
+    if (p.view == 2 && p.selectedSolutionID >-1){
+      // cell view
+      drawCell();
+    }
+  } else{
+    alert("Your browser doesn't support HTML 5 Canvas");
+  }
+};
 
 
 // draw an empty room
 function drawRoom() {
   var canvas = document.getElementById('canv');
-  // Execute only if canvas is supported
-  if (canvas.getContext) {
-    var ctx = canvas.getContext('2d')
-    //clear plan after each solution selection
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    scale = Math.min(
-      (canvas.width-20)/room.sizeX,
-      (canvas.height-20)/room.sizeY
-    );
-    // draw the room in plan
-    ctx.beginPath();
-    ctx.setLineDash([1, 0])
-    ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
-    ctx.stroke();
-    ctx.closePath();
-
-  } else {
-    alert("Your browser doesn't support HTML 5 Canvas");
-  }
+  var ctx = canvas.getContext('2d')
+  //clear plan after each solution selection
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  scale = Math.min((canvas.width-20)/room.sizeX,(canvas.height-20)/room.sizeY);
+  // draw the room in plan
+  ctx.beginPath();
+  ctx.setLineDash([1, 0])
+  ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
+  ctx.stroke();
+  ctx.closePath();
 }
 
 // draw the fans on the floor plan, along with some information about
 // about the selected solution
 function drawFans() {
   var canvas = document.getElementById('canv');
-  // Execute only if canvas is supported
-  if (canvas.getContext) {
-    var ctx = canvas.getContext('2d')
-    // get selected solution
-    sln = solutions[p.selectedSolutionID];
+  ctx = canvas.getContext('2d')
+  // get selected solution
+  sln = solutions[p.selectedSolutionID];
 
-    // scaled sized for fan radius, cellX and cellY
-    fan_rad = scale * sln.fan.diameter / 2
-    cellX = scale * sln.layout.cellSizeX
-    cellY = scale * sln.layout.cellSizeY
-    margin = 10
-    font = 14
-    line_spacing = font + 2
+  // scaled sized for fan radius, cellX and cellY
+  fanRad = scale * sln.fan.diameter / 2
+  cellX = scale * sln.layout.cellSizeX
+  cellY = scale * sln.layout.cellSizeY
+  margin = 10
+  font = 14
+  lineSpacing = font + 2
 
-    // display basic information about the layout on top right
-    ctx.font = `${font}px sans-serif`;
-    ctx.textAlign = "right";
-    ctx.fillStyle='black';
-    ctx.fillText(`${sln.layout.numFans()} ${sln.fan.type} fan${sln.layout.numFans() - 1 ? "s" :""}`,
+  // display basic information about the layout on top right
+  ctx.font = `${font}px sans-serif`;
+  ctx.textAlign = "right";
+  ctx.fillStyle='black';
+  ctx.fillText(`${sln.layout.numFans()} ${sln.fan.type} fan${sln.layout.numFans() - 1 ? "s" :""}`,
+  room.sizeX*scale,
+  margin + lineSpacing);
+
+  ctx.fillText(`Temperatures can be ~${unitToString(sln.tempDiffs[0], "deltaT")} higher`,
+  room.sizeX*scale,
+  margin + room.sizeY*scale - 1.5 * lineSpacing);
+  ctx.fillText(
+    `while maintaining equivalent comfort.`,
     room.sizeX*scale,
-    margin + line_spacing);
+    margin + room.sizeY*scale - 0.5 * lineSpacing
+  );
 
-    ctx.fillText(`Temperatures can be ~${unitToString(sln.tempDiffs[0], "deltaT")} higher`,
-    room.sizeX*scale,
-    margin + room.sizeY*scale - 1.5 * line_spacing);
-    ctx.fillText(`while maintaining equivalent comfort.`,
-    room.sizeX*scale,
-    margin + room.sizeY*scale - 0.5 * line_spacing);
+  // add diameter and units below-right of first fan
+  ctx.textAlign = "center";
+  ctx.fillStyle='grey';
+  ctx.fillText(
+    `Ø ${unitToString(sln.fan.diameter, "distance")}`,
+    margin + fanRad + (0.5 * cellX) + (0.75 * font),
+    margin + fanRad + (0.5 * cellY) + (0.75 * font)
+  );
 
-    // ctx.fillText(`Approximate airspeeds in the room:`,
-    // 2 * margin + room.sizeX*scale,
-    // margin + 3 * line_spacing);
-    //
-    // ctx.fillText(`Minimum: ${unitToString(sln.airspeeds[0], "speed")}`,
-    // 2 * margin + room.sizeX*scale,
-    // margin + 4 * line_spacing);
-    //
-    // ctx.fillText(`Area-weighted average: ${unitToString(sln.airspeeds[1], "speed")}`,
-    // 2 * margin + room.sizeX*scale,
-    // margin + 5 * line_spacing);
-    //
-    // ctx.fillText(`Maximum : ${unitToString(sln.airspeeds[2], "speed")}`,
-    // 2 * margin + room.sizeX*scale,
-    // margin + 6 * line_spacing);
-    //
-    // ctx.fillText(`Uniformity : ${sln.uniformity`,
-    // 2 * margin + room.sizeX*scale,
-    // margin + 8 * line_spacing);
+  // add clearanceX to first fan
+  ctx.beginPath();
+  ctx.moveTo(margin, margin + cellY/2);
+  ctx.lineTo(margin + cellX/2 - fanRad, margin + cellY/2);
+  // ctx.closePath();
+  ctx.lineWidth=1;
+  ctx.strokeStyle='grey';
+  ctx.setLineDash([5,5])
+  ctx.stroke();
+  ctx.textAlign = "left";
+  ctx.fillText(
+    `${unitToString(sln.clearanceX(), "distance")}`,
+    margin + font/2,
+    margin + cellY/2 + 1* font
+  );
+  ctx.fillText(
+    `clear`,
+    margin + font/2,
+    margin + cellY/2 + 2 * font
+  );
 
+  // add clearanceY to first fan
+  ctx.beginPath();
+  ctx.moveTo(margin + cellX/2, margin);
+  ctx.lineTo(margin + cellX/2, margin + cellY/2 - fanRad);
+  // ctx.closePath();
+  ctx.lineWidth=1;
+  ctx.strokeStyle='grey';
+  ctx.setLineDash([5,5])
+  ctx.stroke();
+  ctx.textAlign = "left";
+  ctx.fillText(
+    `${unitToString(sln.clearanceY(), "distance")}`,
+    margin + cellX/2 + 0.5 * font,
+    margin + font
+  );
+  ctx.fillText(
+    `clear`,
+    margin + cellX/2 + 0.5 * font,
+    margin + 2 * font
+  );
 
+  //draw fans and dimensions between fans
+  i = 0;
+  j = 0;
+  blades = sln.fan.diameter > 2.2 ? 6 : 3;
+  for (i = 0; i < sln.layout.numFansX; i++){
+    // at least 2 fans in x direction, show on center spacing
+    // between last fan and second last
+    if (i > 0 & i == sln.layout.numFansX - 1){
+      ctx.beginPath();
+      ctx.moveTo(margin + (i - 0.5)*cellX, margin + 0.5*cellY);
+      ctx.lineTo(margin + (i + 0.5)*cellX, margin + 0.5*cellY);
+      // ctx.closePath();
+      ctx.lineWidth=1;
+      ctx.strokeStyle='grey';
+      ctx.setLineDash([5,5])
+      ctx.stroke();
+      ctx.textAlign = "center";
+      ctx.fillStyle='grey';
+      ctx.fillText(
+        `${unitToString(sln.layout.cellSizeX, "distance")}`,
+        margin + i*cellX,
+        margin + font + 0.5*cellY
+      );
+      ctx.fillText(
+        `on center`,
+        margin + i*cellX,
+        margin + 2*font + 0.5*cellY
+      );
+    }
 
-
-    // add diameter and units below-right of first fan
-    ctx.textAlign = "center";
-    ctx.fillStyle='grey';
-    ctx.fillText(
-      `Ø ${unitToString(sln.fan.diameter, "distance")}`,
-      margin + fan_rad + (0.5 * cellX) + (0.75 * font),
-      margin + fan_rad + (0.5 * cellY) + (0.75 * font)
-    );
-
-    // add clearanceX to first fan
-    ctx.beginPath();
-    ctx.moveTo(margin, margin + cellY/2);
-    ctx.lineTo(margin + cellX/2 - fan_rad, margin + cellY/2);
-    // ctx.closePath();
-    ctx.lineWidth=1;
-    ctx.strokeStyle='grey';
-    ctx.setLineDash([5,5])
-    ctx.stroke();
-    ctx.textAlign = "left";
-    ctx.fillText(
-      `${unitToString(sln.clearanceX(), "distance")}`,
-      margin + font/2,
-      margin + cellY/2 + 1* font
-    );
-    ctx.fillText(
-      `clear`,
-      margin + font/2,
-      margin + cellY/2 + 2 * font
-    );
-
-    // add clearanceY to first fan
-    ctx.beginPath();
-    ctx.moveTo(margin + cellX/2, margin);
-    ctx.lineTo(margin + cellX/2, margin + cellY/2 - fan_rad);
-    // ctx.closePath();
-    ctx.lineWidth=1;
-    ctx.strokeStyle='grey';
-    ctx.setLineDash([5,5])
-    ctx.stroke();
-    ctx.textAlign = "left";
-    ctx.fillText(
-      `${unitToString(sln.clearanceY(), "distance")}`,
-      margin + cellX/2 + 0.5 * font,
-      margin + font
-    );
-    ctx.fillText(
-      `clear`,
-      margin + cellX/2 + 0.5 * font,
-      margin + 2 * font
-    );
-
-    //draw fans and dimensions between fans
-    i = 0;
-    j = 0;
-    inner_rad = fan_rad/30;
-    blades = sln.fan.diameter > 2.2 ? 6 : 3;
-    rot = Math.PI/2*3;
-    step = Math.PI/blades;
-    for (i = 0; i < sln.layout.numFansX; i++){
-      // at least 2 fans in x direction, show on center spacing
+    for (j = 0; j < sln.layout.numFansY; j++){
+      // at least 2 fans in y direction, show on center spacing
       // between last fan and second last
-      if (i > 0 & i == sln.layout.numFansX - 1){
-        ctx.beginPath();
-        ctx.moveTo(margin + (i - 0.5)*cellX, margin + 0.5*cellY);
-        ctx.lineTo(margin + (i + 0.5)*cellX, margin + 0.5*cellY);
-        // ctx.closePath();
-        ctx.lineWidth=1;
-        ctx.strokeStyle='grey';
-        ctx.setLineDash([5,5])
-        ctx.stroke();
-        ctx.textAlign = "center";
-        ctx.fillStyle='grey';
-        ctx.fillText(
-          `${unitToString(sln.layout.cellSizeX, "distance")}`,
-          margin + i*cellX,
-          margin + font + 0.5*cellY
-        );
-        ctx.fillText(
-          `on center`,
-          margin + i*cellX,
-          margin + 2*font + 0.5*cellY
-        );
-      }
-
-      for (j = 0; j < sln.layout.numFansY; j++){
-        // at least 2 fans in y direction, show on center spacing
-        // between last fan and second last
-        if (i == 0 & j > 0 & j == sln.layout.numFansY - 1){
+      if (i == 0 & j > 0 & j == sln.layout.numFansY - 1){
         ctx.beginPath();
         ctx.moveTo(margin + 0.5*cellX, margin + (j-0.5)*cellY);
         ctx.lineTo(margin + 0.5*cellX, margin + (j+0.5)*cellY);
@@ -946,59 +949,214 @@ function drawFans() {
           margin + 0.5 *font +0.5*cellX,
           margin + 0.5*font + j*cellY
         );
-        }
-
-
-
-        // center of each fan
-        cx = margin + (i + 0.5)*cellX;
-        cy = margin + (j + 0.5)*cellY;
-
-        // draw blades
-        var x = cx;
-        var y = cy;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - fan_rad)
-        for(b = 0; b < blades; b++){
-          x=cx + Math.cos(rot) * fan_rad;
-          y=cy + Math.sin(rot) * fan_rad;
-          ctx.lineTo(x, y)
-          rot += step
-
-          x= cx + Math.cos(rot) * inner_rad;
-          y= cy + Math.sin(rot) * inner_rad;
-          ctx.lineTo(x, y)
-          rot += step
-        }
-        ctx.lineTo(cx, cy - fan_rad);
-        ctx.closePath();
-        ctx.lineWidth=4;
-        ctx.strokeStyle='grey';
-        ctx.setLineDash([])
-        ctx.stroke();
-        ctx.fillStyle='grey';
-        ctx.fill();
-
-        // inner circle (fan hub, circle 1/10 fan diameter)
-        ctx.beginPath();
-        ctx.arc(cx, cy, fan_rad/10, 0, 2 * Math.PI);
-        ctx.lineWidth=1;
-        ctx.strokeStyle='black';
-        ctx.setLineDash([])
-        ctx.stroke();
-        ctx.fillStyle='lightblue';
-        ctx.fill();
-        ctx.fillStyle='black';
-
-        // outer circle (blade tip path)
-        ctx.beginPath();
-        ctx.arc(cx, cy, fan_rad, 0, 2 * Math.PI);
-        ctx.setLineDash([1, 3])
-        ctx.stroke();+
-        ctx.setLineDash([]);
-
       }
+      // center of this fan
+      cx = margin + (i + 0.5)*cellX;
+      cy = margin + (j + 0.5)*cellY;
+      drawSingleFan(cx,cy,fanRad,blades);
     }
+  }
+}
+
+
+function drawSingleFan(cx,cy,fanRad,blades){
+  innerRad = fanRad/30;
+  rot = Math.PI/2*3;
+  step = Math.PI/blades;
+  // draw blades
+  var x = cx;
+  var y = cy;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - fanRad)
+  for(b = 0; b < blades; b++){
+    x=cx + Math.cos(rot) * fanRad;
+    y=cy + Math.sin(rot) * fanRad;
+    ctx.lineTo(x, y)
+    rot += step
+
+    x= cx + Math.cos(rot) * innerRad;
+    y= cy + Math.sin(rot) * innerRad;
+    ctx.lineTo(x, y)
+    rot += step
+  }
+  ctx.lineTo(cx, cy - fanRad);
+  ctx.closePath();
+  ctx.lineWidth=4;
+  ctx.strokeStyle='grey';
+  ctx.setLineDash([])
+  ctx.stroke();
+  ctx.fillStyle='grey';
+  ctx.fill();
+
+  // inner circle (fan hub, circle 1/10 fan diameter)
+  ctx.beginPath();
+  ctx.arc(cx, cy, fanRad/10, 0, 2 * Math.PI);
+  ctx.lineWidth=1;
+  ctx.strokeStyle='black';
+  ctx.setLineDash([])
+  ctx.stroke();
+  ctx.fillStyle='lightblue';
+  ctx.fill();
+  ctx.fillStyle='black';
+
+  // outer circle (blade tip path)
+  ctx.beginPath();
+  ctx.arc(cx, cy, fanRad, 0, 2 * Math.PI);
+  ctx.setLineDash([1, 3])
+  ctx.stroke();+
+  ctx.setLineDash([]);
+}
+
+
+
+// draw a schematic of the individual recirculation cell around a fan
+function drawCell() {
+  var canvas = document.getElementById('canv');
+  // Execute only if canvas is supported
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    sln = solutions[p.selectedSolutionID];
+
+    scale = Math.min(
+      (canvas.width-20)/sln.layout.cellSizeX,
+      (canvas.height-20)/sln.layout.cellSizeY,
+      (canvas.height-20)/sln.layout.r,
+      (canvas.width-20)/sln.layout.r
+    );
+
+    // scaled sized for fan radius, cellX and cellY
+    fanRad = scale * sln.fan.diameter / 2
+    cellX = scale * sln.layout.cellSizeX
+    cellY = scale * sln.layout.cellSizeY
+    r = scale * sln.layout.r
+    marg = 10
+    font = 14
+    lineSpacing = font + 2
+
+
+    // draw the room in plan
+    ctx.beginPath();
+    ctx.setLineDash([15, 15])
+    if (cellX > cellY){
+      ctx.rect(marg,marg +(cellX-r)/2, cellX  ,cellY);
+      cx = marg +cellX/2;
+      cy = marg +(cellX-r)/2 + cellY/2;
+    } else{
+      ctx.rect(marg+(cellY-r)/2,marg, cellX ,cellY);
+      cx = marg +(cellY-r)/2 + cellX/2;
+      cy = marg +cellY/2;
+    }
+
+    ctx.stroke();
+    ctx.closePath();
+
+    // draw the square cell in plan
+    ctx.beginPath();
+    ctx.setLineDash([5,5])
+    if (cellX > cellY){
+      ctx.rect(marg+(cellX-r)/2,marg, r ,r);
+    } else{
+      ctx.rect(marg,marg+(cellY-r)/2, r ,r);
+    }
+    ctx.stroke();
+    ctx.closePath();
+
+    // outer and inner diameter estimate of max airspeed location
+    // rough estimate of highest air speed
+    highestLoc = ((sln.fan.diameter*(0.02860)) + 0.26884)*sln.fan.diameter*scale;
+    outer = highestLoc + 0.2*fanRad;
+    inner = highestLoc - 0.2*fanRad;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, outer, 0, 2 * Math.PI);
+    ctx.lineWidth=1;
+    ctx.strokeStyle='black';
+    ctx.setLineDash([])
+    ctx.stroke();
+    ctx.fillStyle='lightgreen';
+    ctx.fill();
+    ctx.fillStyle='black';
+    ctx.beginPath();
+    ctx.arc(cx, cy, inner, 0, 2 * Math.PI);
+    ctx.lineWidth=1;
+    ctx.strokeStyle='black';
+    ctx.setLineDash([])
+    ctx.stroke();
+    ctx.fillStyle='white';
+    ctx.fill();
+    ctx.fillStyle='black';
+
+    ctx.textAlign = "left";
+    ctx.fillText(
+      ` Highest airspeeds will `,
+      cx + fanRad,
+      cy - 0.5*(lineSpacing),
+    );
+    ctx.fillText(
+      ` occur within green area`,
+      cx + fanRad,
+      cy + 0.5*(lineSpacing),
+    );
+    ctx.fillText(
+      `Ø ${unitToString(sln.fan.diameter, "distance")}`,
+      cx + fanRad,
+      cy + 2.5*(lineSpacing),
+    );
+
+    // draw the fan in plan
+    blades = sln.fan.diameter > 2.2 ? 6 : 3;
+    drawSingleFan(cx,cy,fanRad,blades);
+
+    ctx.textAlign = "left";
+    ctx.fillText(
+      ` Square cell assumed`,
+      cx - r/2,
+      cy + (r/2) - 5*(lineSpacing),
+    );
+    ctx.fillText(
+      ` by underlying model`,
+      cx - r/2,
+      cy + (r/2) - 4*(lineSpacing),
+    );
+    ctx.fillText(
+      ` with length/width of ${unitToString(sln.layout.r, "distance")}`,
+      cx - r/2,
+      cy + (r/2) - 3*(lineSpacing),
+    );
+    ctx.fillText(
+      `(equal floor area)`,
+      cx - r/2,
+      cy + (r/2) - 2*(lineSpacing),
+    );
+
+    ctx.fillText(
+      ` Fan cell dimensions`,
+      cx - cellX/2,
+      cy - (cellY/2) + 5*(lineSpacing),
+    );
+    ctx.fillText(
+      ` Length:  ${unitToString(sln.layout.cellSizeX, "distance")}`,
+      cx - cellX/2,
+      cy - (cellY/2) + 6*(lineSpacing),
+    );
+    ctx.fillText(
+      ` Width:  ${unitToString(sln.layout.cellSizeY, "distance")}`,
+      cx - cellX/2,
+      cy - (cellY/2) + 7*(lineSpacing),
+    );
+    ctx.fillText(
+      ` Aspect ratio: ${math.format(sln.layout.aspectRatio,4)}`,
+      cx - cellX/2,
+      cy - (cellY/2) + 8*(lineSpacing),
+    );
+    ctx.fillText(
+      ` Diameter to cell size ratio: ${math.format(sln.dr,3)}`,
+      cx - cellX/2,
+      cy - (cellY/2) + 9*(lineSpacing),
+    );
+
+
   } else {
     alert("Your browser doesn't support HTML 5 Canvas");
   }
