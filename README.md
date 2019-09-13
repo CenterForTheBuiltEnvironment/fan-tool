@@ -4,7 +4,7 @@ Website: https://centerforthebuiltenvironment.github.io/fan-tool/
 
 This tool allows designers to quickly select and layout ceiling fans to meet a given airspeed requirement (or other constraint) in a given room.
 
-- For a one page description, see the [About] (https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About) page. 
+- For a one page description, see the [About](https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About) page. 
 - For more detailed information, read the [User Guide](https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide). 
 - For questions, please take a look at the [FAQ](https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ). 
 
