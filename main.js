@@ -397,10 +397,6 @@ var tblFans = $('#fans').DataTable( {
   paging: false,
   searching: false,
   info: false,
-  columnDefs: [{
-    targets: [1,2],
-    render: $.fn.dataTable.render.number(',', '.', 2)
-  }],
   columns: [
     { title: "Type" },
     { title: "D (m)" },
@@ -471,10 +467,6 @@ var tblSln = $('#solutions').DataTable( {
   info: true,
   lengthChange: false,
   pageLength: 10,
-  // columnDefs: [{
-  //   targets: [2,3,4,5,6],
-  //   render: $.fn.dataTable.render.number(',', '.', 2)
-  // }],
   columns: [
     { title: "Fan type" },
     { title: "# fans" },
@@ -636,8 +628,8 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] *= math.unit("1 ft").toNumber("m");
-      data[2] *= math.unit("1 cfm").toNumber("m^3/s");
+      data[1] = (data[1] * math.unit("1 ft").toNumber("m")).toFixed(2);
+      data[2] = (data[2] * math.unit("1 cfm").toNumber("m^3/s")).toFixed(2);
       this.data(data);
     });
   } else {
@@ -650,8 +642,8 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] *= math.unit("1 m").toNumber("ft");
-      data[2] *= math.unit("1 m3/s").toNumber("cfm");
+      data[1] = (data[1] * math.unit("1 m").toNumber("ft")).toFixed(0);
+      data[2] = (data[2] * math.unit("1 m3/s").toNumber("cfm")).toFixed(0);
       this.data(data);
     });
   }
