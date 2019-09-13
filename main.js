@@ -471,10 +471,10 @@ var tblSln = $('#solutions').DataTable( {
   info: true,
   lengthChange: false,
   pageLength: 10,
-  columnDefs: [{
-    targets: [2,3,4,5,6],
-    render: $.fn.dataTable.render.number(',', '.', 2)
-  }],
+  // columnDefs: [{
+  //   targets: [2,3,4,5,6],
+  //   render: $.fn.dataTable.render.number(',', '.', 2)
+  // }],
   columns: [
     { title: "Fan type" },
     { title: "# fans" },
@@ -561,17 +561,16 @@ function updateSolutions() {
 function updateSlnTable(){
   tblSln.clear();
   tblData = [];
-  convSpeed = (p.isSIunits) ? 1 : math.unit("1 m/s").toNumber("fpm");
   convTempDiff = (p.isSIunits) ? 1 : 1.8;
   for (i of solutions){
     tblData.push([
       i.fan.type,
       i.layout.numFans(),
-      i.airspeeds[0] * convSpeed,
-      i.airspeeds[1] * convSpeed,
-      i.airspeeds[2] * convSpeed,
-      i.tempDiffs[0] * convTempDiff,
-      i.uniformity,
+      unitToString(i.airspeeds[0], "speed", false),
+      unitToString(i.airspeeds[1], "speed", false),
+      unitToString(i.airspeeds[2], "speed", false),
+      unitToString(i.tempDiffs[0], "deltaT", false),
+      i.uniformity.toFixed(2),
       i.layout.aspectRatio.toFixed(2),
     ]);
   }

@@ -2,6 +2,7 @@
 # and maintaining the same SET (starting at standard conditions)
 # fit a simple model to the data
 #
+# this is the simple model used within the tool to convert a seated/standing average airspeed to a temperature increase
 
 library(comf)
 library(tidyverse)
