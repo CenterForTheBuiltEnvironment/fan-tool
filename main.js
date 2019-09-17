@@ -143,6 +143,13 @@ const p_default = {
   ],
   "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
+  "grid" : {
+    'xSpacing': 0,
+    'ySpacing': 0,
+    'xOffset': 0,
+    'yOffset': 0,
+    'display': false
+  },
 }
 var p = p_default;
 
@@ -796,11 +803,49 @@ function drawRoom() {
   scale = Math.min((canvas.width-20)/room.sizeX,(canvas.height-20)/room.sizeY);
   // draw the room in plan
   ctx.beginPath();
-  ctx.setLineDash([1, 0])
+  ctx.lineWidth=1;
+  ctx.strokeStyle='black';
+  ctx.setLineDash([])
   ctx.rect(10,10, room.sizeX*scale,room.sizeY*scale);
   ctx.stroke();
   ctx.closePath();
+  if (p.grid.display) drawGrid();
 }
+
+
+// draw grid
+function drawGrid() {
+  var canvas = document.getElementById('canv');
+  var ctx = canvas.getContext('2d')
+  // add clearanceX to first fan
+  margin = 10;
+  xSpacing = p.grid.xSpacing;
+  ySpacing = p.grid.ySpacing;
+  xOffset = p.grid.xOffset;
+  yOffset = p.grid.yOffset;
+
+  ctx.lineWidth=1;
+  ctx.strokeStyle='lightblue';
+  ctx.setLineDash([2,2])
+  if (xSpacing > 0){
+    for (i = xOffset > 0 ? 0 : 1; i < (room.sizeX - xOffset)/xSpacing; i++){
+      ctx.beginPath();
+      ctx.moveTo(margin + scale*xOffset + i*scale*xSpacing, margin);
+      ctx.lineTo(margin + scale*xOffset + i*scale*xSpacing, room.sizeY*scale + margin);
+      ctx.stroke();
+    }
+  }
+  if (ySpacing > 0){
+    for (j = yOffset > 0 ? 0 : 1; j < (room.sizeY- yOffset)/ySpacing; j++){
+      ctx.beginPath();
+      ctx.moveTo(margin, margin + scale*yOffset + j*scale*ySpacing);
+      ctx.lineTo(room.sizeX*scale + margin, margin + scale*yOffset + j*scale*ySpacing);
+      ctx.stroke();
+    }
+  }
+}
+
+
 
 // draw the fans on the floor plan, along with some information about
 // about the selected solution
