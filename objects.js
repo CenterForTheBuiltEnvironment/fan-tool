@@ -61,13 +61,15 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   this.calcBladeHeightRange = function(){
     // constrain min blade height based on UL507 requirement
     this.fan.meetsUL507 ? min = 2.1336 : min = 3.048;
+    constraintUL507 = min;
     // constrain max blade height based on mount distance (avoiding starvation)
     max = this.layout.room.ceilingHeight - (this.mdMin * this.fan.diameter);
+    constraintMount = max;
     // constrain min/max blade height based on user input ranges
     if (this.bladeHeightRange[0] > min ) min = this.bladeHeightRange[0];
     if (max > this.bladeHeightRange[1]) max = this.bladeHeightRange[1];
     mean = (min+max)/2
-    return {'pass': (max-min) >= 0, 'min': min, 'max' : max, 'mean' : mean};
+    return {'pass': (max-min) >= 0, 'min': min, 'max' : max, 'mean' : mean, 'constraintMount' : constraintMount, 'constraintUL507': constraintUL507};
   }
   this.validBladeHeightRange = this.calcBladeHeightRange();
   this.hd = this.validBladeHeightRange['mean']/this.fan.diameter;

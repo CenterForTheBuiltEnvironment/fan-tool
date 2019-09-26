@@ -32,13 +32,13 @@
       width="204" height="78" style='float:left;'>
       <h1>CBE Fan Tool<span style='color: red'> (ALPHA version)</span></h1>
       <h2>
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">About</a> |
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">FAQ</a> |
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">User Guide</a>
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">  About</a>  |
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">  FAQ</a>  |
+          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">  User Guide</a>
       </h2>
     </div>
     <div id="left_content">
-      <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey">
+      <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
         <button type="button" id="save">Save</button>
         <button type="button" id="load">Restore save</button>
         <button type="button" id="share">Share link</button>
@@ -158,7 +158,7 @@
         </div>
       </div><!--id="accordion"-->
 
-      <div style="text-align:center; padding-top:5px;">
+      <div style="text-align:center; margin-top:5px; padding-top:5px; border: 1px solid lightgrey; border-radius: 5px;">
         <h3>Candidate fan selection</h3>
         <span style=' text-align:center;'>
           <button type="button" id="add-fan" >Add</button>
@@ -180,7 +180,7 @@
         <input type="radio" name="view" id="view1" checked>
         <label for="view2">Cell plan</label>
         <input type="radio" name="view" id="view2">
-        <label for="view3">Section</label>
+        <label for="view3">Cell section</label>
         <input type="radio" name="view" id="view3">
       </span>
       <span style="float:right;">
@@ -221,7 +221,8 @@
 
 <!-- form for grid settings  -->
 <div id="dialog-form2" title="Grid settings">
-  <p class="validateTips">All form fields are required.</p>
+  <p class="validateTips">Use this form to define a grid to more easily visualize and align with lighting or structural elements.</p>
+  <p class="validateTips">All form fields are required. Enter any positive non-zero value to draw vertical and/or horizontal gridlines at that spacing.</p>
   <form>
     <fieldset>
       <input type="checkbox" id="display" name="display" checked>

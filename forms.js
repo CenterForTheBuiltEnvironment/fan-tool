@@ -173,11 +173,11 @@ $( function() {
 
   dialog = $( "#dialog-form2" ).dialog({
     autoOpen: false,
-    height: 500,
+    height: 600,
     width: 500,
     modal: true,
     buttons: {
-      "Add grid": addGrid ,
+      "Modify grid settings": addGrid,
       Close: function() {
         dialog.dialog( "close" );
       }
