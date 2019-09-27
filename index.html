@@ -32,9 +32,9 @@
       width="204" height="78" style='float:left;'>
       <h1>CBE Fan Tool<span style='color: red'> (ALPHA version)</span></h1>
       <h2>
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">  About</a>  |
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">  FAQ</a>  |
-          <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">  User Guide</a>
+        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">  About</a>  |
+        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">  FAQ</a>  |
+        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">  User Guide</a>
       </h2>
     </div>
     <div id="left_content">
@@ -144,7 +144,7 @@
           </div>
           <div id="slider-aspectRatio-min" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it begins to affect the performance of the fan, decreasing the actual airflow compared to the rated airflow. Above values of 0.2, there is little to no effect.">Minimum mount distance</label>
+            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it significantly affects the performance of the fan, substantially decreasing the actual airflow compared to the rated airflow. Above values of 0.25, there is little to no effect.">Minimum mount distance</label>
             <input type="text" id="mount-distance" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
@@ -182,86 +182,92 @@
         <input type="radio" name="view" id="view2">
         <label for="view3">Cell section</label>
         <input type="radio" name="view" id="view3">
-      </span>
-      <span style="float:right;">
-        <button type="button" id="grid-settings" >Grid settings</button>
-      </span>
-    </div>
+        <span style="float:right;">
+          <button type="button" id="grid-settings" >Display settings</button>
+        </span>
+      </div>
 
-    <canvas id = "canv" width = "666 px" height = "540px" ></canvas>
+      <canvas id = "canv" width = "666 px" height = "540px" ></canvas>
 
-  </div><!--id="right_content"-->
-</div> <!--id="all_content"-->
+    </div><!--id="right_content"-->
+  </div> <!--id="all_content"-->
 
 
-<!-- form for adding a new fan  -->
-<div id="dialog-form" title="Add a new fan">
-  <p class="validateTips">All form fields are required.</p>
-  <form>
-    <fieldset>
-      <label for="newtype">Fan type</label>
-      <br>
-      <input type="text" name="newtype" id="newtype" value="YourFan" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
-      <br>
-      <input type="text" name="newdiameter" id="newdiameter" value="" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
-      <br>
-      <input type="text" name="newairflow" id="newairflow" value="" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <input type="checkbox" id="ul507" name="ul507" checked>
-      <label for="ul507">UL 507 Compliant</label>
-      <!-- Allow form submission with keyboard without duplicating the dialog button -->
-      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-    </fieldset>
-  </form>
-</div>
-
-<!-- form for grid settings  -->
-<div id="dialog-form2" title="Grid settings">
-  <p class="validateTips">Use this form to define a grid to more easily visualize and align with lighting or structural elements.</p>
-  <p class="validateTips">All form fields are required. Enter any positive non-zero value to draw vertical and/or horizontal gridlines at that spacing.</p>
-  <form>
-    <fieldset>
-      <input type="checkbox" id="display" name="display" checked>
-      <label for="display">Display grid</label>
-      <p></p>
-      <label for="xSpacing">Spacing between vertical gridlines on floor plan (if any) <span class="distance-unit"></span></label>
-      <br>
-      <input type="text" name="xSpacing" id="xSpacing" value="0.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="ySpacing">Spacing between horizontal gridlines on floor plan (if any) <span class="distance-unit"></span></label>
-      <br>
-      <input type="text" name="ySpacing" id="ySpacing" value="0.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="xOffset">Horizontal offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
-      <br>
-      <input type="text" name="xOffset" id="xOffset" value="0.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <label for="yOffset">Vertical offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
-      <br>
-      <input type="text" name="yOffset" id="yOffset" value="0.0" class="text ui-widget-content ui-corner-all">
-      <p></p>
-      <!-- Allow form submission with keyboard without duplicating the dialog button -->
-      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-    </fieldset>
-  </form>
-</div>
-
-<footer>
-  <div id="all_content">
-    <div style="padding: 10px 10px 10px 10px; float:right; width:678px; text-align: left;">
-      <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" align="right" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/88x31.png"></a><br><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">The CBE Fan Tool</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-      <b>Developed by: </b>
-      <a class="footerlink" href="https://cbe.berkeley.edu/about-us/people/paul-raftery/">Paul Raftery</a> based on full-scale laboratory experiments described in <a class="footerlink" href="https://escholarship.org/uc/item/4p479663">this article</a>.
-      Work performed under funding from the <a class="footerlink" href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program">California Energy Commission's EPIC program</a>.
-      <br>
-      <b>Note:</b> Some features not supported on old browsers. We recommend using Edge, Chrome, Firefox, or Safari.
-    </div>
+  <!-- form for adding a new fan  -->
+  <div id="dialog-form" title="Add a new fan">
+    <p class="validateTips">All form fields are required.</p>
+    <form>
+      <fieldset>
+        <label for="newtype">Fan type</label>
+        <br>
+        <input type="text" name="newtype" id="newtype" value="YourFan" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="newdiameter">Fan diameter <span id="distance-unit"></span></label>
+        <br>
+        <input type="text" name="newdiameter" id="newdiameter" value="" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="newairflow">Fan rated airflow <span id="airflow-unit"></span></label>
+        <br>
+        <input type="text" name="newairflow" id="newairflow" value="" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <input type="checkbox" id="ul507" name="ul507" checked>
+        <label for="ul507">UL 507 Compliant</label>
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
   </div>
-</footer>
+
+  <!-- form for grid settings  -->
+  <div id="dialog-form2" title="Display settings">
+    <p class="validateTips">Use this form to modify display settings. <br> All form fields are required. </p>
+    <p> Enter any non-zero integer to override the default number of blades displayed on the floor and cell plans</p>
+    <form>
+      <fieldset>
+        <label for="blades">Number of blades</label>
+        <br>
+        <input type="text" name="blades" id="blades" value="0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+      </fieldset>
+    </form>
+    <p> A grid can be overlaid on the floor plan to more easily visualize and align with lighting or structural elements.
+      Enter any positive non-zero value to draw vertical and/or horizontal gridlines at that spacing.</p>
+    <form>
+      <fieldset>
+        <label for="xSpacing">Spacing between vertical gridlines on floor plan (if any) <span class="distance-unit"></span></label>
+        <br>
+        <input type="text" name="xSpacing" id="xSpacing" value="0.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="ySpacing">Spacing between horizontal gridlines on floor plan (if any) <span class="distance-unit"></span></label>
+        <br>
+        <input type="text" name="ySpacing" id="ySpacing" value="0.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="xOffset">Horizontal offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
+        <br>
+        <input type="text" name="xOffset" id="xOffset" value="0.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <label for="yOffset">Vertical offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
+        <br>
+        <input type="text" name="yOffset" id="yOffset" value="0.0" class="text ui-widget-content ui-corner-all">
+        <p></p>
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
+  </div>
+
+  <footer>
+    <div id="all_content">
+      <div style="padding: 10px 10px 10px 10px; float:right; width:678px; text-align: left;">
+        <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" align="right" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/88x31.png"></a><br><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">The CBE Fan Tool</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+        <b>Developed by: </b>
+        <a class="footerlink" href="https://cbe.berkeley.edu/about-us/people/paul-raftery/">Paul Raftery</a> based on full-scale laboratory experiments described in <a class="footerlink" href="https://escholarship.org/uc/item/4p479663">this article</a>.
+        Work performed under funding from the <a class="footerlink" href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program">California Energy Commission's EPIC program</a>.
+        <br>
+        <b>Note:</b> Some features not supported on old browsers. We recommend using Edge, Chrome, Firefox, or Safari.
+      </div>
+    </div>
+  </footer>
 
 
 </body>

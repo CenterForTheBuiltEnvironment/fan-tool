@@ -143,12 +143,12 @@ const p_default = {
   ],
   "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
-  "grid" : {
+  "display" : {
+    'blades': 0,
     'xSpacing': 0,
     'ySpacing': 0,
     'xOffset': 0,
-    'yOffset': 0,
-    'display': false
+    'yOffset': 0
   },
 }
 var p = p_default;
@@ -333,7 +333,7 @@ $( "#aspectRatio" ).val( $( "#slider-aspectRatio-min" ).slider( "value" ) );
 $( "#slider-mount-distance-max" ).slider({
   range: "max",
   value: p.mountDistance,
-  min: 0,
+  min: 0.1,
   max: 1,
   step: 0.01,
   slide: function( event, ui ) {
@@ -820,21 +820,25 @@ function drawRoom() {
   var canvas = document.getElementById('canv');
   var ctx = canvas.getContext('2d')
   scale = Math.min((canvas.width-2*margin)/room.sizeX,(canvas.height-2*margin)/room.sizeY);
+
+  ctx.lineWidth=1;
+  ctx.strokeStyle='black';
+  ctx.setLineDash([]);
   // draw the room in plan
   ctx.beginPath();
   ctx.rect(margin, margin, room.sizeX*scale,room.sizeY*scale);
   ctx.stroke();
-  if (p.grid.display) drawGrid();
+  if (p.display.xSpacing * p.display.ySpacing > 0) drawGrid();
 }
 
 // draw a grid on the floor plan for co-ordination with lighting, structural, etc.
 function drawGrid() {
   var canvas = document.getElementById('canv');
   var ctx = canvas.getContext('2d')
-  xSpacing = p.grid.xSpacing;
-  ySpacing = p.grid.ySpacing;
-  xOffset = p.grid.xOffset;
-  yOffset = p.grid.yOffset;
+  xSpacing = p.display.xSpacing;
+  ySpacing = p.display.ySpacing;
+  xOffset = p.display.xOffset;
+  yOffset = p.display.yOffset;
 
   ctx.strokeStyle='lightblue';
   ctx.setLineDash([2,2])
@@ -934,7 +938,7 @@ function drawFans() {
   //draw fans and dimensions between fans
   i = 0;
   j = 0;
-  blades = sln.fan.diameter > 2.2 ? 6 : 3;
+  blades = p.display.blades> 0 ? p.display.blades: sln.fan.diameter > 1.55 ? 6 : 3;
   for (i = 0; i < sln.layout.numFansX; i++){
     // at least 2 fans in x direction, show on center spacing
     // between last fan and second last
@@ -1062,9 +1066,17 @@ function drawCell() {
   r = scale * sln.layout.r
 
   // draw the room in plan
-  ctx.strokeStyle='grey';
+  if (sln.layout.numFans() > 1){
+    ctx.strokeStyle='grey';
+    ctx.setLineDash([10, 10]);
+  } else {
+    // only one fan - cell matches room diemsnions, and boundaries are
+    // all solid walls
+    ctx.strokeStyle='black';
+    ctx.setLineDash([]);
+  }
+
   ctx.beginPath();
-  ctx.setLineDash([10, 10]);
   if (cellX > cellY){
     ctx.rect(margin, margin +(cellX-r)/2, cellX  ,cellY);
     cx = margin +cellX/2;
@@ -1078,6 +1090,7 @@ function drawCell() {
 
   // draw the square cell in plan
   ctx.beginPath();
+  ctx.strokeStyle='grey';
   ctx.setLineDash([20,20])
   if (cellX > cellY){
     ctx.rect(margin+(cellX-r)/2,margin, r ,r);
@@ -1108,14 +1121,19 @@ function drawCell() {
   ctx.fillStyle='black';
   ctx.textAlign = "left";
   ctx.fillText(
-    ` Highest air speed will `,
+    ` Highest air speed `,
     cx + fanRad,
-    cy - 0.5*(lineSpacing),
+    cy - 1*(lineSpacing),
   );
   ctx.fillText(
-    ` occur within green area`,
+    ` (${unitToString(sln.airspeeds[2], "speed")}) occurs`,
     cx + fanRad,
-    cy + 0.5*(lineSpacing),
+    cy - 0*(lineSpacing),
+  );
+  ctx.fillText(
+    ` within green area`,
+    cx + fanRad,
+    cy + 1*(lineSpacing),
   );
   ctx.fillText(
     `Ø ${unitToString(sln.fan.diameter, "distance")}`,
@@ -1124,7 +1142,7 @@ function drawCell() {
   );
 
   // draw the fan in plan
-  blades = sln.fan.diameter > 2.2 ? 6 : 3;
+    blades = p.display.blades> 0 ? p.display.blades: sln.fan.diameter > 1.55 ? 6 : 3;
   drawSingleFan(cx,cy,fanRad,blades);
 
   ctx.fillText(
@@ -1228,10 +1246,33 @@ function drawCellSection() {
   ctx.stroke();
   ctx.textAlign = "left";
   ctx.fillStyle='grey';
+  mUnscaled = sln.layout.room.ceilingHeight - sln.validBladeHeightRange['mean']
   ctx.fillText(
-    `${unitToString(sln.layout.room.ceilingHeight - sln.validBladeHeightRange['mean'], "distance")}`,
+    `${unitToString(mUnscaled, "distance")}`,
     margin + 0.5*r + 0.5*font, margin + 0.5*m
   );
+  // display warning if mount distance is very small
+  md = mUnscaled/sln.fan.diameter;
+  if (md < 0.2){
+    ctx.fillStyle='red';
+    ctx.fillText(
+      `Mount distance to diameter `,
+      margin + 0.6*r + 0.5*font, margin + h/2 - lineSpacing
+    );
+    ctx.fillText(
+      `ratio (${md.toFixed(3)}) < 0.2 recommended.`,
+      margin + 0.6*r + 0.5*font, margin + h/2
+    );
+    ctx.fillText(
+      `Air speeds will likely be lower`,
+      margin + 0.6*r + 0.5*font, margin + h/2 + 1*lineSpacing
+    );
+    ctx.fillText(
+      `than estimated by the tool`,
+      margin + 0.6*r + 0.5*font, margin + h/2 + 2*lineSpacing
+    );
+    ctx.fillStyle='grey';
+  }
 
   // draw the fan blades and hub
   ctx.beginPath();

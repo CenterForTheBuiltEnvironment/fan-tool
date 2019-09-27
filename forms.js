@@ -78,7 +78,7 @@ $( function() {
 
   form = dialog.find( "form" ).on( "submit", function( event ) {
     event.preventDefault();
-    addUser();
+    addFan();
   });
 
   $( "#add-fan" ).button().on( "click", function() {
@@ -97,11 +97,12 @@ $( function() {
 
 $( function() {
   var dialog, form,
+  blades = $( "#blades" ),
   xSpacing = $( "#xSpacing" ),
   ySpacing = $( "#ySpacing" ),
   xOffset = $( "#xOffset" ),
   yOffset = $("#yOffset"),
-  allFields = $( [] ).add( xSpacing ).add( ySpacing ).add( xOffset ).add( yOffset ),
+  allFields = $( [] ).add( blades ).add( xSpacing ).add( ySpacing ).add( xOffset ).add( yOffset ),
   tips = $( ".validateTips" );
 
   function updateTips( t ) {
@@ -134,38 +135,41 @@ $( function() {
     }
   }
 
-  function addGrid() {
+  function modifyDisplay() {
     var valid = true;
     allFields.removeClass( "ui-state-error" );
+    valid = valid && checkLength( blades, "blades", 1, 1 );
     valid = valid && checkLength( xSpacing, "xSpacing", 1, 5 );
     valid = valid && checkLength( xOffset, "xOffset", 1, 5 );
     valid = valid && checkLength( ySpacing, "ySpacing", 1, 5 );
     valid = valid && checkLength( yOffset, "yOffset", 1, 5 );
 
-    valid = valid && checkRegexp( xSpacing, /^(?:\d*\.\d{1,2}|\d+)$/, "X spacing must be a number (0-9), with or without decimals." );
-    valid = valid && checkRegexp( xOffset, /^(?:\d*\.\d{1,2}|\d+)$/, "X offset must be a number (0-9), with or without decimals." );
-    valid = valid && checkRegexp( ySpacing, /^(?:\d*\.\d{1,2}|\d+)$/, "Y spacing must be a number (0-9), with or without decimals." );
-    valid = valid && checkRegexp( yOffset, /^(?:\d*\.\d{1,2}|\d+)$/, "Y offset must be a number (0-9), with or without decimals." );
+    valid = valid && checkRegexp( blades, /^(?:\d*\.\d{1,1}|\d+)$/, "Number of blades must be a number (2-8), without decimals." );
+    valid = valid && checkRegexp( xSpacing, /^(?:\d*\.\d{1,5}|\d+)$/, "X spacing must be a number (0-9), with or without decimals." );
+    valid = valid && checkRegexp( xOffset, /^(?:\d*\.\d{1,5}|\d+)$/, "X offset must be a number (0-9), with or without decimals." );
+    valid = valid && checkRegexp( ySpacing, /^(?:\d*\.\d{1,5}|\d+)$/, "Y spacing must be a number (0-9), with or without decimals." );
+    valid = valid && checkRegexp( yOffset, /^(?:\d*\.\d{1,5}|\d+)$/, "Y offset must be a number (0-9), with or without decimals." );
 
     // add grid lines
     if ( valid ) {
       if (p.isSI){
-        p.grid = {
+        p.display = {
+          'blades' : Number(blades.val()),
           'xSpacing': Number(xSpacing.val()),
           'ySpacing': Number(ySpacing.val()),
           'xOffset': Number(xOffset.val()),
           'yOffset': Number(yOffset.val()),
-          'display': document.getElementById("display").checked,
         }
       } else {
-        p.grid = {
+        p.display = {
+          'blades' : Number(blades.val()),
           'xSpacing': Number(xSpacing.val()) * math.unit("1 ft").toNumber("m"),
           'ySpacing': Number(ySpacing.val()) * math.unit("1 ft").toNumber("m"),
           'xOffset': Number(xOffset.val()) * math.unit("1 ft").toNumber("m"),
           'yOffset': Number(yOffset.val()) * math.unit("1 ft").toNumber("m"),
-          'display': document.getElementById("display").checked,
         }
       }
+      dialog.dialog( "close" );
       updateView();
     }
     return valid;
@@ -173,24 +177,25 @@ $( function() {
 
   dialog = $( "#dialog-form2" ).dialog({
     autoOpen: false,
-    height: 600,
+    height: 800,
     width: 500,
     modal: true,
     buttons: {
-      "Modify grid settings": addGrid,
+      "Modify display settings": modifyDisplay,
       Close: function() {
         dialog.dialog( "close" );
       }
     },
     close: function() {
       form[ 0 ].reset();
+      form[ 1 ].reset();
       allFields.removeClass( "ui-state-error" );
     }
   });
 
   form = dialog.find( "form" ).on( "submit", function( event ) {
     event.preventDefault();
-    addUser();
+    modifyDisplay();
   });
 
   $( "#grid-settings" ).button().on( "click", function() {
