@@ -118,7 +118,7 @@ const p_default = {
   'maxAirSpeed': [0.5, 4.0],
   'uniformity': [0.3, 1.0],
   'numFans':[1,10],
-  'diameter':[1.2192, 4.2672],
+  'diameter':[1.2, 4.3],
   'bladeHeight' : [2.1336, 3.048],
   'dimensionlessDiameter':[0.15, 0.5],
   "length" : 13,

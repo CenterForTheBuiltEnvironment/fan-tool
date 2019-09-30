@@ -36,6 +36,26 @@ $( function() {
     }
   }
 
+  function checkDiam( o, regexp,) {
+    if (p.isSIunits) {
+      if ( o.val() < 1.2 | o.val() > 4.3  ) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Diameter must be between 1.22 and 4.3 m" );
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      if ( o.val() < 4 | o.val() > 14 ) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Diameter must be between 4 and 14 ft" );
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
   function addFan() {
     var valid = true;
     allFields.removeClass( "ui-state-error" );
@@ -47,6 +67,7 @@ $( function() {
     valid = valid && checkRegexp( newdiameter, /^(?:\d*\.\d{1,2}|\d+)$/, "Fan diameter must be a number (0-9), with or without decimals." );
     valid = valid && checkRegexp( newairflow, /^(?:\d*\.\d{1,2}|\d+)$/, "Fan airflow must be a number (0-9), with or without decimals." );
 
+    valid = valid && checkDiam( newdiameter, "newdiameter");
     // add a fan to the table if the inputs are valid
     if ( valid ) {
       tblFans.row.add( [
@@ -67,12 +88,14 @@ $( function() {
     buttons: {
       "Add fan": addFan,
       Close: function() {
+        allFields.removeClass( "ui-state-error" );
         dialog.dialog( "close" );
       }
     },
     close: function() {
       form[ 0 ].reset();
       allFields.removeClass( "ui-state-error" );
+      updateTips("");
     }
   });
 
@@ -190,6 +213,8 @@ $( function() {
       // form[ 0 ].reset();
       // form[ 1 ].reset();
       allFields.removeClass( "ui-state-error" );
+      allFields.removeClass( "ui-state-error" );
+      updateTips("");
     }
   });
 
