@@ -87,6 +87,12 @@
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-fan-speed-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="blade-height"  title="Acceptable range of blade heights. This is an additional constraint to those based on UL507 blade height requirements, and minimum mount distance requirements." >Blade height</label>
+            <input type="text" id="blade-height" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-blade-height" class='slider'></div>
         </div>
 
         <h3>Target air speed constraints</h3>
@@ -149,12 +155,6 @@
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-mount-distance-max" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="blade-height"  title="Acceptable range of blade heights. This is an additional constraint to those based on UL507 blade height requirements, and minimum mount distance requirements." >Blade height</label>
-            <input type="text" id="blade-height" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-blade-height" class='slider'></div>
         </div>
       </div><!--id="accordion"-->
 
@@ -183,7 +183,7 @@
         <label for="view3">Cell section</label>
         <input type="radio" name="view" id="view3">
         <span style="float:right;">
-          <button type="button" id="grid-settings" >Display settings</button>
+          <button type="button" id="display-settings" >Display settings</button>
         </span>
       </div>
 
@@ -218,7 +218,7 @@
     </form>
   </div>
 
-  <!-- form for grid settings  -->
+  <!-- form for display settings  -->
   <div id="dialog-form2" title="Display settings">
     <p class="validateTips">Use this form to modify display settings. <br> All form fields are required. </p>
     <p> Enter any non-zero integer to override the default number of blades displayed on the floor and cell plans</p>

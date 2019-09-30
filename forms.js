@@ -187,8 +187,8 @@ $( function() {
       }
     },
     close: function() {
-      form[ 0 ].reset();
-      form[ 1 ].reset();
+      // form[ 0 ].reset();
+      // form[ 1 ].reset();
       allFields.removeClass( "ui-state-error" );
     }
   });
@@ -198,7 +198,7 @@ $( function() {
     modifyDisplay();
   });
 
-  $( "#grid-settings" ).button().on( "click", function() {
+  $( "#display-settings" ).button().on( "click", function() {
     dialog.dialog( "open" );
     $(".distance-unit").each(function() {
           if (p.isSIunits) {
