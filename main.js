@@ -27,15 +27,14 @@ $(document).ready(function() {
 });
 
 function initializeRadioButtons(){
-  // handle firefox only edge case in which it seems to store the radio button
+  // handle firefox only edge case in which it stores the radio button
   // states after page refresh
   if (!$("#units1")[0].checked){
+    // if user did not have SI units selected before refresh
+    // need to manually change system of units
     changeUnits();
   }
-  if (!$("#posture1")[0].checked){
-    // p.isSeated = $("#posture1")[0].checked;
-    updateSolutions();
-  }
+  // reset to same default values as other browsers
   $("#units1").click();
   $("#posture1").click();
   $("#view1").click();
@@ -156,15 +155,15 @@ const p_default = {
   "isSeated" : true,
   "view" : 1,
   "fanTableData" : [
-    ['ExampleA', 1.2192,   2.611757, true],
-    ['ExampleB', 1.319784, 2.258268, true],
-    ['ExampleC', 1.524,    3.765196, true],
-    ['ExampleD', 1.524,    3.826077, true],
-    ['ExampleE', 2.1336,   7.734745, true],
-    ['ExampleF', 2.4384,   13.80304, false],
-    ['ExampleG', 2.4384,   16.57101, false],
-    ['ExampleH', 3.048,    20.91151, false],
-    ['ExampleI', 4.2672,   25.30817, false]
+    ['ExampleA', 1.22, 2.61, true],
+    ['ExampleB', 1.32, 2.26, true],
+    ['ExampleC', 1.52, 3.77, true],
+    ['ExampleD', 1.52, 3.83, true],
+    ['ExampleE', 2.13, 7.73, true],
+    ['ExampleF', 2.44, 13.80, false],
+    ['ExampleG', 2.44, 16.57, false],
+    ['ExampleH', 3.05, 20.91, false],
+    ['ExampleI', 4.27, 25.31, false]
   ],
   "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
@@ -851,18 +850,19 @@ function drawRoom() {
   ctx.setLineDash([]);
   // draw the room in plan
   ctx.beginPath();
-  ctx.rect(margin, margin, room.sizeX*scale,room.sizeY*scale);
+  xCenteringOffset = (canvas.width - 2*margin - room.sizeX*scale)/2
+  ctx.rect(margin + xCenteringOffset, margin, room.sizeX*scale,room.sizeY*scale);
   ctx.stroke();
   if (p.display.xSpacing * p.display.ySpacing > 0) drawGrid();
   ctx.font = `${font}px sans-serif`;
   ctx.textAlign = "right";
   ctx.fillStyle='black';
   ctx.fillText(`Room dimensions: `,
-    margin + room.sizeX*scale - font/2,
-    margin + room.sizeY*scale - 1.5 * lineSpacing)
+    margin + xCenteringOffset + room.sizeX*scale - font/2,
+    margin + xCenteringOffset + room.sizeY*scale - 1.5 * lineSpacing)
     ctx.fillText(`${unitToString(room.sizeX,"distance", false)} x ${unitToString(room.sizeY,"distance", false)} x ${unitToString(room.ceilingHeight,"distance")} high`,
-    margin + room.sizeX*scale - font/2,
-    margin + room.sizeY*scale - 0.5 * lineSpacing)
+    margin + xCenteringOffset + room.sizeX*scale - font/2,
+    margin + xCenteringOffset + room.sizeY*scale - 0.5 * lineSpacing)
   }
 
   // draw a grid on the floor plan for co-ordination with lighting, structural, etc.
@@ -879,16 +879,16 @@ function drawRoom() {
     if (xSpacing > 0){
       for (i = xOffset > 0 ? 0 : 1; i < (room.sizeX - xOffset)/xSpacing; i++){
         ctx.beginPath();
-        ctx.moveTo(margin + scale*xOffset + i*scale*xSpacing, margin);
-        ctx.lineTo(margin + scale*xOffset + i*scale*xSpacing, room.sizeY*scale + margin);
+        ctx.moveTo(margin + xCenteringOffset + scale*xOffset + i*scale*xSpacing, margin);
+        ctx.lineTo(margin + xCenteringOffset + scale*xOffset + i*scale*xSpacing, room.sizeY*scale + margin);
         ctx.stroke();
       }
     }
     if (ySpacing > 0){
       for (j = yOffset > 0 ? 0 : 1; j < (room.sizeY- yOffset)/ySpacing; j++){
         ctx.beginPath();
-        ctx.moveTo(margin, margin + scale*yOffset + j*scale*ySpacing);
-        ctx.lineTo(room.sizeX*scale + margin, margin + scale*yOffset + j*scale*ySpacing);
+        ctx.moveTo(margin + xCenteringOffset, margin + scale*yOffset + j*scale*ySpacing);
+        ctx.lineTo( margin + xCenteringOffset + room.sizeX*scale, margin + scale*yOffset + j*scale*ySpacing);
         ctx.stroke();
       }
     }
@@ -902,6 +902,7 @@ function drawRoom() {
     ctx = canvas.getContext('2d')
     // get selected solution
     sln = solutions[p.selectedSolutionID];
+    xCenteringOffset = (canvas.width - 2*margin - room.sizeX*scale)/2
 
     // scaled sizes for fan radius, cellX and cellY
     fanRad = scale * sln.fan.diameter / 2
@@ -913,7 +914,7 @@ function drawRoom() {
     ctx.textAlign = "right";
     ctx.fillStyle='black';
     ctx.fillText(`${sln.layout.numFans()} ${sln.fan.type} fan${sln.layout.numFans() - 1 ? "s" :""}`,
-    room.sizeX*scale,
+    xCenteringOffset + room.sizeX*scale,
     margin + lineSpacing);
 
     // add diameter and units below-right of first fan
@@ -921,43 +922,43 @@ function drawRoom() {
     ctx.fillStyle='grey';
     ctx.fillText(
       `Ø ${unitToString(sln.fan.diameter, "distance")}`,
-      margin + fanRad + (0.5 * cellX) + (0.75 * font),
+      margin + xCenteringOffset + fanRad + (0.5 * cellX) + (0.75 * font),
       margin + fanRad + (0.5 * cellY) + (0.75 * font)
     );
 
     // add clearanceX to first fan
     ctx.beginPath();
-    ctx.moveTo(margin, margin + cellY/2);
-    ctx.lineTo(margin + cellX/2 - fanRad, margin + cellY/2);
+    ctx.moveTo(margin + xCenteringOffset, margin + cellY/2);
+    ctx.lineTo(margin + xCenteringOffset+ cellX/2 - fanRad, margin + cellY/2);
     ctx.strokeStyle='grey';
     ctx.setLineDash([5,5])
     ctx.stroke();
     ctx.textAlign = "left";
     ctx.fillText(
       `${unitToString(sln.clearanceX(), "distance")}`,
-      margin + font/2,
+      margin + xCenteringOffset + font/2,
       margin + cellY/2 + 1* font
     );
     ctx.fillText(
       `clear`,
-      margin + font/2,
+      margin + xCenteringOffset + font/2,
       margin + cellY/2 + 2 * font
     );
 
     // add clearanceY to first fan
     ctx.beginPath();
-    ctx.moveTo(margin + cellX/2, margin);
-    ctx.lineTo(margin + cellX/2, margin + cellY/2 - fanRad);
+    ctx.moveTo(margin + xCenteringOffset + cellX/2, margin);
+    ctx.lineTo(margin + xCenteringOffset + cellX/2, margin + cellY/2 - fanRad);
     ctx.stroke();
     ctx.textAlign = "right";
     ctx.fillText(
       `${unitToString(sln.clearanceY(), "distance")}`,
-      margin + cellX/2 - 0.5 * font,
+      margin + xCenteringOffset + cellX/2 - 0.5 * font,
       margin + font
     );
     ctx.fillText(
       `clear`,
-      margin + cellX/2 - 0.5 * font,
+      margin + xCenteringOffset + cellX/2 - 0.5 * font,
       margin + 2 * font
     );
 
@@ -971,8 +972,8 @@ function drawRoom() {
       // between last fan and second last
       if (i > 0 & i == sln.layout.numFansX - 1){
         ctx.beginPath();
-        ctx.moveTo(margin + (i - 0.5)*cellX, margin + 0.5*cellY);
-        ctx.lineTo(margin + (i + 0.5)*cellX, margin + 0.5*cellY);
+        ctx.moveTo(margin + xCenteringOffset + (i - 0.5)*cellX, margin + 0.5*cellY);
+        ctx.lineTo(margin + xCenteringOffset + (i + 0.5)*cellX, margin + 0.5*cellY);
         ctx.lineWidth=1;
         ctx.strokeStyle='grey';
         ctx.setLineDash([5,5])
@@ -981,12 +982,12 @@ function drawRoom() {
         ctx.fillStyle='grey';
         ctx.fillText(
           `${unitToString(sln.layout.cellSizeX, "distance")}`,
-          margin + i*cellX,
+          margin + xCenteringOffset + i*cellX,
           margin + font + 0.5*cellY
         );
         ctx.fillText(
           `on center`,
-          margin + i*cellX,
+          margin + xCenteringOffset + i*cellX,
           margin + 2*font + 0.5*cellY
         );
       }
@@ -996,8 +997,8 @@ function drawRoom() {
         // between last fan and second last
         if (i == 0 & j > 0 & j == sln.layout.numFansY - 1){
           ctx.beginPath();
-          ctx.moveTo(margin + 0.5*cellX, margin + (j-0.5)*cellY);
-          ctx.lineTo(margin + 0.5*cellX, margin + (j+0.5)*cellY);
+          ctx.moveTo(margin + xCenteringOffset + 0.5*cellX, margin + (j-0.5)*cellY);
+          ctx.lineTo(margin + xCenteringOffset + 0.5*cellX, margin + (j+0.5)*cellY);
           ctx.strokeStyle='grey';
           ctx.setLineDash([5,5])
           ctx.stroke();
@@ -1005,25 +1006,25 @@ function drawRoom() {
           ctx.fillStyle='grey';
           ctx.fillText(
             `${unitToString(sln.layout.cellSizeY, "distance")}`,
-            margin + 0.5 *font + 0.5*cellX,
+            margin + xCenteringOffset + 0.5 *font + 0.5*cellX,
             margin - 0.3*lineSpacing + j*cellY
           );
           ctx.fillText(
             `on center`,
-            margin + 0.5 *font +0.5*cellX,
+            margin + xCenteringOffset + 0.5 *font +0.5*cellX,
             margin + 0.7*lineSpacing + j*cellY
           );
         }
 
         // center of this fan
-        cx = margin + (i + 0.5)*cellX;
+        cx = margin + xCenteringOffset + (i + 0.5)*cellX;
         cy = margin + (j + 0.5)*cellY;
         drawSingleFan(cx,cy,fanRad,blades);
 
         // draw cell around second fan
         if ((i == 1 | j == 1) & cellBorderCount == 0){
           ctx.beginPath();
-          ctx.rect(margin + i*cellX, margin+ j*cellY, cellX, cellY);
+          ctx.rect(margin + xCenteringOffset + i*cellX, margin+ j*cellY, cellX, cellY);
           ctx.setLineDash([10,10]);
           ctx.strokeStyle='#2A4583';
           ctx.stroke();
@@ -1033,13 +1034,13 @@ function drawRoom() {
           ctx.fillStyle='#2A4583';
           ctx.fillText(
             `Fan cell`,
-            margin + i*cellX + font/2,
-            margin+ j*cellY + lineSpacing
+            margin + xCenteringOffset + i*cellX + font/2,
+            margin + j*cellY + lineSpacing
           );
           ctx.fillText(
             `border`,
-            margin + i*cellX + font/2,
-            margin+ j*cellY + 2*lineSpacing
+            margin + xCenteringOffset + i*cellX + font/2,
+            margin + j*cellY + 2*lineSpacing
           );
         }
       }
@@ -1126,15 +1127,16 @@ function drawRoom() {
       ctx.strokeStyle='black';
       ctx.setLineDash([]);
     }
-
     ctx.beginPath();
     if (cellX > cellY){
-      ctx.rect(margin, margin +(cellX-r)/2, cellX  ,cellY);
-      cx = margin +cellX/2;
+      xCenteringOffset = (canvas.width - 2*margin - cellX)/2
+      ctx.rect(margin + xCenteringOffset, margin +(cellX-r)/2, cellX  ,cellY);
+      cx = margin + xCenteringOffset +cellX/2;
       cy = margin +(cellX-r)/2 + cellY/2;
     } else{
-      ctx.rect(margin +(cellY-r)/2, margin, cellX ,cellY);
-      cx = margin +(cellY-r)/2 + cellX/2;
+      xCenteringOffset = (canvas.width - 2*margin - r)/2
+      ctx.rect(margin + xCenteringOffset +(cellY-r)/2, margin, cellX ,cellY);
+      cx = margin + xCenteringOffset +(cellY-r)/2 + cellX/2;
       cy = margin +cellY/2;
     }
     ctx.stroke();
@@ -1144,9 +1146,9 @@ function drawRoom() {
     ctx.strokeStyle='grey';
     ctx.setLineDash([20,20])
     if (cellX > cellY){
-      ctx.rect(margin+(cellX-r)/2,margin, r ,r);
+      ctx.rect(margin + xCenteringOffset+(cellX-r)/2,margin, r ,r);
     } else{
-      ctx.rect(margin,margin+(cellY-r)/2, r ,r);
+      ctx.rect(margin + xCenteringOffset,margin+(cellY-r)/2, r ,r);
     }
     ctx.stroke();
 
@@ -1166,29 +1168,29 @@ function drawRoom() {
     if (cellX > cellY + 0.1*scale){
       ctx.fillStyle='#ffdae0'; // light pink
       ctx.beginPath();
-      ctx.rect(margin + boundary_start, margin + boundary_start + (cellX-r)/2, cellX - 2* boundary_start , cellY - 2 * boundary_start );
+      ctx.rect(margin  + xCenteringOffset+ boundary_start, margin + boundary_start + (cellX-r)/2, cellX - 2* boundary_start , cellY - 2 * boundary_start );
       ctx.fill();
       ctx.fillStyle='white';
       ctx.beginPath();
-      ctx.rect(margin + boundary_thickness, margin + boundary_start + (cellX-r)/2 - 1, cellX - 2* boundary_thickness , cellY - 2 * boundary_start + 2);
+      ctx.rect(margin  + xCenteringOffset+ boundary_thickness, margin + boundary_start + (cellX-r)/2 - 1, cellX - 2* boundary_thickness , cellY - 2 * boundary_start + 2);
       ctx.fill();
     } else if (cellX + 0.1*scale < cellY){
       ctx.fillStyle='#ffdae0';
       ctx.beginPath();
-      ctx.rect(margin + boundary_start +(cellY-r)/2, margin + boundary_start, cellX - 2* boundary_start , cellY - 2 * boundary_start );
+      ctx.rect(margin  + xCenteringOffset+ boundary_start +(cellY-r)/2, margin + boundary_start, cellX - 2* boundary_start , cellY - 2 * boundary_start );
       ctx.fill();
       ctx.fillStyle='white';
       ctx.beginPath();
-      ctx.rect(margin + boundary_start +(cellY-r)/2 - 1, margin + boundary_thickness, cellX - 2* boundary_start +2, cellY - 2 * boundary_thickness );
+      ctx.rect(margin  + xCenteringOffset+ boundary_start +(cellY-r)/2 - 1, margin + boundary_thickness, cellX - 2* boundary_start +2, cellY - 2 * boundary_thickness );
       ctx.fill();
     } else {
       ctx.fillStyle='#ffdae0';
       ctx.beginPath();
-      ctx.rect(margin + boundary_start +(cellY-r)/2, margin + boundary_start, cellX - 2* boundary_start , cellY - 2 * boundary_start );
+      ctx.rect(margin  + xCenteringOffset+ boundary_start +(cellY-r)/2, margin + boundary_start, cellX - 2* boundary_start , cellY - 2 * boundary_start );
       ctx.fill();
       ctx.fillStyle='white';
       ctx.beginPath();
-      ctx.rect(margin + boundary_thickness +(cellY-r)/2, margin + boundary_thickness, cellX - 2* boundary_thickness , cellY - 2 * boundary_thickness );
+      ctx.rect(margin  + xCenteringOffset+ boundary_thickness +(cellY-r)/2, margin + boundary_thickness, cellX - 2* boundary_thickness , cellY - 2 * boundary_thickness );
       ctx.fill();
     }
 
@@ -1253,17 +1255,45 @@ function drawRoom() {
       cy + 5*(lineSpacing),
     );
 
-    // add fan diameter
+    // add fan related info
+    ctx.textAlign = "right";
     ctx.fillText(
-      `Ø ${unitToString(sln.fan.diameter, "distance")}`,
-      cx - fanRad - font * 3,
-      cy + font/2,
+      `${sln.fan.type} fan`,
+      cx - fanRad - font/2,
+      cy - 3*(lineSpacing),
+    );
+    ctx.fillText(
+      `Diameter: ${unitToString(sln.fan.diameter, "distance")}`,
+      cx - fanRad - font/2,
+      cy - 2*(lineSpacing),
+    );
+    ctx.fillText(
+      `Rated airflow: ${unitToString(sln.fan.airflow, "flowrate")}`,
+      cx - fanRad - font/2,
+      cy - 1*(lineSpacing),
+    );
+    ctx.fillText(
+      `Percent speed: ${sln.percentFanSpeed} %`,
+      cx - fanRad - font/2,
+      cy + 1*(lineSpacing),
+    );
+    ctx.fillText(
+      `Fan air speed: ${unitToString(sln.fan.maxFanAirSpeed, "speed")}`,
+      cx - fanRad - font/2,
+      cy + 2*(lineSpacing),
+    );
+    ctx.fillText(
+      `Blade height: ${unitToString(sln.validBladeHeightRange['mean'], "distance")}`,
+      cx - fanRad - font/2,
+      cy + 3*(lineSpacing),
     );
 
     // draw the fan in plan
     blades = p.display.blades> 0 ? p.display.blades: sln.fan.diameter > 1.55 ? 6 : 3;
     drawSingleFan(cx,cy,fanRad,blades);
 
+    // add square cell dimensions
+    ctx.textAlign = "left";
     ctx.fillStyle='grey';
     ctx.fillText(
       ` Square cell assumed`,
@@ -1291,6 +1321,8 @@ function drawRoom() {
       cy + (r/2) - 0.5*(lineSpacing),
     );
 
+
+    // add cell dimension info
     ctx.fillStyle='#2A4583';
     ctx.fillText(
       ` Fan cell dimensions`,
@@ -1438,8 +1470,12 @@ function drawRoom() {
       margin + r - font/2, margin + lineSpacing,
     );
     ctx.fillText(
-      `Width of simplified square cell: ${unitToString(sln.layout.r, "distance")}`,
-      margin + r - font/2, margin + h - font/2,
+      `Width of simplified`,
+      margin + r - font/2, margin + 3 * lineSpacing,
+    );
+    ctx.fillText(
+      `square cell: ${unitToString(sln.layout.r, "distance")}`,
+      margin + r - font/2, margin + 4 * lineSpacing,
     );
 
     ctx.beginPath();
@@ -1476,10 +1512,25 @@ function drawRoom() {
     );
 
     // add some standing/sitting people for context
-    personHeight = scale * 1.7;
-    var imageObj = new Image();
-    imageObj.onload = function() {
-      ctx.drawImage(imageObj, margin + 0.2*r, margin + h - personHeight - 1, scale*1.15, personHeight);
-    };
-    imageObj.src = '/img/2-people.png';
+    if (p.isSeated){
+      personHeight = scale * 1.35;
+      var imageObj = new Image();
+      imageObj.onload = function() {
+        ctx.drawImage(imageObj, margin + 0.2*r, margin + h - personHeight - 1, 0.935*personHeight, personHeight);
+      };
+      imageObj.src = '/img/seated-left.png';
+      var imageObj2 = new Image();
+      imageObj2.onload = function() {
+        ctx.drawImage(imageObj2, margin + 0.6*r, margin + h - personHeight - 1, 0.8923*personHeight, personHeight);
+      };
+      imageObj2.src = '/img/seated-right.png';
+
+    } else {
+      personHeight = scale * 1.7;
+      var imageObj = new Image();
+      imageObj.onload = function() {
+        ctx.drawImage(imageObj, margin + 0.2*r, margin + h - personHeight - 1, scale*1.15, personHeight);
+      };
+      imageObj.src = '/img/2-people.png';
+    }
   }
