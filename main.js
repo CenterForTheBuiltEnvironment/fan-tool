@@ -439,6 +439,10 @@ var tblFans = $('#fans').DataTable( {
   ]
 } );
 
+// sort by diameter on opening
+// also resolves unexpected table header width initialization issue
+$('#fan_accordion_header').on('click', function () {tblFans.order( [ 3, 'asc' ] ).draw();});
+
 // select/deselect rows when clicked
 $('#fans tbody').on( 'click', 'tr', function () {
   $(this).toggleClass('selected');
@@ -492,7 +496,7 @@ function updateCandidateFans(){
 var tblSln = $('#solutions').DataTable( {
   data: [],
   language: {
-    emptyTable: "No solutions. Please ensure you have selected at least one fan type. Relax constraints if needed."
+    emptyTable: "No solutions. Please select additional fans and/or relax constraints."
   },
   destroy: true,
   paging: false,
@@ -512,6 +516,7 @@ var tblSln = $('#solutions').DataTable( {
     { title: "Cell aspect ratio" },
   ]
 } );
+tblSln.order( [ 1, 'asc' ] ).draw();
 
 // allow only one solution to be selected at a time
 $('#solutions tbody').on( 'click', 'tr', function () {
@@ -676,7 +681,7 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] = (data[1] * math.unit("1 m").toNumber("ft")).toFixed(0);
+      data[1] = (data[1] * math.unit("1 m").toNumber("ft")).toFixed(1);
       data[2] = (data[2] * math.unit("1 m3/s").toNumber("cfm")).toFixed(0);
       this.data(data);
     });
@@ -837,7 +842,24 @@ function clearCanvas() {
   var ctx = canvas.getContext('2d')
   //clear plan after each solution selection
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // display some basic warnings/info
+  if (candidateFans.length == 0){
+    ctx.font = `18px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillStyle='darkred';
+    ctx.fillText(
+      `Please select at least one candidate `,
+      margin + canvas.width/2,
+      margin + canvas.height/3
+    )
+    ctx.fillText(
+      `fan in the table to the left.`,
+      margin + canvas.width/2,
+      margin + canvas.height/3 + lineSpacing
+    )
+  }
 }
+
 
 // draw an empty room
 function drawRoom() {
@@ -853,16 +875,16 @@ function drawRoom() {
   xCenteringOffset = (canvas.width - 2*margin - room.sizeX*scale)/2
   ctx.rect(margin + xCenteringOffset, margin, room.sizeX*scale,room.sizeY*scale);
   ctx.stroke();
-  if (p.display.xSpacing * p.display.ySpacing > 0) drawGrid();
+  if (p.display.xSpacing > 0 | p.display.ySpacing > 0) drawGrid();
   ctx.font = `${font}px sans-serif`;
   ctx.textAlign = "right";
   ctx.fillStyle='black';
   ctx.fillText(`Room dimensions: `,
     margin + xCenteringOffset + room.sizeX*scale - font/2,
-    margin + xCenteringOffset + room.sizeY*scale - 1.5 * lineSpacing)
+    margin + room.sizeY*scale - 1.5 * lineSpacing)
     ctx.fillText(`${unitToString(room.sizeX,"distance", false)} x ${unitToString(room.sizeY,"distance", false)} x ${unitToString(room.ceilingHeight,"distance")} high`,
     margin + xCenteringOffset + room.sizeX*scale - font/2,
-    margin + xCenteringOffset + room.sizeY*scale - 0.5 * lineSpacing)
+    margin + room.sizeY*scale - 0.5 * lineSpacing)
   }
 
   // draw a grid on the floor plan for co-ordination with lighting, structural, etc.

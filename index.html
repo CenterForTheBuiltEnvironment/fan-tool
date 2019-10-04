@@ -4,20 +4,16 @@
   <meta charset="utf-8">
   <title>CBE Fan Tool</title>
   <link rel="icon" href="https://cbe.berkeley.edu/wp-content/uploads/2018/09/cropped-CBE-favicon.3-150x150.png" sizes="32x32">
+  <link rel="icon" href="/img/cropped-CBE-favicon.3-150x150.png" sizes="32x32">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
   <link rel="stylesheet" type="text/css" href="common.css">
 
-  <style>
-  #canv{border:1px solid lightgrey;}
-  </style>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
   <script src="https://unpkg.com/mathjs/dist/math.min.js"></script>
-  <script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
   <script src="objects.js" defer></script>
   <script src="main.js" defer></script>
   <script src="forms.js" defer></script>
@@ -26,7 +22,7 @@
 <body>
   <div id='all_content'>
     <div id ='header'>
-      <img src="https://cbe.berkeley.edu/wp-content/uploads/2018/10/CBE-logo-2018.png"
+      <img src="/img/CBE-logo-2018.png"
       alt="Center for the Built Environment" id="logo"
       width="204" height="78" style='float:left;'>
       <h1>CBE Fan Tool<span style='color: red'> (ALPHA version)</span></h1>
@@ -38,9 +34,9 @@
     </div>
     <div id="left_content">
       <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
-        <button type="button" id="save">Save</button>
-        <button type="button" id="load">Restore save</button>
-        <button type="button" id="share">Share link</button>
+        <button type="button" id="save" title="This button will save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
+        <button type="button" id="load" title="This button restores the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
+        <button type="button" id="share" title="This button generates a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
       </div>
       <div style="text-align: center; padding: 5px 0px 5px 0px;">
         Units
@@ -50,7 +46,7 @@
         <input type="radio" name="units" id="units2">
       </div>
       <div id="accordion">
-        <h3>Room dimensions</h3>
+        <h3>What are the room dimensions?</h3>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
             <label for="len" title="The length of the room">Length</label>
@@ -72,29 +68,17 @@
           <div id="slider-hei-min" class='slider'></div>
         </div>
 
-        <h3>Fan constraints</h3>
-        <div id="accordion_content">
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="num-fans"  title="Acceptable range of number of fans in the X (row) or Y (column) direction" ># fans in X or Y direction</label>
-            <input type="text" id="num-fans" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-num-fans" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
-            <input type="text" id="fan-speed-min" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-fan-speed-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="blade-height"  title="Acceptable range of blade heights. This is an additional constraint to those based on UL507 blade height requirements, and minimum mount distance requirements." >Blade height</label>
-            <input type="text" id="blade-height" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-blade-height" class='slider'></div>
+        <h3 id ="fan_accordion_header" title="Please select at least one fan for consideration. The default fans in the table below are anonymous examples of commercially available fans of various diameters. To add information for a specific fan model, click 'Add'" >Which fan types?</h3>
+        <div style="text-align:center; background-color: #DCE7F7; padding: 6px 6px 6px 6px;">
+          <span style="text-align:center; background-color: #DCE7F7;">
+            <button type="button" id="add-fan" >Add</button>
+            <button type="button" id="delete-fan">Delete</button>
+            <button type="button" id="reset-fan">Default</button>
+          </span>
+          <table id="fans" class="compact order-column hover stripe" style="text-align:center; background-color: #DCE7F7; width:100%"></table>
         </div>
 
-        <h3>Target air speed constraints</h3>
+        <h3>What are the design air airspeeds?</h3>
         <div id="accordion_content">
           <div style="text-align: center;vertical-align: middle; margin: 5px">
             <label for="posture1">Seated</label>
@@ -103,23 +87,69 @@
             <input type="radio" name="posture" id="posture2">
           </div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="min-air-speed" title="The range of acceptable minimum airspeed in the room">Minimum air speed</label>
+            <label for="min-air-speed" title="The range of acceptable minimum air speeds in the room">Minimum air speed</label>
             <input type="text" id="min-air-speed" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-min-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="avg-air-speed" title="The range of acceptable area-weighted average airspeed in the room">Average air speed</label>
+            <label for="avg-air-speed" title="The range of acceptable area-weighted average air speeds in the room">Average air speed</label>
             <input type="text" id="avg-air-speed" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-avg-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="max-air-speed" title="The range of acceptable maximum airspeed in the room">Maximum air speed</label>
+            <label for="max-air-speed" title="The range of acceptable maximum air speeds in the room">Maximum air speed</label>
             <input type="text" id="max-air-speed" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-max-air-speed" class='slider'></div>
+        </div>
+
+        <h3>Advanced constraints</h3>
+        <div id="accordion_content">
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="cellSize"  title="The range of acceptable sizes of the cell around each fan. A cell is defined as the square root of the floor area that is closest to a particular fan." >Cell size</label>
+            <input type="text" id="cellSize" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-cellSize" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="dimless" title="The range of acceptable ratios of fan diameter to cell size. The default settings (0.15-0.5) are the edges of typically recommended range of sizes, and also span the range of sizes tested in the laboratory experiments that were used to develop the model underlying this tool.">Diameter to cell size ratio</label>
+            <input type="text" id="dimless" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-dimless" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width). The underlying experimental data is from square test cells. For non-square cells, the tool uses the square root of the floor area as the representative length of the cell. The further the aspect ratio is from 1, the less accurate the tool's air speed predictions are, particularly when predicting the lowest airspeed and the uniformity in the room. ">Maximum cell aspect ratio</label>
+            <input type="text" id="aspectRatio" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-aspectRatio-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="num-fans"  title="Acceptable range of number of fans in either the horizontal or vertical direction as displayed in the floor plan view." ># fans in X or Y direction</label>
+            <input type="text" id="num-fans" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-num-fans" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum used to generate solutions. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
+            <input type="text" id="fan-speed-min" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-fan-speed-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it significantly affects the performance of the fan, substantially decreasing the actual airflow compared to the rated airflow. Above values of 0.25, there is typically little to no effect.">Minimum mount distance</label>
+            <input type="text" id="mount-distance" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-mount-distance-max" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="blade-height"  title="The acceptable range of blade heights. This allows a user to provide additional constraints on the blade height as well as the constraints based on UL507 blade height requirements and minimum mount distance requirements." >Blade height</label>
+            <input type="text" id="blade-height" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-blade-height" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
             <label for="uniformity" title="The range of acceptable uniformity in the room">Uniformity</label>
             <input type="text" id="uniformity" readonly style="border:0;
@@ -127,50 +157,11 @@
           </div>
           <div id="slider-uniformity" class='slider'></div>
         </div>
-
-        <h3>Advanced constraints</h3>
-        <div id="accordion_content">
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="cellSize"  title="Acceptable range of sizes of each individual cell. A cell is defined as the square root of the floor area that is closest to a particular fan." >Cell size</label>
-            <input type="text" id="cellSize" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-cellSize" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="dimless" title="Acceptable range of the ratio of fan diameter to cell size. The default settings (0.2-0.5) are the recommended range of sizes, and also span the range of sizes tested in the laboratory experiments that were used to develop the model underlying this tool.">Diameter to cell size ratio</label>
-            <input type="text" id="dimless" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-dimless" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="aspectRatio" title="The maximum acceptable cell aspect ratio (cell length divided by cell width). The underlying experimental data is from square test cells. For non-square cells, the tool uses the square root of the floor area as the representative length of the cell. The further the aspect ratio is from 1, the less accurate the tool's air speed predictions are, particularly when predicting the lowest airspeed, and the uniformity in the room. Both of these are probably lower than predicted by the tool in these cases. ">Maximum cell aspect ratio</label>
-            <input type="text" id="aspectRatio" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-aspectRatio-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it significantly affects the performance of the fan, substantially decreasing the actual airflow compared to the rated airflow. Above values of 0.25, there is little to no effect.">Minimum mount distance</label>
-            <input type="text" id="mount-distance" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-mount-distance-max" class='slider'></div>
-        </div>
       </div><!--id="accordion"-->
-
-      <div style="text-align:center; margin-top:5px; padding-top:5px; border: 1px solid lightgrey; border-radius: 5px;">
-        <h3>Candidate fan selection</h3>
-        <span style=' text-align:center;'>
-          <button type="button" id="add-fan" >Add</button>
-          <button type="button" id="delete-fan">Delete</button>
-          <button type="button" id="reset-fan">Default</button>
-        </span>
-        <table id="fans" class="compact order-column hover stripe" width="90%"></table>
-      </div>
     </div><!--id="left_content"-->
 
     <div id="right_content">
-      <h3 style="text-align:center;">Solutions</h3>
-
+      <h3 style="text-align:center;">Which solution to display?</h3>
       <table id="solutions" class="compact order-column hover stripe" width="95%"></table>
       <!-- <h2 style="text-align:center;">Display</h2> -->
       <div style="text-align: center; margin: 5px">
@@ -231,44 +222,44 @@
     </form>
     <p> A grid can be overlaid on the floor plan to more easily visualize and align with lighting or structural elements.
       Enter any positive non-zero value to draw vertical and/or horizontal gridlines at that spacing.</p>
-    <form>
-      <fieldset>
-        <label for="xSpacing">Spacing between vertical gridlines on floor plan (if any) <span class="distance-unit"></span></label>
-        <br>
-        <input type="text" name="xSpacing" id="xSpacing" value="0.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <label for="ySpacing">Spacing between horizontal gridlines on floor plan (if any) <span class="distance-unit"></span></label>
-        <br>
-        <input type="text" name="ySpacing" id="ySpacing" value="0.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <label for="xOffset">Horizontal offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
-        <br>
-        <input type="text" name="xOffset" id="xOffset" value="0.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <label for="yOffset">Vertical offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
-        <br>
-        <input type="text" name="yOffset" id="yOffset" value="0.0" class="text ui-widget-content ui-corner-all">
-        <p></p>
-        <!-- Allow form submission with keyboard without duplicating the dialog button -->
-        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-      </fieldset>
-    </form>
-  </div>
-
-  <footer>
-    <div id="all_content">
-      <div style="padding: 10px 10px 10px 10px; float:right; width:678px; text-align: left;">
-        <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" align="right" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/88x31.png"></a><br><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">The CBE Fan Tool</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-        <b>Developed by: </b>
-        <a class="footerlink" href="https://cbe.berkeley.edu/about-us/people/paul-raftery/">Paul Raftery</a> based on full-scale laboratory experiments described in <a class="footerlink" href="https://escholarship.org/uc/item/4p479663">this article</a>.
-        Work performed under funding from the <a class="footerlink" href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program">California Energy Commission's EPIC program</a>.
-        <br>
-        <b>Note:</b> Some features not supported on old browsers. We recommend using Edge, Chrome, Firefox, or Safari.
-      </div>
+      <form>
+        <fieldset>
+          <label for="xSpacing">Spacing between vertical gridlines on floor plan (if any) <span class="distance-unit"></span></label>
+          <br>
+          <input type="text" name="xSpacing" id="xSpacing" value="0.0" class="text ui-widget-content ui-corner-all">
+          <p></p>
+          <label for="ySpacing">Spacing between horizontal gridlines on floor plan (if any) <span class="distance-unit"></span></label>
+          <br>
+          <input type="text" name="ySpacing" id="ySpacing" value="0.0" class="text ui-widget-content ui-corner-all">
+          <p></p>
+          <label for="xOffset">Horizontal offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
+          <br>
+          <input type="text" name="xOffset" id="xOffset" value="0.0" class="text ui-widget-content ui-corner-all">
+          <p></p>
+          <label for="yOffset">Vertical offset distance from upper-left corner of plan <span class="distance-unit"></span></label>
+          <br>
+          <input type="text" name="yOffset" id="yOffset" value="0.0" class="text ui-widget-content ui-corner-all">
+          <p></p>
+          <!-- Allow form submission with keyboard without duplicating the dialog button -->
+          <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
     </div>
-  </footer>
+
+    <footer>
+      <div id="all_content">
+        <div style="padding: 10px 10px 10px 10px; float:right; width:678px; text-align: left;">
+          <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" align="right" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/88x31.png"></a><br><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">The CBE Fan Tool</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+          <b>Developed by: </b>
+          <a class="footerlink" href="https://cbe.berkeley.edu/about-us/people/paul-raftery/">Paul Raftery</a> based on full-scale laboratory experiments described in <a class="footerlink" href="https://escholarship.org/uc/item/4p479663">this article</a>.
+          Work performed under funding from the <a class="footerlink" href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program">California Energy Commission's EPIC program</a>.
+          <br>
+          <b>Note:</b> Some features not supported on old browsers. We recommend using Edge, Chrome, Firefox, or Safari.
+        </div>
+      </div>
+    </footer>
 
 
-</body>
+  </body>
 
-</html>
+  </html>
