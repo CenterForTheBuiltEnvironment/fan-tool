@@ -1,9 +1,9 @@
 /// once all content has loaded, perform first solutions calc
 $(document).ready(function() {
+  initializeRadioButtons();
   // load parameters from url query string if represent
   // otherwise use default parameters
   url_components = document.URL.split("?")
-  initializeRadioButtons();
   if (url_components.length > 1) {
     stored = atob(url_components[1]);
     loadStateFromJSON(stored);
@@ -15,15 +15,9 @@ $(document).ready(function() {
     } else {
       $("#units1").trigger("click");
     };
-    // select an example fan for basic demonstration of functionality
-    $('#fans tbody tr:eq(' + 3 + ')').click();
-    $('#fans tbody tr:eq(' + 4 + ')').click();
-    $('#fans tbody tr:eq(' + 6 + ')').click();
-    $('#fans tbody tr:eq(' + 7 + ')').click();
-
+    updateSliderDisplays();
+    updateSolutions();
   }
-  updateSliderDisplays();
-  updateSolutions();
 });
 
 function initializeRadioButtons(){
@@ -60,6 +54,11 @@ $( "#share" ).button().on( "click", function() {
   copyToClipboard(new_url)
 });
 
+$( "#example" ).button().on( "click", function() {
+  b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjMsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjI1LCJtb3VudERpc3RhbmNlIjowLjIsImZhblNwZWVkIjoxMDAsImlzU0l1bml0cyI6ZmFsc2UsImlzU2VhdGVkIjp0cnVlLCJ2aWV3IjoxLCJmYW5UYWJsZURhdGEiOltbIkV4YW1wbGVBIiwzLjk5OTk5OTk5OTk5OTk5OSwiNTUzMCIsdHJ1ZV0sWyJFeGFtcGxlQiIsNC4zMzMzMzMzMzMzMzMzMzMsIjQ3ODkiLHRydWVdLFsiRXhhbXBsZUMiLDQuOTk5OTk5OTk5OTk5OTk5LCI3OTg4Iix0cnVlXSxbIkV4YW1wbGVEIiw0Ljk5OTk5OTk5OTk5OTk5OSwiODExNSIsdHJ1ZV0sWyJFeGFtcGxlRSIsNi45OTk5OTk5OTk5OTk5OTksIjE2Mzc5Iix0cnVlXSxbIkV4YW1wbGVGIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMjkyNDEiLGZhbHNlXSxbIkV4YW1wbGVHIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMzUxMTAiLGZhbHNlXSxbIkV4YW1wbGVIIiw5Ljk5OTk5OTk5OTk5OTk5OCwiNDQzMDYiLGZhbHNlXSxbIkV4YW1wbGVJIiwxMy45OTk5OTk5OTk5OTk5OTgsIjUzNjI5IixmYWxzZV1dLCJzZWxlY3RlZFNvbHV0aW9uSUQiOjIsInNlbGVjdGVkQ2FuZGlkYXRlRmFuSURzIjpbMyw0LDYsN10sImRpc3BsYXkiOnsiYmxhZGVzIjowLCJ4U3BhY2luZyI6MCwieVNwYWNpbmciOjAsInhPZmZzZXQiOjAsInlPZmZzZXQiOjB9fQ=="
+  loadStateFromJSON(atob(b64))
+  });
+
 
 // prompt user to copy from prompt to clipboard
 function copyToClipboard(text) {
@@ -67,7 +66,14 @@ function copyToClipboard(text) {
 }
 
 function loadStateFromJSON(storedJSON){
-  //saved_p = JSON.parse(stored);
+  // update spinners (stored value always in SI)
+  $( "#len" ).spinner( "value", JSON.parse(storedJSON).length);
+  $( "#hei" ).spinner( "value", JSON.parse(storedJSON).height);
+  $( "#wid" ).spinner( "value", JSON.parse(storedJSON).width);
+  p.length = JSON.parse(storedJSON).length;
+  p.height = JSON.parse(storedJSON).height;
+  p.width = JSON.parse(storedJSON).width;
+
   //handle case where saved radio button states don't match current display
   if (JSON.parse(storedJSON).isSIunits){
     $("#units1").trigger("click");
@@ -89,9 +95,6 @@ function loadStateFromJSON(storedJSON){
 
   // set sliders to parameter values, update sliders, and calc solutions
   // set single value sliders
-  $("#slider-wid-min").slider('value',JSON.parse(storedJSON).width)
-  $("#slider-len-min").slider('value',JSON.parse(storedJSON).length)
-  $("#slider-hei-min").slider('value',JSON.parse(storedJSON).height)
   $("#slider-aspectRatio-min").slider('value',JSON.parse(storedJSON).aspectRatio)
   $("#slider-fan-speed-min").slider('value',JSON.parse(storedJSON).fanSpeed)
   $("#slider-mount-distance-max").slider('value',JSON.parse(storedJSON).mountDistance)
@@ -136,7 +139,7 @@ function loadStateFromJSON(storedJSON){
 
 // define default parameter state
 const p_default = {
-  'cellSize': [4.572, 15.24],
+  'cellSize': [4.5, 15.24],
   'minAirSpeed': [0.5, 4.0],
   'avgAirSpeed': [0.5, 4.0],
   'maxAirSpeed': [0.5, 4.0],
@@ -145,9 +148,9 @@ const p_default = {
   'diameter':[1.2, 4.3],
   'bladeHeight' : [2.1336, 3.048],
   'dimensionlessDiameter':[0.15, 0.5],
-  "length" : 13,
-  "width" : 16,
-  "height" : 3.7,
+  "length" : 0,
+  "width" : 0,
+  "height" : 0,
   "aspectRatio" : 1.25,
   "mountDistance" : 0.2,
   "fanSpeed" : 100,
@@ -155,15 +158,15 @@ const p_default = {
   "isSeated" : true,
   "view" : 1,
   "fanTableData" : [
-    ['ExampleA', 1.22, 2.61, true],
-    ['ExampleB', 1.32, 2.26, true],
-    ['ExampleC', 1.52, 3.77, true],
-    ['ExampleD', 1.52, 3.83, true],
-    ['ExampleE', 2.13, 7.73, true],
-    ['ExampleF', 2.44, 13.80, false],
-    ['ExampleG', 2.44, 16.57, false],
-    ['ExampleH', 3.05, 20.91, false],
-    ['ExampleI', 4.27, 25.31, false]
+    ['ExampleA', 1.2192, 2.61, true],
+    ['ExampleB', 1.3208, 2.26, true],
+    ['ExampleC', 1.524, 3.77, true],
+    ['ExampleD', 1.524, 3.83, true],
+    ['ExampleE', 2.1336, 7.73, true],
+    ['ExampleF', 2.4384, 13.80, false],
+    ['ExampleG', 2.4384, 16.57, false],
+    ['ExampleH', 3.048, 20.91, false],
+    ['ExampleI', 4.2672, 25.31, false]
   ],
   "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
@@ -294,7 +297,7 @@ $( "#slider-blade-height" ).slider({
 
 $( "#slider-cellSize" ).slider({
   range: true,
-  min: 4.572,
+  min: 4.5,
   max: 18.288,
   values: p.cellSize,
   step: 0.1,
@@ -381,43 +384,6 @@ $( "#slider-fan-speed-min" ).slider({
 });
 $( "#fan-speed-min" ).val( $( "#slider-fan-speed-min" ).slider( "value" ) + "%" );
 
-
-$( "#slider-len-min" ).slider({
-  range: "min",
-  value: p.length,
-  min: 4.573,
-  max: 40,
-  step: 0.1,
-  slide: function( event, ui ) {
-    p.length = ui.value;
-    updateSliderDisplays();
-  }
-});
-
-$( "#slider-wid-min" ).slider({
-  range: "min",
-  value: p.width,
-  min: 4.573,
-  max: 40,
-  step: 0.1,
-  slide: function( event, ui ) {
-    p.width = ui.value;
-    updateSliderDisplays();
-  }
-});
-
-$( "#slider-hei-min" ).slider({
-  range: "min",
-  value: p.height,
-  min: 2.7,
-  max: 4.5,
-  step: 0.05,
-  slide: function( event, ui ) {
-    p.height = ui.value;
-    updateSliderDisplays();
-  }
-});
-
 $( ":radio" ).checkboxradio({
   icon: false
 });
@@ -431,6 +397,10 @@ var tblFans = $('#fans').DataTable( {
   paging: false,
   searching: false,
   info: false,
+  columnDefs: [ {
+    targets: [1],
+    render: $.fn.dataTable.render.number( ',', '.', 2, '' )
+  } ],
   columns: [
     { title: "Type" },
     { title: "D (m)" },
@@ -441,7 +411,7 @@ var tblFans = $('#fans').DataTable( {
 
 // sort by diameter on opening
 // also resolves unexpected table header width initialization issue
-$('#fan_accordion_header').on('click', function () {tblFans.order( [ 3, 'asc' ] ).draw();});
+$('#fan_accordion_header').on('click', function () {tblFans.order( [ 1, 'asc' ] ).draw();});
 
 // select/deselect rows when clicked
 $('#fans tbody').on( 'click', 'tr', function () {
@@ -547,15 +517,99 @@ $('.ui-slider').on("slidestop", function () {
   updateSolutions();
 });
 
-
 // update the solutions on any change of input
-// $(':input').change(function () {
-//   // updateSolutions();
-// });
+$(':input').change(function () {
+  updateSolutions();
+});
+
+
+// add spinners
+var lenSpinner = $( "#len" ).spinner({
+  numberFormat: "n",
+  min: 4.6,
+  max: 40,
+  step: 0.1,
+  stop: function( event, ui ) {
+    if (p.isSIunits) {
+      p.length = $( "#len" ).spinner( "value");
+    } else {
+      p.length = $( "#len" ).spinner( "value")*0.3048;
+    }
+    var min = $(this).spinner('option', 'min');
+    var max = $(this).spinner('option', 'max');
+
+    if (isNaN($(this).val())) {
+      $(this).spinner("value", min);
+    } else if ($(this).val() > max) {
+      $(this).spinner("value", max);
+    } else if ($(this).val() < min) {
+      $(this).spinner("value", min);
+    }
+    updateSolutions();
+  },
+})
+var widSpinner = $( "#wid" ).spinner({
+  numberFormat: "n",
+  min: 4.6,
+  max: 40,
+  step: 0.1,
+  stop: function( event, ui ) {
+    if (p.isSIunits) {
+      p.width = $( "#wid" ).spinner( "value");
+    } else {
+      p.width = $( "#wid" ).spinner( "value")*0.3048;
+    }
+    var min = $(this).spinner('option', 'min');
+    var max = $(this).spinner('option', 'max');
+
+    if (isNaN($(this).val())) {
+      $(this).spinner("value", min);
+    } else if ($(this).val() > max) {
+      $(this).spinner("value", max);
+    } else if ($(this).val() < min) {
+      $(this).spinner("value", min);
+    }
+    updateSolutions();
+  },
+})
+var heiSpinner = $( "#hei" ).spinner({
+  numberFormat: "n",
+  min: 2.7,
+  max: 4.5,
+  step: 0.05,
+  stop: function( event, ui ) {
+    if (p.isSIunits) {
+      p.height = $( "#hei" ).spinner( "value");
+    } else {
+      p.height = $( "#hei" ).spinner( "value")*0.3048;
+    }
+    var min = $(this).spinner('option', 'min');
+    var max = $(this).spinner('option', 'max');
+
+    if (isNaN($(this).val())) {
+      $(this).spinner("value", min);
+    } else if ($(this).val() > max) {
+      $(this).spinner("value", max);
+    } else if ($(this).val() < min) {
+      $(this).spinner("value", min);
+    }
+    updateSolutions();
+  },
+})
+
+
+
 
 // change units and store state on click
 $("#units1, #units2").change(function () {
   p.isSIunits = $("#units1")[0].checked;
+  $(".distance-unit").each(function() {
+    if (p.isSIunits) {
+      $(this).text("(m)");
+    } else {
+      $(this).text("(ft)");
+    }
+  });
   changeUnits();
 });
 
@@ -583,7 +637,14 @@ $("[id*= view]").change(function () {
 function updateSolutions() {
   calcSolutions();
   updateSlnTable();
-  updateView();
+  // updateView();
+  if (p.height * p.length * p.width == 0){
+    completeRoomDimensions();
+  } else if (candidateFans.length == 0){
+    pickFans();
+  } else {
+    // no more basic warnings
+  }
 };
 
 
@@ -619,10 +680,6 @@ function updateSlnTable(){
 // update the input display associated with each slider,
 // accounting for different unit systems and measurements
 function updateSliderDisplays(){
-  $( "#wid" ).val(unitToString($( "#slider-wid-min" ).slider( "value" ),"distance"))
-  $( "#len" ).val(unitToString($( "#slider-len-min" ).slider( "value" ),"distance"))
-  $( "#hei" ).val(unitToString($( "#slider-hei-min" ).slider( "value" ),"distance"))
-
   $( "#cellSize" ).val(
     unitToString($( "#slider-cellSize" ).slider( "values", 0 ), "distance",false)
     +  " - " +
@@ -667,10 +724,20 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] = (data[1] * math.unit("1 ft").toNumber("m")).toFixed(2);
+      data[1] = (data[1] * math.unit("1 ft").toNumber("m"));
       data[2] = (data[2] * math.unit("1 cfm").toNumber("m^3/s")).toFixed(2);
       this.data(data);
     });
+    // update spinnners
+    $('#len').spinner('option', 'min', 4.6);
+    $('#len').spinner('option', 'max', 40);
+    if (p.length >0) $( "#len" ).spinner( "value", p.length* math.unit("1 ft").toNumber("m") )
+    $('#wid').spinner('option', 'min', 4.6);
+    $('#wid').spinner('option', 'max', 40);
+    if (p.width > 0) $( "#wid" ).spinner( "value", p.width* math.unit("1 ft").toNumber("m") )
+    $('#hei').spinner('option', 'min', 2.7);
+    $('#hei').spinner('option', 'max', 4.3);
+    if (p.height >0) $( "#hei" ).spinner( "value", p.height* math.unit("1 ft").toNumber("m") )
   } else {
     $(tblFans.column(1).header()).text('D (ft)');
     $(tblFans.column(2).header()).text('Q (cfm)');
@@ -681,10 +748,20 @@ function changeUnits () {
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
-      data[1] = (data[1] * math.unit("1 m").toNumber("ft")).toFixed(1);
+      data[1] = (data[1] * math.unit("1 m").toNumber("ft"));
       data[2] = (data[2] * math.unit("1 m3/s").toNumber("cfm")).toFixed(0);
       this.data(data);
     });
+    // update spinnners
+    $('#len').spinner('option', 'min', 15);
+    $('#len').spinner('option', 'max', 130);
+    if (p.length >0) $( "#len" ).spinner( "value", p.length* math.unit("1 m").toNumber("ft") )
+    $('#wid').spinner('option', 'min', 15);
+    $('#wid').spinner('option', 'max', 130);
+    if (p.width > 0) $( "#wid" ).spinner( "value", p.width* math.unit("1 m").toNumber("ft") )
+    $('#hei').spinner('option', 'min', 8.9);
+    $('#hei').spinner('option', 'max', 14);
+    if (p.height >0) $( "#hei" ).spinner( "value", p.height* math.unit("1 m").toNumber("ft") )
   }
   updateSliderDisplays();
   updateSlnTable();
@@ -694,9 +771,7 @@ function changeUnits () {
 // calculate the new set of solutions given the user inputs
 function calcSolutions(){
   // instantiate a new room object using the selected dimensions
-  room = new Room($( "#slider-hei-min" ).slider("value"),
-  $( "#slider-len-min" ).slider("value"),
-  $( "#slider-wid-min" ).slider("value"))
+  room = new Room(p.height, p.length, p.width)
 
   /* function to ensure that the resulting size of the fan 'cell' in either the
   X  or Y direction is within the limits of the underlying data set.
@@ -731,11 +806,11 @@ function calcSolutions(){
         failAspectRatio++;
         continue;
       };
-      if (candidate.r <= p.cellSize[0]){
+      if (candidate.r < p.cellSize[0]){
         failCellSize[0]++;
         continue;
       };
-      if (candidate.r >= p.cellSize[1]){
+      if (candidate.r > p.cellSize[1]){
         failCellSize[1]++;
         continue;
       };
@@ -837,27 +912,52 @@ function updateView() {
 };
 
 
+
+function completeRoomDimensions() {
+  clearCanvas();
+  var canvas = document.getElementById('canv');
+  var ctx = canvas.getContext('2d')
+  // display some basic warnings/info
+  ctx.font = `20px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillStyle='darkred';
+  ctx.fillText(
+    `Please enter all of the `,
+    margin + canvas.width/2,
+    margin + canvas.height/3
+  )
+  ctx.fillText(
+    `room dimensions.`,
+    margin + canvas.width/2,
+    margin + canvas.height/3 + 20
+  )
+}
+
+
+function pickFans() {
+  clearCanvas();
+  var canvas = document.getElementById('canv');
+  var ctx = canvas.getContext('2d')
+  ctx.font = `20px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillStyle='darkred';
+  ctx.fillText(
+    `Please select at least one candidate `,
+    margin + canvas.width/2,
+    margin + canvas.height/3
+  )
+  ctx.fillText(
+    `fan in the table to the left.`,
+    margin + canvas.width/2,
+    margin + canvas.height/3 + 20
+  )
+}
+
 function clearCanvas() {
   var canvas = document.getElementById('canv');
   var ctx = canvas.getContext('2d')
   //clear plan after each solution selection
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // display some basic warnings/info
-  if (candidateFans.length == 0){
-    ctx.font = `18px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.fillStyle='darkred';
-    ctx.fillText(
-      `Please select at least one candidate `,
-      margin + canvas.width/2,
-      margin + canvas.height/3
-    )
-    ctx.fillText(
-      `fan in the table to the left.`,
-      margin + canvas.width/2,
-      margin + canvas.height/3 + lineSpacing
-    )
-  }
 }
 
 
@@ -1376,6 +1476,7 @@ function drawRoom() {
 
   // draw a schematic of the individual recirculation cell around a fan
   function drawCellSection() {
+    clearCanvas();
     var canvas = document.getElementById('canv');
     // Execute only if canvas is supported
     var ctx = canvas.getContext('2d')

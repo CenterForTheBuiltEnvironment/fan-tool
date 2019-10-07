@@ -34,41 +34,41 @@
     </div>
     <div id="left_content">
       <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
-        <button type="button" id="save" title="This button will save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
-        <button type="button" id="load" title="This button restores the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
-        <button type="button" id="share" title="This button generates a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
+        <button type="button" id="save" title="Save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
+        <button type="button" id="load" title="Restore the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
+        <button type="button" id="share" title="Generate a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
+
       </div>
       <div style="text-align: center; padding: 5px 0px 5px 0px;">
         Units
         <label for="units1">Metric</label>
         <input type="radio" name="units" id="units1" checked>
-        <label for="units2">Imperial</label>
+        <label for="units2">I-P</label>
         <input type="radio" name="units" id="units2">
+        &nbsp
+        &nbsp
+        <button type="button" id="example" title="Displays an example use case for the web tool.">Example</button>
       </div>
+
+
       <div id="accordion">
         <h3>What are the room dimensions?</h3>
-        <div id="accordion_content">
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="len" title="The length of the room">Length</label>
-            <input type="text" id="len" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        <div id="accordion_content" style="overflow:hidden;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="len" title="The length of the room">Length <span class="distance-unit"></span></label>
+            <input class="roomDimensionInput" id="len" style="width:70px;" >
           </div>
-          <div id="slider-len-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="wid" title="The width of the room">Width</label>
-            <input type="text" id="wid" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="wid" title="The width of the room">Width <span class="distance-unit"></span></label>
+            <input type="text" class="roomDimensionInput" id="wid" style="width:70px;">
           </div>
-          <div id="slider-wid-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="hei" title="The floor to ceiling height of the room">Height</label>
-            <input type="text" id="hei" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="hei" title="The floor to ceiling height of the room">Height <span class="distance-unit"></span></label>
+            <input type="text" class="roomDimensionInput"  id="hei" style="width:70px;">
           </div>
-          <div id="slider-hei-min" class='slider'></div>
         </div>
 
-        <h3 id ="fan_accordion_header" title="Please select at least one fan for consideration. The default fans in the table below are anonymous examples of commercially available fans of various diameters. To add information for a specific fan model, click 'Add'" >Which fan types?</h3>
+        <h3 id ="fan_accordion_header" title="Please select at least one fan for consideration. The default fans in the table below are anonymous examples of commercially available fans of various diameters. To add information for a specific fan model, click 'Add'" >Which fan types to consider?</h3>
         <div style="text-align:center; background-color: #DCE7F7; padding: 6px 6px 6px 6px;">
           <span style="text-align:center; background-color: #DCE7F7;">
             <button type="button" id="add-fan" >Add</button>
