@@ -175,7 +175,7 @@ $( function() {
 
     // add grid lines
     if ( valid ) {
-      if (p.isSI){
+      if (p.isSIunits){
         p.display = {
           'blades' : Number(blades.val()),
           'xSpacing': Number(xSpacing.val()),

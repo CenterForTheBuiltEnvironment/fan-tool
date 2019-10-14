@@ -25,7 +25,7 @@
       <img src="/img/CBE-logo-2018.png"
       alt="Center for the Built Environment" id="logo"
       width="204" height="78" style='float:left;'>
-      <h1>CBE Fan Tool<span style='color: red'> (ALPHA version)</span></h1>
+      <h1>CBE Fan Tool<span style='color: red'> (beta)</span></h1>
       <h2>
         <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">  About</a>  |
         <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">  FAQ</a>  |
@@ -34,38 +34,38 @@
     </div>
     <div id="left_content">
       <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
-        <button type="button" id="save" title="This button will save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
-        <button type="button" id="load" title="This button restores the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
-        <button type="button" id="share" title="This button generates a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
+        <button type="button" id="save" title="Save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
+        <button type="button" id="load" title="Restore the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
+        <button type="button" id="share" title="Generate a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
+
       </div>
       <div style="text-align: center; padding: 5px 0px 5px 0px;">
         Units
         <label for="units1">Metric</label>
         <input type="radio" name="units" id="units1" checked>
-        <label for="units2">Imperial</label>
+        <label for="units2">I-P</label>
         <input type="radio" name="units" id="units2">
+        &nbsp
+        &nbsp
+        <button type="button" id="example" title="Displays an example use case for the web tool.">Example</button>
       </div>
+
+
       <div id="accordion">
-        <h3>What are the room dimensions?</h3>
-        <div id="accordion_content">
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="len" title="The length of the room">Length</label>
-            <input type="text" id="len" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+        <h3>What room dimensions?</h3>
+        <div id="accordion_content" style="overflow:hidden;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="len" title="The length of the room">Length <span class="distance-unit"></span></label>
+            <input class="roomDimensionInput" id="len" style="width:70px;" >
           </div>
-          <div id="slider-len-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="wid" title="The width of the room">Width</label>
-            <input type="text" id="wid" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="wid" title="The width of the room">Width <span class="distance-unit"></span></label>
+            <input type="text" class="roomDimensionInput" id="wid" style="width:70px;">
           </div>
-          <div id="slider-wid-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="hei" title="The floor to ceiling height of the room">Height</label>
-            <input type="text" id="hei" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          <div style="height:60px; width:93px;float: left;">
+            <label for="hei" title="The floor to ceiling height of the room">Height <span class="distance-unit"></span></label>
+            <input type="text" class="roomDimensionInput"  id="hei" style="width:70px;">
           </div>
-          <div id="slider-hei-min" class='slider'></div>
         </div>
 
         <h3 id ="fan_accordion_header" title="Please select at least one fan for consideration. The default fans in the table below are anonymous examples of commercially available fans of various diameters. To add information for a specific fan model, click 'Add'" >Which fan types?</h3>
@@ -78,7 +78,7 @@
           <table id="fans" class="compact order-column hover stripe" style="text-align:center; background-color: #DCE7F7; width:100%"></table>
         </div>
 
-        <h3>What are the design air airspeeds?</h3>
+        <h3>Which design air speed ranges?</h3>
         <div id="accordion_content">
           <div style="text-align: center;vertical-align: middle; margin: 5px">
             <label for="posture1">Seated</label>
@@ -106,8 +106,25 @@
           <div id="slider-max-air-speed" class='slider'></div>
         </div>
 
+        <h3>Basic constraints</h3>
+        <div id="accordion_content">
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum used to generate solutions. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
+            <input type="text" id="fan-speed-min" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-fan-speed-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="blade-height"  title="The acceptable range of blade heights. This allows a user to provide additional constraints on the blade height as well as the constraints based on UL507 blade height requirements and minimum mount distance requirements. The fan will be placed at the mid point between the min and max constraints." >Blade height</label>
+            <input type="text" id="blade-height" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-blade-height" class='slider'></div>
+        </div>
+
         <h3>Advanced constraints</h3>
         <div id="accordion_content">
+          <div> Please ensure that you have a clear understanding of the underlying limitations of the model before modifying these values.</div>
           <div style="margin: 10px 0px 10px 0px;">
             <label for="cellSize"  title="The range of acceptable sizes of the cell around each fan. A cell is defined as the square root of the floor area that is closest to a particular fan." >Cell size</label>
             <input type="text" id="cellSize" readonly style="border:0;
@@ -133,23 +150,11 @@
           </div>
           <div id="slider-num-fans" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum used to generate solutions. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
-            <input type="text" id="fan-speed-min" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-fan-speed-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
             <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it significantly affects the performance of the fan, substantially decreasing the actual airflow compared to the rated airflow. Above values of 0.25, there is typically little to no effect.">Minimum mount distance</label>
             <input type="text" id="mount-distance" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-mount-distance-max" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="blade-height"  title="The acceptable range of blade heights. This allows a user to provide additional constraints on the blade height as well as the constraints based on UL507 blade height requirements and minimum mount distance requirements." >Blade height</label>
-            <input type="text" id="blade-height" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-blade-height" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
             <label for="uniformity" title="The range of acceptable uniformity in the room">Uniformity</label>
             <input type="text" id="uniformity" readonly style="border:0;
@@ -177,7 +182,7 @@
         </span>
       </div>
 
-      <canvas id = "canv" width = "666 px" height = "540px" ></canvas>
+      <canvas id = "canv" width = "667 px" height = "546px" ></canvas>
 
     </div><!--id="right_content"-->
   </div> <!--id="all_content"-->
@@ -248,13 +253,36 @@
 
     <footer>
       <div id="all_content">
-        <div style="padding: 10px 10px 10px 10px; float:right; width:678px; text-align: left;">
-          <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" align="right" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/4.0/88x31.png"></a><br><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">The CBE Fan Tool</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-          <b>Developed by: </b>
-          <a class="footerlink" href="https://cbe.berkeley.edu/about-us/people/paul-raftery/">Paul Raftery</a> based on full-scale laboratory experiments described in <a class="footerlink" href="https://escholarship.org/uc/item/4p479663">this article</a>.
-          Work performed under funding from the <a class="footerlink" href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program">California Energy Commission's EPIC program</a>.
-          <br>
-          <b>Note:</b> Some features not supported on old browsers. We recommend using Edge, Chrome, Firefox, or Safari.
+        <div style="background-color: #124F7F;  color: #ffffff;  font-size: 14px; line-height: 1.2;">
+          <div style="width:998px; height:110px; overflow:hidden; padding: 6px 6px 6px 6px;">
+            <div style="width:100px; height:100px; float:left; margin: 6px 6px 6px 6px;">
+              <img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/footer-logo.png" width="100" vspace="5">
+              <br>
+              <img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/ucb-logo.png" width="100" vspace="5">
+            </div>
+            <div style="width:580px; height:100px; float:left; margin: 6px 6px 6px 6px;">
+              <b>To cite this webpage:</b>
+              Paul Raftery, 2019,
+              CBE Fan Tool, <a href="http://cbe.berkeley.edu/fan-tool" style="color:white;"> cbe.berkeley.edu/fan-tool</a>. Center for the Built Environment, University of California Berkeley.
+              <br>
+              <b>To cite the underlying models:</b> see full-scale laboratory experiments described <a href="https://escholarship.org/uc/item/4p479663" style="color:white;">here</a>.
+              <br>
+              Work performed under funding from the <a href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program" style="color:white;">California Energy Commission's EPIC program</a>.
+              <br>
+              <b>Note:</b> We recommend using Edge, Chrome, or Firefox.
+              <br>
+              <b>Contact:</b> For any enquiries contact p.raftery@berkeley.edu.
+
+            </div>
+            <div style="width:270px; height:100px; float:left; margin: 6px 6px 6px 6px;">
+              <div style="text-align:center;">
+                <a class="footerlink" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/creative_commons.png" width="100"></a>
+              </div>
+              <br>
+              The CBE Fan Tool is licensed under a
+              <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" style="color:white">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+            </div>
+          </div>
         </div>
       </div>
     </footer>
