@@ -75,7 +75,7 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   this.hd = this.validBladeHeightRange['mean']/this.fan.diameter;
   this.calcAirspeeds = function(){
     lowest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
-    (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047);
+    (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047)/this.layout.aspectRatio;
 
     areaWeightedAverage = this.percentFanSpeed * 0.01 *
     this.fan.maxFanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);

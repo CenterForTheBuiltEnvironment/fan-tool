@@ -106,6 +106,22 @@
           <div id="slider-max-air-speed" class='slider'></div>
         </div>
 
+        <h3>Basic constraints</h3>
+        <div id="accordion_content">
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum used to generate solutions. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
+            <input type="text" id="fan-speed-min" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-fan-speed-min" class='slider'></div>
+          <div style="margin: 10px 0px 10px 0px;">
+            <label for="blade-height"  title="The acceptable range of blade heights. This allows a user to provide additional constraints on the blade height as well as the constraints based on UL507 blade height requirements and minimum mount distance requirements." >Blade height</label>
+            <input type="text" id="blade-height" readonly style="border:0;
+            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+          </div>
+          <div id="slider-blade-height" class='slider'></div>
+        </div>
+
         <h3>Advanced constraints</h3>
         <div id="accordion_content">
           <div style="margin: 10px 0px 10px 0px;">
@@ -133,23 +149,11 @@
           </div>
           <div id="slider-num-fans" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
-            <label for="fan-speed-min" title="The fan rotational speed as a percentage of maximum used to generate solutions. i.e. rpm as a percentage of maximum rpm">Maximum fan speed</label>
-            <input type="text" id="fan-speed-min" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-fan-speed-min" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
             <label for="mount-distance" title="The minimum acceptable diameter from fan blade to ceiling surface, expressed as a fraction of the fan diameter. In general, when this fraction is below 0.2, it significantly affects the performance of the fan, substantially decreasing the actual airflow compared to the rated airflow. Above values of 0.25, there is typically little to no effect.">Minimum mount distance</label>
             <input type="text" id="mount-distance" readonly style="border:0;
             color:#2A4583; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-mount-distance-max" class='slider'></div>
-          <div style="margin: 10px 0px 10px 0px;">
-            <label for="blade-height"  title="The acceptable range of blade heights. This allows a user to provide additional constraints on the blade height as well as the constraints based on UL507 blade height requirements and minimum mount distance requirements." >Blade height</label>
-            <input type="text" id="blade-height" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
-          </div>
-          <div id="slider-blade-height" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
             <label for="uniformity" title="The range of acceptable uniformity in the room">Uniformity</label>
             <input type="text" id="uniformity" readonly style="border:0;
