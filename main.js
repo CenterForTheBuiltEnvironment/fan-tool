@@ -67,18 +67,26 @@ function copyToClipboard(text) {
 
 function loadStateFromJSON(storedJSON){
   // update spinners (stored value always in SI)
-  $( "#len" ).spinner( "value", JSON.parse(storedJSON).length);
-  $( "#hei" ).spinner( "value", JSON.parse(storedJSON).height);
-  $( "#wid" ).spinner( "value", JSON.parse(storedJSON).width);
+  // $( "#len" ).spinner( "value", JSON.parse(storedJSON).length);
+  // $( "#hei" ).spinner( "value", JSON.parse(storedJSON).height);
+  // $( "#wid" ).spinner( "value", JSON.parse(storedJSON).width);
   p.length = JSON.parse(storedJSON).length;
   p.height = JSON.parse(storedJSON).height;
   p.width = JSON.parse(storedJSON).width;
 
   //handle case where saved radio button states don't match current display
-  if (JSON.parse(storedJSON).isSIunits){
-    $("#units1").trigger("click");
-  } else{
-    $("#units2").trigger("click");
+  if (JSON.parse(storedJSON).isSIunits != $("#units1")[0].checked){
+    if (JSON.parse(storedJSON).isSIunits){
+      $("#units1").trigger("click");
+    } else{
+      $("#units2").trigger("click");
+    }
+  } else {
+    // need to toggle units to ensure spinners display correct value
+    if (!JSON.parse(storedJSON).isSIunits){
+      $("#units1").trigger("click");
+      $("#units2").trigger("click");
+    }
   }
   if (JSON.parse(storedJSON).isSeated){
     $("#posture1").trigger("click");
