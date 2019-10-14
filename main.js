@@ -57,7 +57,7 @@ $( "#share" ).button().on( "click", function() {
 $( "#example" ).button().on( "click", function() {
   b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjMsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjI1LCJtb3VudERpc3RhbmNlIjowLjIsImZhblNwZWVkIjoxMDAsImlzU0l1bml0cyI6ZmFsc2UsImlzU2VhdGVkIjp0cnVlLCJ2aWV3IjoxLCJmYW5UYWJsZURhdGEiOltbIkV4YW1wbGVBIiwzLjk5OTk5OTk5OTk5OTk5OSwiNTUzMCIsdHJ1ZV0sWyJFeGFtcGxlQiIsNC4zMzMzMzMzMzMzMzMzMzMsIjQ3ODkiLHRydWVdLFsiRXhhbXBsZUMiLDQuOTk5OTk5OTk5OTk5OTk5LCI3OTg4Iix0cnVlXSxbIkV4YW1wbGVEIiw0Ljk5OTk5OTk5OTk5OTk5OSwiODExNSIsdHJ1ZV0sWyJFeGFtcGxlRSIsNi45OTk5OTk5OTk5OTk5OTksIjE2Mzc5Iix0cnVlXSxbIkV4YW1wbGVGIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMjkyNDEiLGZhbHNlXSxbIkV4YW1wbGVHIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMzUxMTAiLGZhbHNlXSxbIkV4YW1wbGVIIiw5Ljk5OTk5OTk5OTk5OTk5OCwiNDQzMDYiLGZhbHNlXSxbIkV4YW1wbGVJIiwxMy45OTk5OTk5OTk5OTk5OTgsIjUzNjI5IixmYWxzZV1dLCJzZWxlY3RlZFNvbHV0aW9uSUQiOjIsInNlbGVjdGVkQ2FuZGlkYXRlRmFuSURzIjpbMyw0LDYsN10sImRpc3BsYXkiOnsiYmxhZGVzIjowLCJ4U3BhY2luZyI6MCwieVNwYWNpbmciOjAsInhPZmZzZXQiOjAsInlPZmZzZXQiOjB9fQ=="
   loadStateFromJSON(atob(b64))
-  });
+});
 
 
 // prompt user to copy from prompt to clipboard
@@ -151,7 +151,7 @@ const p_default = {
   'minAirSpeed': [0.5, 4.0],
   'avgAirSpeed': [0.5, 4.0],
   'maxAirSpeed': [0.5, 4.0],
-  'uniformity': [0.3, 1.0],
+  'uniformity': [0.1, 1.0],
   'numFans':[1,10],
   'diameter':[1.2, 4.3],
   'bladeHeight' : [2.1336, 3.048],
@@ -526,6 +526,33 @@ $('.ui-slider').on("slidestop", function () {
 });
 
 
+$('#len').change(function () {
+  correctInput(this);
+});
+
+$('#wid').change(function () {
+  correctInput(this);
+});
+
+$('#hei').change(function () {
+  correctInput(this);
+});
+
+function correctInput(x){
+  var min = $(x).spinner('option', 'min');
+  var max = $(x).spinner('option', 'max');
+  if (isNaN($(x).val())) {
+    $(x).spinner("value", min);
+    $(x).val(min);
+  } else if ($(x).val() > max) {
+    $(x).spinner("value", max);
+    $(x).val(max);
+  } else if ($(x).val() < min) {
+    $(x).val(min);
+  }
+  updateSolutions();
+}
+
 // add spinners
 var lenSpinner = $( "#len" ).spinner({
   numberFormat: "n",
@@ -533,44 +560,47 @@ var lenSpinner = $( "#len" ).spinner({
   max: 40,
   step: 0.1,
   stop: function( event, ui ) {
-    if (p.isSIunits) {
-      p.length = $( "#len" ).spinner( "value");
-    } else {
-      p.length = $( "#len" ).spinner( "value")*0.3048;
-    }
     var min = $(this).spinner('option', 'min');
     var max = $(this).spinner('option', 'max');
 
-    if (isNaN($(this).val())) {
-      $(this).spinner("value", min);
-    } else if ($(this).val() > max) {
-      $(this).spinner("value", max);
-    } else if ($(this).val() < min) {
-      $(this).spinner("value", min);
+    if ($( "#len" ).spinner( "value") < min){
+      var v = min;
+    } else if (($( "#len" ).spinner( "value") > max)) {
+      var v = max;
+    } else {
+      var v = $( "#len" ).spinner( "value");
+    }
+
+    if (p.isSIunits) {
+      p.length = v;
+    } else {
+      p.length = v*0.3048;
     }
     updateSolutions();
   },
 })
+
 var widSpinner = $( "#wid" ).spinner({
   numberFormat: "n",
   min: 4.6,
   max: 40,
   step: 0.1,
   stop: function( event, ui ) {
-    if (p.isSIunits) {
-      p.width = $( "#wid" ).spinner( "value");
-    } else {
-      p.width = $( "#wid" ).spinner( "value")*0.3048;
-    }
     var min = $(this).spinner('option', 'min');
     var max = $(this).spinner('option', 'max');
 
-    if (isNaN($(this).val())) {
-      $(this).spinner("value", min);
-    } else if ($(this).val() > max) {
-      $(this).spinner("value", max);
-    } else if ($(this).val() < min) {
-      $(this).spinner("value", min);
+    if ($( "#wid" ).spinner( "value") < min){
+      var v = min;
+    } else if (($( "#wid" ).spinner( "value") > max)) {
+      var v = max;
+    } else {
+      var v = $( "#wid" ).spinner( "value");
+    }
+
+    if (p.isSIunits) {
+      p.width = v;
+    } else {
+      p.width = v*0.3048;
     }
     updateSolutions();
   },
@@ -581,20 +611,21 @@ var heiSpinner = $( "#hei" ).spinner({
   max: 4.5,
   step: 0.05,
   stop: function( event, ui ) {
-    if (p.isSIunits) {
-      p.height = $( "#hei" ).spinner( "value");
-    } else {
-      p.height = $( "#hei" ).spinner( "value")*0.3048;
-    }
     var min = $(this).spinner('option', 'min');
     var max = $(this).spinner('option', 'max');
 
-    if (isNaN($(this).val())) {
-      $(this).spinner("value", min);
-    } else if ($(this).val() > max) {
-      $(this).spinner("value", max);
-    } else if ($(this).val() < min) {
-      $(this).spinner("value", min);
+    if ($( "#hei" ).spinner( "value") < min){
+      var v = min;
+    } else if (($( "#hei" ).spinner( "value") > max)) {
+      var v = max;
+    } else {
+      var v = $( "#hei" ).spinner( "value");
+    }
+
+    if (p.isSIunits) {
+      p.height = v;
+    } else {
+      p.height = v*0.3048;
     }
     updateSolutions();
   },
