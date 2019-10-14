@@ -172,8 +172,8 @@ const p_default = {
   "selectedCandidateFanIDs" :[],
   "display" : {
     'blades': 0,
-    'xSpacing': 0,
-    'ySpacing': 0,
+    'xSpacing': 0.6,
+    'ySpacing': 1.2,
     'xOffset': 0,
     'yOffset': 0
   },
@@ -517,11 +517,6 @@ $('.ui-slider').on("slidestop", function () {
   updateSolutions();
 });
 
-// update the solutions on any change of input
-$(':input').change(function () {
-  updateSolutions();
-});
-
 
 // add spinners
 var lenSpinner = $( "#len" ).spinner({
@@ -731,13 +726,13 @@ function changeUnits () {
     // update spinnners
     $('#len').spinner('option', 'min', 4.6);
     $('#len').spinner('option', 'max', 40);
-    if (p.length >0) $( "#len" ).spinner( "value", p.length* math.unit("1 ft").toNumber("m") )
+    if (p.length >0) $( "#len" ).spinner( "value", p.length)
     $('#wid').spinner('option', 'min', 4.6);
     $('#wid').spinner('option', 'max', 40);
-    if (p.width > 0) $( "#wid" ).spinner( "value", p.width* math.unit("1 ft").toNumber("m") )
+    if (p.width > 0) $( "#wid" ).spinner( "value", p.width)
     $('#hei').spinner('option', 'min', 2.7);
     $('#hei').spinner('option', 'max', 4.3);
-    if (p.height >0) $( "#hei" ).spinner( "value", p.height* math.unit("1 ft").toNumber("m") )
+    if (p.height >0) $( "#hei" ).spinner( "value", p.height)
   } else {
     $(tblFans.column(1).header()).text('D (ft)');
     $(tblFans.column(2).header()).text('Q (cfm)');
@@ -958,6 +953,7 @@ function clearCanvas() {
   var ctx = canvas.getContext('2d')
   //clear plan after each solution selection
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = `${font}px sans-serif`;
 }
 
 
