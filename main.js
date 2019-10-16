@@ -67,9 +67,6 @@ function copyToClipboard(text) {
 
 function loadStateFromJSON(storedJSON){
   // update spinners (stored value always in SI)
-  // $( "#len" ).spinner( "value", JSON.parse(storedJSON).length);
-  // $( "#hei" ).spinner( "value", JSON.parse(storedJSON).height);
-  // $( "#wid" ).spinner( "value", JSON.parse(storedJSON).width);
   p.length = JSON.parse(storedJSON).length;
   p.height = JSON.parse(storedJSON).height;
   p.width = JSON.parse(storedJSON).width;
@@ -107,41 +104,32 @@ function loadStateFromJSON(storedJSON){
   $("#slider-fan-speed-min").slider('value',JSON.parse(storedJSON).fanSpeed)
   $("#slider-mount-distance-max").slider('value',JSON.parse(storedJSON).mountDistance)
   // set doal value sliders
-  $("#slider-dimless").slider('values', 0, JSON.parse(storedJSON).dimensionlessDiameter[0])
-  $("#slider-dimless").slider('values', 1, JSON.parse(storedJSON).dimensionlessDiameter[1])
-  $("#slider-cellSize").slider('values', 0, JSON.parse(storedJSON).cellSize[0])
-  $("#slider-cellSize").slider('values', 1, JSON.parse(storedJSON).cellSize[1])
-  $("#slider-num-fans").slider('values', 0, JSON.parse(storedJSON).numFans[0])
-  $("#slider-num-fans").slider('values', 1, JSON.parse(storedJSON).numFans[1])
-  $("#slider-uniformity").slider('values', 0, JSON.parse(storedJSON).uniformity[0])
-  $("#slider-uniformity").slider('values', 1, JSON.parse(storedJSON).uniformity[1])
-  $("#slider-min-air-speed").slider('values', 0, JSON.parse(storedJSON).minAirSpeed[0])
-  $("#slider-min-air-speed").slider('values', 1, JSON.parse(storedJSON).minAirSpeed[1])
-  $("#slider-avg-air-speed").slider('values', 0, JSON.parse(storedJSON).avgAirSpeed[0])
-  $("#slider-avg-air-speed").slider('values', 1, JSON.parse(storedJSON).avgAirSpeed[1])
-  $("#slider-max-air-speed").slider('values', 0, JSON.parse(storedJSON).maxAirSpeed[0])
-  $("#slider-max-air-speed").slider('values', 1, JSON.parse(storedJSON).maxAirSpeed[1])
-  $("#slider-blade-height").slider('values', 0, JSON.parse(storedJSON).bladeHeight[0])
-  $("#slider-blade-height").slider('values', 1, JSON.parse(storedJSON).bladeHeight[1])
+  $("#slider-dimless").slider('values', JSON.parse(storedJSON).dimensionlessDiameter)
+  $("#slider-cellSize").slider('values', JSON.parse(storedJSON).cellSize)
+  $("#slider-num-fans").slider('values', JSON.parse(storedJSON).numFans)
+  $("#slider-uniformity").slider('values', JSON.parse(storedJSON).uniformity)
+  $("#slider-min-air-speed").slider('values', JSON.parse(storedJSON).minAirSpeed)
+  $("#slider-avg-air-speed").slider('values', JSON.parse(storedJSON).avgAirSpeed)
+  $("#slider-max-air-speed").slider('values', JSON.parse(storedJSON).maxAirSpeed)
+  $("#slider-blade-height").slider('values', JSON.parse(storedJSON).bladeHeight)
 
   // reload fan data into table
   tblFans.clear();
   tblFans.rows.add(JSON.parse(storedJSON).fanTableData).draw();
+  tblFans.order( [ 1, 'asc' ] ).draw();
   if (JSON.parse(storedJSON).selectedCandidateFanIDs.length >0 ) {
     for (i in JSON.parse(storedJSON).selectedCandidateFanIDs) {
       $('#fans tbody tr:eq(' + JSON.parse(storedJSON).selectedCandidateFanIDs[i] + ')').click();
     }
   }
-  p.display = JSON.parse(storedJSON).display;
+  let temp_selectedSolutionID = JSON.parse(storedJSON).selectedSolutionID;
+  p = JSON.parse(storedJSON);
   updateSliderDisplays();
   updateSolutions();
   // reselect chosen solution
-  if (JSON.parse(storedJSON).selectedSolutionID >-1 ) {
-    $('#solutions tbody tr:eq(' + JSON.parse(storedJSON).selectedSolutionID + ')').click();
+  if (temp_selectedSolutionID >-1 ) {
+    $('#solutions tbody tr:eq(' + temp_selectedSolutionID + ')').click();
   }
-
-  p = JSON.parse(storedJSON);
-
 }
 
 
@@ -257,11 +245,9 @@ $( "#slider-dimless" ).slider({
   step: 0.01,
   slide: function( event, ui ) {
     p.dimensionlessDiameter = ui.values;
-    $( "#dimless" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+    updateSliderDisplays();
   }
 });
-$( "#dimless" ).val( $( "#slider-dimless" ).slider( "values", 0 ) +
-" - " + $( "#slider-dimless" ).slider( "values", 1 ));
 
 $( "#slider-num-fans" ).slider({
   range: true,
@@ -271,11 +257,9 @@ $( "#slider-num-fans" ).slider({
   step: 1,
   slide: function( event, ui ) {
     p.numFans = ui.values;
-    $( "#num-fans" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+    updateSliderDisplays();
   }
 });
-$( "#num-fans" ).val( $( "#slider-num-fans" ).slider( "values", 0 ) +
-" - " + $( "#slider-num-fans" ).slider( "values", 1 ));
 
 $( "#slider-uniformity" ).slider({
   range: true,
@@ -285,11 +269,9 @@ $( "#slider-uniformity" ).slider({
   step: 0.05,
   slide: function( event, ui ) {
     p.uniformity = ui.values;
-    $( "#uniformity" ).val( ui.values[ 0 ] + " - "  + ui.values[ 1 ]);
+    updateSliderDisplays();
   }
 });
-$( "#uniformity" ).val( $( "#slider-uniformity" ).slider( "values", 0 ) +
-" - " + $( "#slider-uniformity" ).slider( "values", 1 ));
 
 $( "#slider-blade-height" ).slider({
   range: true,
@@ -361,10 +343,10 @@ $( "#slider-aspectRatio-min" ).slider({
   step: 0.01,
   slide: function( event, ui ) {
     p.aspectRatio = ui.value;
-    $( "#aspectRatio" ).val( ui.value );
+    updateSliderDisplays();
   }
 });
-$( "#aspectRatio" ).val( $( "#slider-aspectRatio-min" ).slider( "value" ) );
+
 
 $( "#slider-mount-distance-max" ).slider({
   range: "max",
@@ -374,10 +356,9 @@ $( "#slider-mount-distance-max" ).slider({
   step: 0.01,
   slide: function( event, ui ) {
     p.mountDistance = ui.value;
-    $( "#mount-distance" ).val( ui.value );
+    updateSliderDisplays();
   }
 });
-$( "#mount-distance" ).val( $( "#slider-mount-distance-max" ).slider( "value" ) );
 
 
 $( "#slider-fan-speed-min" ).slider({
@@ -388,10 +369,10 @@ $( "#slider-fan-speed-min" ).slider({
   step: 1,
   slide: function( event, ui ) {
     p.fanSpeed = ui.value;
-    $( "#fan-speed-min" ).val( ui.value + "%" );
+    updateSliderDisplays();
   }
 });
-$( "#fan-speed-min" ).val( $( "#slider-fan-speed-min" ).slider( "value" ) + "%" );
+
 
 $( ":radio" ).checkboxradio({
   icon: false
@@ -722,6 +703,21 @@ function updateSlnTable(){
 // update the input display associated with each slider,
 // accounting for different unit systems and measurements
 function updateSliderDisplays(){
+  $( "#dimless" ).val(
+    $( "#slider-dimless" ).slider( "values", 0 )
+    +  " - " +
+    $( "#slider-dimless" ).slider( "values", 1 )
+  );
+  $( "#num-fans" ).val(
+    $( "#slider-num-fans" ).slider( "values", 0 )
+    +  " - " +
+    $( "#slider-num-fans" ).slider( "values", 1 )
+  );
+  $( "#uniformity" ).val(
+    $( "#slider-uniformity" ).slider( "values", 0 )
+    +  " - " +
+    $( "#slider-uniformity" ).slider( "values", 1 )
+  );
   $( "#cellSize" ).val(
     unitToString($( "#slider-cellSize" ).slider( "values", 0 ), "distance",false)
     +  " - " +
@@ -747,6 +743,10 @@ function updateSliderDisplays(){
     +  " - " +
     unitToString($( "#slider-max-air-speed" ).slider( "values", 1 ), "speed")
   );
+  // update single value sliders
+  $( "#mount-distance" ).val( $( "#slider-mount-distance-max" ).slider( "value" ) );
+  $( "#aspectRatio" ).val( $( "#slider-aspectRatio-min" ).slider( "value" ) );
+  $( "#fan-speed-min" ).val( $( "#slider-fan-speed-min" ).slider( "value" ) + "%" );
 }
 
 
@@ -1214,6 +1214,8 @@ function drawRoom() {
 
 
   function drawSingleFan(cx,cy,fanRad,blades){
+    var canvas = document.getElementById('canv');
+    var ctx = canvas.getContext('2d')
     innerRad = fanRad/30;
     rot = Math.PI/2*3;
     step = Math.PI/blades;
@@ -1265,7 +1267,6 @@ function drawRoom() {
   // draw a schematic of the individual recirculation cell around a fan
   function drawCell() {
     var canvas = document.getElementById('canv');
-    // Execute only if canvas is supported
     var ctx = canvas.getContext('2d')
     sln = solutions[p.selectedSolutionID];
 
@@ -1521,7 +1522,6 @@ function drawRoom() {
   function drawCellSection() {
     clearCanvas();
     var canvas = document.getElementById('canv');
-    // Execute only if canvas is supported
     var ctx = canvas.getContext('2d')
     sln = solutions[p.selectedSolutionID];
 
