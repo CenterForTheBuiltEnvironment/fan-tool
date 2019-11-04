@@ -143,7 +143,7 @@ const p_default = {
   'uniformity': [0.1, 1.0],
   'numFans':[1,10],
   'diameter':[1.2, 4.3],
-  'bladeHeight' : [2.1336, 3.048],
+  'bladeHeight' : [2.13, 3.08],
   'dimensionlessDiameter':[0.15, 0.5],
   "length" : 0,
   "width" : 0,
@@ -275,8 +275,8 @@ $( "#slider-uniformity" ).slider({
 
 $( "#slider-blade-height" ).slider({
   range: true,
-  min: 2.15,
-  max: 4.5,
+  min: 2.13,
+  max: 4.53,
   values: p.bladeHeight,
   step: 0.05,
   slide: function( event, ui ) {
@@ -477,7 +477,7 @@ var tblSln = $('#solutions').DataTable( {
     { title: "Uniformity" },
   ]
 } );
-tblSln.order( [ 1, 'asc' ] ).draw();
+tblSln.order( [ 2, 'asc' ] ).draw();
 
 // allow only one solution to be selected at a time
 $('#solutions tbody').on( 'click', 'tr', function () {
@@ -540,7 +540,7 @@ function correctInput(x){
 var lenSpinner = $( "#len" ).spinner({
   numberFormat: "n",
   min: 4.6,
-  max: 40,
+  max: 100,
   step: 0.1,
   stop: function( event, ui ) {
     var min = $(this).spinner('option', 'min');
@@ -566,7 +566,7 @@ var lenSpinner = $( "#len" ).spinner({
 var widSpinner = $( "#wid" ).spinner({
   numberFormat: "n",
   min: 4.6,
-  max: 40,
+  max: 100,
   step: 0.1,
   stop: function( event, ui ) {
     var min = $(this).spinner('option', 'min');
@@ -776,10 +776,10 @@ function changeUnits () {
     });
     // update spinnners
     $('#len').spinner('option', 'min', 4.6);
-    $('#len').spinner('option', 'max', 40);
+    $('#len').spinner('option', 'max', 100);
     if (p.length >0) $( "#len" ).spinner( "value", p.length)
     $('#wid').spinner('option', 'min', 4.6);
-    $('#wid').spinner('option', 'max', 40);
+    $('#wid').spinner('option', 'max', 100);
     if (p.width > 0) $( "#wid" ).spinner( "value", p.width)
     $('#hei').spinner('option', 'min', 2.4);
     $('#hei').spinner('option', 'max', 5.7);
@@ -802,10 +802,10 @@ function changeUnits () {
     });
     // update spinnners
     $('#len').spinner('option', 'min', 15);
-    $('#len').spinner('option', 'max', 130);
+    $('#len').spinner('option', 'max', 330);
     if (p.length >0) $( "#len" ).spinner( "value", p.length* math.unit("1 m").toNumber("ft") )
     $('#wid').spinner('option', 'min', 15);
-    $('#wid').spinner('option', 'max', 130);
+    $('#wid').spinner('option', 'max', 330);
     if (p.width > 0) $( "#wid" ).spinner( "value", p.width* math.unit("1 m").toNumber("ft") )
     $('#hei').spinner('option', 'min', 8);
     $('#hei').spinner('option', 'max', 18.7);
