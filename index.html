@@ -70,12 +70,19 @@
 
         <h3 id ="fan_accordion_header" title="Please select at least one fan for consideration. The default fans in the table below are anonymous examples of commercially available fans of various diameters. To add information for a specific fan model, click 'Add'" >Which fan types?</h3>
         <div style="text-align:center; background-color: #DCE7F7; padding: 6px 6px 6px 6px;">
-          <span style="text-align:center; background-color: #DCE7F7;">
-            <button type="button" id="add-fan" >Add</button>
-            <button type="button" id="delete-fan">Delete</button>
-            <button type="button" id="reset-fan">Default</button>
-          </span>
+          <div style="text-align:center; background-color: #DCE7F7;">
+            Select
+            <button type="button" id="all-fan" title="Select all fan types as fans under consideration in the design">All</button>
+            <button type="button" id="no-fan" title="Deselect all fan types as fans under consideration in the design">None</button>
+          </div>
           <table id="fans" class="compact order-column hover stripe" style="text-align:center; background-color: #DCE7F7; width:100%"></table>
+          <div style="text-align: center; margin-top: 6px;">
+            <span title="Edit the list of available fan types by adding a new fan, removing a selected fan (or fans), or restoring the default set of fan types">Edit fan types</span>
+            <br>
+            <button type="button" id="add-fan" title="Add a new fan type to the table above" >Add</button>
+            <button type="button" id="delete-fan" title="Remove any fan types that are currently selected from the table above">Delete</button>
+            <button type="button" id="reset-fan" title="Restore the table above to the default list of fan types">Default</button>
+          </div>
         </div>
 
         <h3>Which design air speed ranges?</h3>

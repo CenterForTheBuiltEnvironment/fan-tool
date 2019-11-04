@@ -403,6 +403,37 @@ var tblFans = $('#fans').DataTable( {
 // also resolves unexpected table header width initialization issue
 $('#fan_accordion_header').on('click', function () {tblFans.order( [ 1, 'asc' ] ).draw();});
 
+function allFans(){
+  selected = tblFans.rows('.selected')[0]
+  all = tblFans.rows()[0]
+  for (i in all){
+    if (!(selected.includes(all[i]))) {
+      $('#fans tbody tr:eq(' + all[i] +')').click();
+    }
+  }
+};
+
+//  select all fans from the table
+$( "#all-fan" ).button().on( "click", function() {
+  allFans();
+});
+
+function noFans(){
+  selected = tblFans.rows('.selected')[0]
+  all = tblFans.rows()[0]
+  for (i in all){
+    if (selected.includes(all[i])) {
+      $('#fans tbody tr:eq(' + all[i] +')').click();
+    }
+  }
+};
+
+// deselect all fans from the table
+$( "#no-fan" ).button().on( "click", function() {
+  noFans();
+});
+
+
 // select/deselect rows when clicked
 $('#fans tbody').on( 'click', 'tr', function () {
   $(this).toggleClass('selected');
