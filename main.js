@@ -55,7 +55,7 @@ $( "#share" ).button().on( "click", function() {
 });
 
 $( "#example" ).button().on( "click", function() {
-  b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjMsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjI1LCJtb3VudERpc3RhbmNlIjowLjIsImZhblNwZWVkIjoxMDAsImlzU0l1bml0cyI6ZmFsc2UsImlzU2VhdGVkIjp0cnVlLCJ2aWV3IjoxLCJmYW5UYWJsZURhdGEiOltbIkV4YW1wbGVBIiwzLjk5OTk5OTk5OTk5OTk5OSwiNTUzMCIsdHJ1ZV0sWyJFeGFtcGxlQiIsNC4zMzMzMzMzMzMzMzMzMzMsIjQ3ODkiLHRydWVdLFsiRXhhbXBsZUMiLDQuOTk5OTk5OTk5OTk5OTk5LCI3OTg4Iix0cnVlXSxbIkV4YW1wbGVEIiw0Ljk5OTk5OTk5OTk5OTk5OSwiODExNSIsdHJ1ZV0sWyJFeGFtcGxlRSIsNi45OTk5OTk5OTk5OTk5OTksIjE2Mzc5Iix0cnVlXSxbIkV4YW1wbGVGIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMjkyNDEiLGZhbHNlXSxbIkV4YW1wbGVHIiw3Ljk5OTk5OTk5OTk5OTk5OCwiMzUxMTAiLGZhbHNlXSxbIkV4YW1wbGVIIiw5Ljk5OTk5OTk5OTk5OTk5OCwiNDQzMDYiLGZhbHNlXSxbIkV4YW1wbGVJIiwxMy45OTk5OTk5OTk5OTk5OTgsIjUzNjI5IixmYWxzZV1dLCJzZWxlY3RlZFNvbHV0aW9uSUQiOjIsInNlbGVjdGVkQ2FuZGlkYXRlRmFuSURzIjpbMyw0LDYsN10sImRpc3BsYXkiOnsiYmxhZGVzIjowLCJ4U3BhY2luZyI6MC42LCJ5U3BhY2luZyI6MS4yLCJ4T2Zmc2V0IjowLCJ5T2Zmc2V0IjowfX0="
+  b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjEsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjUsIm1vdW50RGlzdGFuY2UiOjAuMiwiZmFuU3BlZWQiOjEwMCwiaXNTSXVuaXRzIjpmYWxzZSwiaXNTZWF0ZWQiOnRydWUsInZpZXciOjEsImZhblRhYmxlRGF0YSI6W1siRXhhbXBsZUEiLDMuOTk5OTk5OTk5OTk5OTk5LCI1NTMwIix0cnVlXSxbIkV4YW1wbGVCIiw0LjMzMzMzMzMzMzMzMzMzMywiNDc4OSIsdHJ1ZV0sWyJFeGFtcGxlQyIsNC45OTk5OTk5OTk5OTk5OTksIjc5ODgiLHRydWVdLFsiRXhhbXBsZUQiLDQuOTk5OTk5OTk5OTk5OTk5LCI4MTE1Iix0cnVlXSxbIkV4YW1wbGVFIiw2Ljk5OTk5OTk5OTk5OTk5OSwiMTYzNzkiLHRydWVdLFsiRXhhbXBsZUYiLDcuOTk5OTk5OTk5OTk5OTk4LCIyOTI0MSIsZmFsc2VdLFsiRXhhbXBsZUciLDcuOTk5OTk5OTk5OTk5OTk4LCIzNTExMCIsZmFsc2VdLFsiRXhhbXBsZUgiLDkuOTk5OTk5OTk5OTk5OTk4LCI0NDMwNiIsZmFsc2VdLFsiRXhhbXBsZUkiLDEzLjk5OTk5OTk5OTk5OTk5OCwiNTM2MjkiLGZhbHNlXV0sInNlbGVjdGVkU29sdXRpb25JRCI6Mywic2VsZWN0ZWRDYW5kaWRhdGVGYW5JRHMiOlszLDQsNiw3XSwiZGlzcGxheSI6eyJibGFkZXMiOjAsInhTcGFjaW5nIjowLjYsInlTcGFjaW5nIjoxLjIsInhPZmZzZXQiOjAsInlPZmZzZXQiOjB9fQ=="
   loadStateFromJSON(atob(b64))
 });
 
@@ -148,7 +148,7 @@ const p_default = {
   "length" : 0,
   "width" : 0,
   "height" : 0,
-  "aspectRatio" : 1.25,
+  "aspectRatio" : 1.5,
   "mountDistance" : 0.2,
   "fanSpeed" : 100,
   "isSIunits" : true,
@@ -339,7 +339,7 @@ $( "#slider-aspectRatio-min" ).slider({
   range: "min",
   value: p.aspectRatio,
   min: 1,
-  max: 1.5,
+  max: 1.6,
   step: 0.01,
   slide: function( event, ui ) {
     p.aspectRatio = ui.value;
@@ -467,13 +467,14 @@ var tblSln = $('#solutions').DataTable( {
   pageLength: 10,
   columns: [
     { title: "Fan type" },
+    { title: "Ø (m)" },
     { title: "# fans" },
     { title: "Min airspeed (m/s)" },
+    { title: "Cooling effect (°C) at min" },
     { title: "Avg airspeed (m/s)" },
     { title: "Max airspeed (m/s)" },
-    { title: "Temp increase (°C)" },
+    { title: "Cooling effect (°C) at max" },
     { title: "Uniformity" },
-    { title: "Cell aspect ratio" },
   ]
 } );
 tblSln.order( [ 1, 'asc' ] ).draw();
@@ -589,8 +590,8 @@ var widSpinner = $( "#wid" ).spinner({
 })
 var heiSpinner = $( "#hei" ).spinner({
   numberFormat: "n",
-  min: 2.7,
-  max: 4.5,
+  min: 2.4,
+  max: 5.7,
   step: 0.05,
   stop: function( event, ui ) {
     var min = $(this).spinner('option', 'min');
@@ -680,13 +681,14 @@ function updateSlnTable(){
   for (i of solutions){
     tblData.push([
       i.fan.type,
+      unitToString(i.fan.diameter, "distance", false),
       i.layout.numFans(),
       unitToString(i.airspeeds[0], "speed", false),
+      unitToString(i.tempDiffs[0], "deltaT", false),
       unitToString(i.airspeeds[1], "speed", false),
       unitToString(i.airspeeds[2], "speed", false),
-      unitToString(i.tempDiffs[0], "deltaT", false),
+      unitToString(i.tempDiffs[2], "deltaT", false),
       i.uniformity.toFixed(2),
-      i.layout.aspectRatio.toFixed(2),
     ]);
   }
   tblSln.rows.add(tblData).draw();
@@ -759,10 +761,12 @@ function changeUnits () {
   if (p.isSIunits) {
     $(tblFans.column(1).header()).text('D (m)');
     $(tblFans.column(2).header()).text('Q (m³/s)');
-    $(tblSln.column(2).header()).text('Min airspeed (m/s)');
-    $(tblSln.column(3).header()).text('Avg airspeed (m/s)');
-    $(tblSln.column(4).header()).text('Max airspeed (m/s)');
-    $(tblSln.column(5).header()).text('Temp increase (°C)');
+    $(tblSln.column(1).header()).text('Ø (m)');
+    $(tblSln.column(3).header()).text('Min airspeed (m/s)');
+    $(tblSln.column(4).header()).text('Cooling effect (°C) at min');
+    $(tblSln.column(5).header()).text('Avg airspeed (m/s)');
+    $(tblSln.column(6).header()).text('Max airspeed (m/s)');
+    $(tblSln.column(7).header()).text('Cooling effect (°C) at max');
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
@@ -777,16 +781,18 @@ function changeUnits () {
     $('#wid').spinner('option', 'min', 4.6);
     $('#wid').spinner('option', 'max', 40);
     if (p.width > 0) $( "#wid" ).spinner( "value", p.width)
-    $('#hei').spinner('option', 'min', 2.7);
-    $('#hei').spinner('option', 'max', 4.3);
+    $('#hei').spinner('option', 'min', 2.4);
+    $('#hei').spinner('option', 'max', 5.7);
     if (p.height >0) $( "#hei" ).spinner( "value", p.height)
   } else {
     $(tblFans.column(1).header()).text('D (ft)');
     $(tblFans.column(2).header()).text('Q (cfm)');
-    $(tblSln.column(2).header()).text('Min airspeed (fpm)');
-    $(tblSln.column(3).header()).text('Avg airspeed (fpm)');
-    $(tblSln.column(4).header()).text('Max airspeed (fpm)');
-    $(tblSln.column(5).header()).text('Temp increase (°F)');
+    $(tblSln.column(1).header()).text('Ø (ft)');
+    $(tblSln.column(3).header()).text('Min airspeed (fpm)');
+    $(tblSln.column(4).header()).text('Cooling effect (°F) at min');
+    $(tblSln.column(5).header()).text('Avg airspeed (fpm)');
+    $(tblSln.column(6).header()).text('Max airspeed (fpm)');
+    $(tblSln.column(7).header()).text('Cooling effect (°F) at max');
     // update the data in each column
     tblFans.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
@@ -801,8 +807,8 @@ function changeUnits () {
     $('#wid').spinner('option', 'min', 15);
     $('#wid').spinner('option', 'max', 130);
     if (p.width > 0) $( "#wid" ).spinner( "value", p.width* math.unit("1 m").toNumber("ft") )
-    $('#hei').spinner('option', 'min', 8.9);
-    $('#hei').spinner('option', 'max', 14);
+    $('#hei').spinner('option', 'min', 8);
+    $('#hei').spinner('option', 'max', 18.7);
     if (p.height >0) $( "#hei" ).spinner( "value", p.height* math.unit("1 m").toNumber("ft") )
   }
   updateSliderDisplays();
