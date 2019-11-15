@@ -15,11 +15,11 @@ function Room(ceilingHeight, sizeX, sizeY) {
 };
 
 /* object to represent a candidate fan type */
-function Fan(type, diameter, airflow, meetsUL507, percentFanSpeed) {
+function Fan(type, diameter, airflow, ul507, percentFanSpeed) {
   this.type = type;
   this.diameter = diameter;
   this.airflow = airflow;
-  this.meetsUL507 = meetsUL507;
+  this.ul507 = ul507;
   this.maxFanAirSpeed = this.airflow/(Math.PI * Math.pow(this.diameter,2)/4);
 };
 
@@ -60,7 +60,7 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   }
   this.calcBladeHeightRange = function(){
     // constrain min blade height based on UL507 requirement
-    this.fan.meetsUL507 ? min = 2.1336 : min = 3.048;
+    this.fan.ul507 == "Yes" ? min = 3.048 : min = 2.1336;
     constraintUL507 = min;
     // constrain max blade height based on mount distance (avoiding starvation)
     max = this.layout.room.ceilingHeight - (this.mdMin * this.fan.diameter);

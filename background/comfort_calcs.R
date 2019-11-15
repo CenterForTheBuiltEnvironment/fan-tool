@@ -35,9 +35,10 @@ for (v in vels) {
 eqn_data = df%>%filter(delta_ta_c>0)
 ggplot(eqn_data, aes(x=vel_mps, y=delta_ta_c)) + 
   geom_point() +
-  geom_smooth(method= lm,formula = y ~ log(x), se=TRUE) +
+  coord_cartesian(xlim = c(0,8), ylim = c(0,10)) + 
+  #geom_smooth(method= loess, se=TRUE) +
   scale_x_continuous(expand=c(0,0), "Air speed (m/s) | (above, fpm)", sec.axis = sec_axis(~ . * 197)) +
-  scale_y_continuous(expand=c(0,0), "Temperature difference (C) | (right, F)", sec.axis = sec_axis(~ . * 1.8 + 32))
+  scale_y_continuous(expand=c(0,0), "Cooling effect (C) | (right, F)", sec.axis = sec_axis(~ . * 1.8))
 fit = lm(eqn_data$delta_ta_c~log(eqn_data$vel_mps))  
 summary(fit)
 
@@ -47,8 +48,8 @@ eqn_data = df%>%filter(delta_ta_c>0)%>%filter(vel_mps<=2)
 ggplot(eqn_data, aes(x=vel_mps, y=delta_ta_c)) + 
   geom_point() +
   geom_smooth(method= lm, formula = y ~ log(x), se=TRUE) +
-  scale_x_continuous(expand=c(0,0), "Air speed (m/s) | (above, fpm)", sec.axis = sec_axis(~ . * 197)) +
-  scale_y_continuous(expand=c(0,0), "Temperature difference (C) | (right, F)", sec.axis = sec_axis(~ . * 1.8 + 32))
+  scale_x_continuous(expand=c(0,0), "Air speed (m/s, above: fpm)", sec.axis = sec_axis(~ . * 197)) +
+  scale_y_continuous(expand=c(0,0), "Temperature difference (°C, right: °F)", sec.axis = sec_axis(~ . * 1.8 + 32))
 fit = lm(eqn_data$delta_ta_c~log(eqn_data$vel_mps))  
 summary(fit)
 plot(fit)

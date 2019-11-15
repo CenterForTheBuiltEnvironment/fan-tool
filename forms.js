@@ -74,7 +74,7 @@ $( function() {
         newtype.val(),
         Number(newdiameter.val()),
         Number(newairflow.val()),
-        document.getElementById("ul507").checked,
+        document.getElementById("ul507").checked ? "Yes" : "No" ,
       ] ).draw( false );
     }
     return valid;

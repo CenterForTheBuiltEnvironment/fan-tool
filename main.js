@@ -55,7 +55,7 @@ $( "#share" ).button().on( "click", function() {
 });
 
 $( "#example" ).button().on( "click", function() {
-  b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjEsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjUsIm1vdW50RGlzdGFuY2UiOjAuMiwiZmFuU3BlZWQiOjEwMCwiaXNTSXVuaXRzIjpmYWxzZSwiaXNTZWF0ZWQiOnRydWUsInZpZXciOjEsImZhblRhYmxlRGF0YSI6W1siRXhhbXBsZUEiLDMuOTk5OTk5OTk5OTk5OTk5LCI1NTMwIix0cnVlXSxbIkV4YW1wbGVCIiw0LjMzMzMzMzMzMzMzMzMzMywiNDc4OSIsdHJ1ZV0sWyJFeGFtcGxlQyIsNC45OTk5OTk5OTk5OTk5OTksIjc5ODgiLHRydWVdLFsiRXhhbXBsZUQiLDQuOTk5OTk5OTk5OTk5OTk5LCI4MTE1Iix0cnVlXSxbIkV4YW1wbGVFIiw2Ljk5OTk5OTk5OTk5OTk5OSwiMTYzNzkiLHRydWVdLFsiRXhhbXBsZUYiLDcuOTk5OTk5OTk5OTk5OTk4LCIyOTI0MSIsZmFsc2VdLFsiRXhhbXBsZUciLDcuOTk5OTk5OTk5OTk5OTk4LCIzNTExMCIsZmFsc2VdLFsiRXhhbXBsZUgiLDkuOTk5OTk5OTk5OTk5OTk4LCI0NDMwNiIsZmFsc2VdLFsiRXhhbXBsZUkiLDEzLjk5OTk5OTk5OTk5OTk5OCwiNTM2MjkiLGZhbHNlXV0sInNlbGVjdGVkU29sdXRpb25JRCI6Mywic2VsZWN0ZWRDYW5kaWRhdGVGYW5JRHMiOlszLDQsNiw3XSwiZGlzcGxheSI6eyJibGFkZXMiOjAsInhTcGFjaW5nIjowLjYsInlTcGFjaW5nIjoxLjIsInhPZmZzZXQiOjAsInlPZmZzZXQiOjB9fQ=="
+  b64 = "eyJjZWxsU2l6ZSI6WzQuNSwxNS4yNF0sIm1pbkFpclNwZWVkIjpbMC41LDRdLCJhdmdBaXJTcGVlZCI6WzAuNSw0XSwibWF4QWlyU3BlZWQiOlswLjUsNF0sInVuaWZvcm1pdHkiOlswLjEsMV0sIm51bUZhbnMiOlsxLDEwXSwiZGlhbWV0ZXIiOlsxLjIsNC4zXSwiYmxhZGVIZWlnaHQiOlsyLjEzMzYsMy4wNDhdLCJkaW1lbnNpb25sZXNzRGlhbWV0ZXIiOlswLjE1LDAuNV0sImxlbmd0aCI6MTMsIndpZHRoIjoxNiwiaGVpZ2h0IjozLjcsImFzcGVjdFJhdGlvIjoxLjUsIm1vdW50RGlzdGFuY2UiOjAuMiwiZmFuU3BlZWQiOjEwMCwiaXNTSXVuaXRzIjpmYWxzZSwiaXNTZWF0ZWQiOnRydWUsInZpZXciOjEsImZhblRhYmxlRGF0YSI6W1siRXhhbXBsZUEiLDMuOTk5OTk5OTk5OTk5OTk5LCI1NTMwIiwiTm8iXSxbIkV4YW1wbGVCIiw0LjMzMzMzMzMzMzMzMzMzMywiNDc4OSIsIk5vIl0sWyJFeGFtcGxlQyIsNC45OTk5OTk5OTk5OTk5OTksIjc5ODgiLCJObyJdLFsiRXhhbXBsZUQiLDQuOTk5OTk5OTk5OTk5OTk5LCI4MTE1IiwiTm8iXSxbIkV4YW1wbGVFIiw2Ljk5OTk5OTk5OTk5OTk5OSwiMTYzNzkiLCJObyJdLFsiRXhhbXBsZUYiLDcuOTk5OTk5OTk5OTk5OTk4LCIyOTI0MSIsIlllcyJdLFsiRXhhbXBsZUciLDcuOTk5OTk5OTk5OTk5OTk4LCIzNTExMCIsIlllcyJdLFsiRXhhbXBsZUgiLDkuOTk5OTk5OTk5OTk5OTk4LCI0NDMwNiIsIlllcyJdLFsiRXhhbXBsZUkiLDEzLjk5OTk5OTk5OTk5OTk5OCwiNTM2MjkiLCJZZXMiXV0sInNlbGVjdGVkU29sdXRpb25JRCI6Mywic2VsZWN0ZWRDYW5kaWRhdGVGYW5JRHMiOlszLDQsNiw3XSwiZGlzcGxheSI6eyJibGFkZXMiOjAsInhTcGFjaW5nIjowLjYsInlTcGFjaW5nIjoxLjIsInhPZmZzZXQiOjAsInlPZmZzZXQiOjB9fQ=="
   loadStateFromJSON(atob(b64))
 });
 
@@ -155,15 +155,15 @@ const p_default = {
   "isSeated" : true,
   "view" : 1,
   "fanTableData" : [
-    ['ExampleA', 1.2192, 2.61, true],
-    ['ExampleB', 1.3208, 2.26, true],
-    ['ExampleC', 1.524, 3.77, true],
-    ['ExampleD', 1.524, 3.83, true],
-    ['ExampleE', 2.1336, 7.73, true],
-    ['ExampleF', 2.4384, 13.80, false],
-    ['ExampleG', 2.4384, 16.57, false],
-    ['ExampleH', 3.048, 20.91, false],
-    ['ExampleI', 4.2672, 25.31, false]
+    ['ExampleA', 1.2192, 2.61, "No"],
+    ['ExampleB', 1.3208, 2.26, "No"],
+    ['ExampleC', 1.524, 3.77, "No"],
+    ['ExampleD', 1.524, 3.83, "No"],
+    ['ExampleE', 2.1336, 7.73, "No"],
+    ['ExampleF', 2.4384, 13.80, "Yes"],
+    ['ExampleG', 2.4384, 16.57, "Yes"],
+    ['ExampleH', 3.048, 20.91, "Yes"],
+    ['ExampleI', 4.2672, 25.31, "Yes"]
   ],
   "selectedSolutionID" : -1,
   "selectedCandidateFanIDs" :[],
@@ -395,7 +395,7 @@ var tblFans = $('#fans').DataTable( {
     { title: "Type" },
     { title: "D (m)" },
     { title: "Q (m³/s)" },
-    { title: "UL507" }
+    { title: "Min blade hgt. ≥ 3 m?" }
   ]
 } );
 
@@ -792,6 +792,7 @@ function changeUnits () {
   if (p.isSIunits) {
     $(tblFans.column(1).header()).text('D (m)');
     $(tblFans.column(2).header()).text('Q (m³/s)');
+    $(tblFans.column(3).header()).text('Min blade hgt. ≥ 3 m?');
     $(tblSln.column(1).header()).text('Ø (m)');
     $(tblSln.column(3).header()).text('Min airspeed (m/s)');
     $(tblSln.column(4).header()).text('Cooling effect (°C) at min');
@@ -818,6 +819,7 @@ function changeUnits () {
   } else {
     $(tblFans.column(1).header()).text('D (ft)');
     $(tblFans.column(2).header()).text('Q (cfm)');
+    $(tblFans.column(3).header()).text('Min blade hgt. ≥ 10 ft?');
     $(tblSln.column(1).header()).text('Ø (ft)');
     $(tblSln.column(3).header()).text('Min airspeed (fpm)');
     $(tblSln.column(4).header()).text('Cooling effect (°F) at min');
