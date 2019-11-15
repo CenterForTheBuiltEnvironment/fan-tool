@@ -1439,7 +1439,7 @@ function drawRoom() {
       cy - 0*(lineSpacing),
     );
     ctx.fillText(
-      ` is ~ ${unitToString(sln.airspeeds[1], "speed")}`,
+      ` is ~ ${unitToString(sln.airspeeds[1], "speed")} (${unitToString(sln.tempDiffs[1], "deltaT")})`,
       cx + fanRad,
       cy + 1*(lineSpacing),
     );
@@ -1553,6 +1553,11 @@ function drawRoom() {
       ` Aspect ratio: ${math.format(sln.layout.aspectRatio,4)}`,
       cx - cellX/2,
       cy - (cellY/2) + 5*(lineSpacing),
+    );
+    ctx.fillText(
+      ` Fan density: ${math.format(sln.density,3)}`,
+      cx - cellX/2,
+      cy - (cellY/2) + 6*(lineSpacing),
     );
   }
 

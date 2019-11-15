@@ -49,6 +49,7 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   this.dr = this.fan.diameter/this.layout.r;
   this.cd = this.layout.room.ceilingHeight/this.fan.diameter;
   this.do = this.fan.diameter/1.7;
+  this.density = (Math.PI * Math.pow(this.fan.diameter,2)/4)/this.layout.cellArea;
   this.bladeHeightRange = bladeHeight;
   // this.isBladeLowest = isBladeLowest;
   this.mdMin = mdMin;
