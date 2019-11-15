@@ -33,23 +33,18 @@
       </h2>
     </div>
     <div id="left_content">
-      <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
-        <button type="button" id="save" title="Save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
-        <button type="button" id="load" title="Restore the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore save</button>
-        <button type="button" id="share" title="Generate a url that matches the current state of the web tool so that it is easily shared with others." >Share link</button>
-
+      <div style="text-align: center; font-size: 18px; padding: 6px 6px 6px 6px;">
+        <button type="button" id="example" title="Displays an example use case for the web tool.">Show me an example</button>
       </div>
-      <div style="text-align: center; padding: 5px 0px 5px 0px;">
-        Units
+      <div style="text-align: center; padding: 5px 0px 5px 0px; border: 1px solid lightgrey;  border-radius: 5px;">
+        Unit system
         <label for="units1" title="Switch to metric (SI) units">Metric</label>
         <input type="radio" name="units" id="units1" checked>
         <label for="units2" title="Switch to imperial (I-P) units" >I-P</label>
         <input type="radio" name="units" id="units2">
         &nbsp
         &nbsp
-        <button type="button" id="example" title="Displays an example use case for the web tool.">Example</button>
       </div>
-
 
       <div id="accordion">
         <h3  title="Please enter the length, width, and height of the room.">What room dimensions?</h3>
@@ -170,6 +165,13 @@
           <div id="slider-uniformity" class='slider'></div>
         </div>
       </div><!--id="accordion"-->
+      <br>
+      <div style="text-align: center; padding: 6px 6px 6px 6px; border: 1px solid lightgrey;  background-color: #acc6ec;  border-radius: 5px;">
+        Session
+        <button type="button" id="save" title="Save the current state of the web tool in your local browser session. This includes the table of candidate fans, allowing users to store a 'database' of manually entered fans instead of, or as well as, the default example fans provided.">Save</button>
+        <button type="button" id="load" title="Restore the state of the web tool to the previously saved state that has been stored in your local browser session.">Restore</button>
+        <button type="button" id="share" title="Generate a url that matches the current state of the web tool so that it is easily shared with others." >Share</button>
+      </div>
     </div><!--id="left_content"-->
 
     <div id="right_content">
