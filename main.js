@@ -66,6 +66,20 @@ function copyToClipboard(text) {
 }
 
 function loadStateFromJSON(storedJSON){
+  //handle case where saved radio button states don't match current display
+  if (JSON.parse(storedJSON).view == 3){
+    $("#view3").trigger("click");
+  } else if (JSON.parse(storedJSON).view == 2){
+    $("#view2").trigger("click");
+  } else {
+    $("#view1").trigger("click");
+  }
+  if (JSON.parse(storedJSON).isSeated){
+    $("#posture1").trigger("click");
+  } else{
+    $("#posture2").trigger("click");
+  }
+
   // update spinners (stored value always in SI)
   p.length = JSON.parse(storedJSON).length;
   p.height = JSON.parse(storedJSON).height;
@@ -85,18 +99,8 @@ function loadStateFromJSON(storedJSON){
       $("#units2").trigger("click");
     }
   }
-  if (JSON.parse(storedJSON).isSeated){
-    $("#posture1").trigger("click");
-  } else{
-    $("#posture2").trigger("click");
-  }
-  if (JSON.parse(storedJSON).view == 3){
-    $("#view3").trigger("click");
-  } else if (JSON.parse(storedJSON).view == 2){
-    $("#view2").trigger("click");
-  } else {
-    $("#view1").trigger("click");
-  }
+
+
 
   // set sliders to parameter values, update sliders, and calc solutions
   // set single value sliders
