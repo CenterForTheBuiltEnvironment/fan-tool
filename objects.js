@@ -32,6 +32,7 @@ function Layout(numFansX, numFansY, room){
   this.cellSizeX = this.room.sizeX / this.numFansX;
   this.cellSizeY = this.room.sizeY / this.numFansY;
   this.cellArea = this.cellSizeX * this.cellSizeY;
+  this.cellVolume = this.cellArea * this.room.ceilingHeight;
   this.r = Math.sqrt(this.cellArea);
   // TODO redefine throughout to always > 1
   this.aspectRatio = Math.max(this.cellSizeX/this.cellSizeY, this.cellSizeY/this.cellSizeX);
@@ -74,14 +75,15 @@ function Solution(layout, fan, percentFanSpeed, bladeHeight, mdMin){
   }
   this.validBladeHeightRange = this.calcBladeHeightRange();
   this.hd = this.validBladeHeightRange['mean']/this.fan.diameter;
+  this.fanAirSpeed = this.fan.maxFanAirSpeed * this.percentFanSpeed /100;
+  this.airTurnoversPerHour = this.fan.airflow*this.percentFanSpeed*36/this.layout.cellVolume; // * 3600 to convert m3/s to m3/hour, /100 to convert percent
   this.calcAirspeeds = function(){
-    lowest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
+    lowest = this.fanAirSpeed *
     (0.9 * this.dr - 0.017 * this.cd +0.11 * this.do + p.isSeated*0.024 + 0.047)/this.layout.aspectRatio;
 
-    areaWeightedAverage = this.percentFanSpeed * 0.01 *
-    this.fan.maxFanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);
+    areaWeightedAverage = this.fanAirSpeed * (0.99 * this.dr - 0.06 * this.cd + 0.11 * this.do + p.isSeated*0.024 + 0.25);
 
-    highest = this.percentFanSpeed * 0.01 * this.fan.maxFanAirSpeed *
+    highest = this.fanAirSpeed *
     (-0.18 * this.hd - p.isSeated*0.1 + 1.3);
     return [lowest,areaWeightedAverage,highest];
   }

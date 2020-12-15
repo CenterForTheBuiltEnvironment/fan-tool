@@ -1487,14 +1487,19 @@ function drawRoom() {
       cy + 1*(lineSpacing),
     );
     ctx.fillText(
-      `Fan air speed: ${unitToString(sln.fan.maxFanAirSpeed, "speed")}`,
+      `Fan air speed: ${unitToString(sln.fanAirSpeed, "speed")}`,
       cx - fanRad - font/2,
       cy + 2*(lineSpacing),
     );
     ctx.fillText(
-      `Blade height: ${unitToString(sln.validBladeHeightRange['mean'], "distance")}`,
+      `Air Turnovers/Hour: ${math.format(sln.airTurnoversPerHour,3)} /hr`,
       cx - fanRad - font/2,
       cy + 3*(lineSpacing),
+    );
+    ctx.fillText(
+      `Blade height: ${unitToString(sln.validBladeHeightRange['mean'], "distance")}`,
+      cx - fanRad - font/2,
+      cy + 4*(lineSpacing),
     );
 
     // draw the fan in plan
