@@ -1737,13 +1737,13 @@ function drawRoom() {
       imageObj.onload = function() {
         ctx.drawImage(imageObj, margin + 0.2*r, margin + h - personHeight - 1, 0.935*personHeight, personHeight);
       };
-      imageObj.src = 'https://centerforthebuiltenvironment.github.io/fan-tool/img/seated-left.png';
+      imageObj.src = 'static/img/seated-left.png';
       // imageObj.src = '/img/seated-left.png';
       var imageObj2 = new Image();
       imageObj2.onload = function() {
         ctx.drawImage(imageObj2, margin + 0.6*r, margin + h - personHeight - 1, 0.8923*personHeight, personHeight);
       };
-      imageObj2.src = 'https://centerforthebuiltenvironment.github.io/fan-tool/img/seated-right.png';
+      imageObj2.src = 'static/img/seated-right.png';
       // imageObj2.src = '/img/seated-right.png';
     } else {
       personHeight = scale * 1.7;
@@ -1751,7 +1751,7 @@ function drawRoom() {
       imageObj.onload = function() {
         ctx.drawImage(imageObj, margin + 0.2*r, margin + h - personHeight - 1, scale*1.15, personHeight);
       };
-      imageObj.src = 'https://centerforthebuiltenvironment.github.io/fan-tool/img/2-people.png';
+      imageObj.src = 'static/img/2-people.png';
       // imageObj.src = '/img/2-people.png';
     }
   }

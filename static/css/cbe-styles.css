@@ -1,0 +1,293 @@
+body {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* HEADER ---------------------------------------- */
+
+header {
+    background-color: #fafafa;
+    padding: 12px;
+    border-bottom: 1px solid rgb(174, 176, 174);
+    width: 965px;
+    padding: 0 auto;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.cbe-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;  
+}
+
+.cbe-header-logo {
+    display: flex;
+    align-items: end;
+}
+
+.cbe-header-logo img {
+    max-height: 80px;
+    /* border: 1px solid grey;  uncomment for layout viz */ 
+}
+
+.cbe-tool-title {
+    font-size: 24pt;
+    font-weight: 700;
+    line-height: 105%;
+    padding-right: 20px;
+    padding-left: 20px;
+    color: #0c2772;
+    /* border: 1px solid grey; */
+}
+
+.cbe-tool-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cbe-header-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 40px;
+    overflow: hidden;
+    /* border: 1px solid grey; */
+}
+
+.cbe-header-nav a {
+    color: #0077c2;
+    text-decoration: none;
+}
+
+
+/* CBE TOOL DROPDOWN ----------------------------------------  */
+
+.cbe-tool-dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+.cbe-tool-dropdown .dropbtn {
+    color: #0077c2;
+    font-size: inherit;
+    border: none;
+    outline: none;
+    padding: inherit;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+}
+
+.cbe-tool-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fafafa;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius:10px
+}
+
+.cbe-tool-dropdown-content a {
+    float: none;
+    font-size: 11pt;
+    color: #3fbbec;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.cbe-tool-dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.cbe-tool-dropdown:hover .cbe-tool-dropdown-content {
+    display: block;
+    border-radius: 5px;
+}
+
+
+@media (max-width: 768px) {
+    .cbe-header-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cbe-tool-title {
+        font-size: 20pt;
+    }
+
+    .cbe-header-logo {
+        margin-bottom: 10px;
+    }
+
+    .cbe-tool-title,
+    .cbe-header-nav {
+        margin-top: 10px;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .cbe-tool-title {
+        font-size: 16pt;
+    }
+
+    .cbe-header-nav {
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+}
+
+
+
+
+/* CONTENT ----------------------------------------  */
+.content-container {
+    height: 450px;
+}
+
+
+
+
+
+/* FOOTER ---------------------------------------- */
+
+footer {
+    color: white;
+}
+
+.cbe-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0077c2;
+    padding: 12px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 965px;
+    overflow: hidden;
+    margin: 0 auto; 
+}
+
+.cbe-footer-logo {
+    display: flex;
+    flex-wrap: wrap;
+    width: 25%;
+    gap: 25px 40px;
+    justify-content: center;
+    align-self: center;
+    /* border: 1px solid grey; */
+}
+
+.cbe-footer-logo img {
+    object-fit: contain;
+    height: clamp(40px, 3.5vw, 50px);
+}
+
+.cbe-footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 20px 50px;
+    justify-content: center;
+    align-items: center;
+    /* border: 1px solid grey;  */
+}
+
+.cbe-footer-links a {
+    color: white;
+    font-size: 11pt;
+    text-decoration: none;
+    padding-right: 25px; /* custom fix for spacing */
+}
+
+.cbe-social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 50px;
+    justify-content: center;
+    align-self: center;
+    /* border: 1px solid grey;  */
+}
+
+.cbe-social-links img {
+    max-height: 45px;
+}
+
+.cbe-citation-info {
+    padding-left: 20px;
+    font-size: 10pt;
+    width: 35%;
+    text-align: start;
+    /* border: 1px solid grey;  */
+}
+
+.cbe-doi-link {
+    color: white;
+}
+
+.cbe-footnotes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    font-size: 8pt;
+    background-color: #0c2772;
+    padding: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 965px;
+    overflow: hidden;
+    margin: 0 auto; 
+}
+
+.cbe-version-license {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.license-badge img {
+    max-height: 12pt;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .cbe-footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cbe-footer-logo,
+    .cbe-footer-links,
+    .cbe-social-links,
+    .cbe-citation-info {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .cbe-footer-links,
+    .cbe-social-links {
+        justify-content: center;
+    }
+
+    .cbe-citation-info {
+        margin-left: 0;
+        padding-left: 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .cbe-footnotes {
+        padding: 10px;
+    }
+}
+

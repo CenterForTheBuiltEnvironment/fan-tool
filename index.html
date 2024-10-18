@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>CBE Fan Tool</title>
-  <link rel="icon" href="https://centerforthebuiltenvironment.github.io/fan-tool/img/cropped-CBE-favicon.3-150x150.png" sizes="32x32">
+  <link rel="icon" href="static/img/cropped-CBE-favicon.3-150x150.png" sizes="32x32">
   <!--<link rel="icon" href="/img/cropped-CBE-favicon.3-150x150.png" sizes="32x32">-->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css"> 
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css">
   <link rel="stylesheet" type="text/css" href="common.css">
+  <link rel="stylesheet" href="static/css/cbe-styles.css">
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script> 
@@ -29,19 +31,36 @@
 </head>
 
 <body>
-  <div id='all_content'>
-    <div id ='header'>
-      <img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/CBE-logo-2018.png"
-      alt="Center for the Built Environment" id="logo"
-      width="204" height="78" style='float:left;'>
-      <h1>CBE Fan Tool</h1>
-      <h2>
-        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/About">  About</a>  |
-        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/FAQ">  FAQ</a>  |
-        <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/User-Guide">  User Guide</a> |
-        <a href="https://escholarship.org/uc/item/6s44510d">  Design Guide</a>
-      </h2>
+
+  <!-- HEADER Start -->
+  <header>
+    <div class="cbe-header-content">
+        
+        <div class="cbe-header-logo">
+            <img src="static/img/logo-placeholder.png" alt="Tool logo">
+        </div>
+        
+        <div class="cbe-tool-title"><a href="/">CBE Fan Tool</a></div>
+
+        <nav class="cbe-header-nav">
+            <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki/about" target="_blank">About</a>
+            <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/wiki" target="_blank">Documentation</a>
+            <div class="cbe-tool-dropdown">
+                <button class="dropbtn">More CBE Tools <i class="fa fa-sort"></i></button>
+                    <div class="cbe-tool-dropdown-content">
+                        <a href="https://cbe.berkeley.edu/research/guidebook-on-fans-for-cooling-people//" target="_blank">Fans for Cooling Guidebook</a>
+                        <a href="https://clima.cbe.berkeley.edu/" target="_blank">CBE Clima Tool</a>
+                        <a href="https://comfort.cbe.berkeley.edu/" target="_blank">CBE Comfort Tool</a>
+                        <a href="https://pypi.org/project/pythermalcomfort/" target="_blank">pythermalcomfort</a>
+                    </div>
+            </div>
+        </nav>
     </div>
+</header>
+<!-- HEADER End -->
+
+
+  <div id='all_content' style="padding-top: 5px">
     <div id="left_content">
       <div style="text-align: center; font-size: 18px; padding: 6px 6px 6px 6px;">
         <button type="button" id="example" title="Displays an example use case for the web tool.">Show me an example</button>
@@ -101,13 +120,13 @@
           <div style="margin: 10px 0px 10px 0px;">
             <label for="min-air-speed" title="The range of acceptable minimum air speeds in the room">Minimum air speed</label>
             <input type="text" id="min-air-speed" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+            color:#0077c2; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-min-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
             <label for="avg-air-speed" title="The range of acceptable area-weighted average air speeds in the room">Average air speed</label>
             <input type="text" id="avg-air-speed" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+            color:#0077c2; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-avg-air-speed" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
@@ -140,7 +159,7 @@
           <div style="margin: 10px 0px 10px 0px;">
             <label for="cellSize"  title="The range of acceptable sizes of the cell around each fan. A cell is defined as the square root of the floor area that is closest to a particular fan. The original laboratory experiments were performed in rooms 6.1 m - 12.2 m (20 - 40 ft)" >Cell size</label>
             <input type="text" id="cellSize" readonly style="border:0;
-            color:#2A4583; background-color : #cccccc; font-weight:bold;">
+            color:#0077c2; background-color : #cccccc; font-weight:bold;">
           </div>
           <div id="slider-cellSize" class='slider'></div>
           <div style="margin: 10px 0px 10px 0px;">
@@ -201,7 +220,7 @@
         </span>
       </div>
 
-      <canvas id = "canv" width = "667 px" height = "534px" ></canvas>
+        <canvas id = "canv" width = "667 px" height = "534px"></canvas>
 
     </div><!--id="right_content"-->
   </div> <!--id="all_content"-->
@@ -269,43 +288,56 @@
         </fieldset>
       </form>
     </div>
+  </div> 
 
-    <footer>
-      <div id="all_content">
-        <div style="background-color: #124F7F;  color: #ffffff;  font-size: 14px; line-height: 1.2;">
-          <div style="width:998px; height:110px; overflow:hidden; padding: 6px 6px 6px 6px;">
-            <div style="width:100px; height:100px; float:left; margin: 6px 6px 6px 6px;">
-              <img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/footer-logo.png" width="100" vspace="5">
-              <br>
-              <img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/ucb-logo.png" width="100" vspace="5">
-            </div>
-            <div style="width:580px; height:100px; float:left; margin: 6px 6px 6px 6px;">
-              <b>To cite this webpage:</b>
-              Paul Raftery, 2019,
-              CBE Fan Tool, <a href="http://cbe.berkeley.edu/fan-tool" style="color:white;"> cbe.berkeley.edu/fan-tool</a>. Center for the Built Environment, University of California Berkeley.
-              <br>
-              <b>To cite the underlying models:</b> see full-scale laboratory experiments described <a href="https://escholarship.org/uc/item/4p479663" style="color:white;">here</a>.
-              <br>
-              Work performed under funding from the <a href="https://www.energy.ca.gov/programs-and-topics/programs/electric-program-investment-charge-epic-program" style="color:white;">California Energy Commission's EPIC program</a>.
-              <br>
-              <b>Note:</b> We recommend using Edge, Chrome, or Firefox.
-              <br>
-              <b>Contact:</b> For any enquiries contact p.raftery@berkeley.edu.
-
-            </div>
-            <div style="width:270px; height:100px; float:left; margin: 6px 6px 6px 6px;">
-              <div style="text-align:center;">
-                <a class="footerlink" rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://centerforthebuiltenvironment.github.io/fan-tool/img/creative_commons.png" width="100"></a>
-              </div>
-              <br>
-              The CBE Fan Tool is licensed under a
-              <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" style="color:white">Creative Commons Attribution-ShareAlike 4.0 International License</a>			  
-            </div>
-          </div>
+  <footer>
+    <div class="cbe-footer-content">
+        <div class="cbe-footer-logo">
+            <img src="static/img/CBE-logo-2019-white.png" alt="CBE Logo">
+            <img src="static/img/ucb-logo-2024-white.png" alt="UC Berkeley Logo">
         </div>
-      </div>
-    </footer>
 
+        <nav class="cbe-footer-links">
+            <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/discussions" target="_blank">Contact Us</a>
+            <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool/issues/new?labels=bug&template=issue--bug-report.md" target="_blank">Report Issues</a>
+            <!-- <a href="#">Changelog</a> -->
+        </nav>
+
+        <nav class="cbe-social-links">
+            <a href="https://github.com/CenterForTheBuiltEnvironment/fan-tool"><img src="static/img/github-white-transparent.png" alt="GitHub"></a>
+            <a href="https://www.linkedin.com/company/cbe-uc-berkeley/posts/?feedView=all"><img src="static/img/linkedin-white.png" alt="LinkedIn"></a>
+            <!-- <a href="#"><img src="img/youtube-white-trans-cropped.png" alt="YouTube"></a> -->
+        </nav>
+
+        <div class="cbe-citation-info">
+            <div>
+                <b>Please cite us if you use this software:</b> 
+                <div>
+                  Paul Raftery, 2019, CBE Fan Tool,
+                    <a class="cbe-doi-link" href="http://cbe.berkeley.edu/fan-tool" target="_blank">cbe.berkeley.edu/fan-tool</a>. Center for the Built Environment, University of California Berkeley.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="cbe-footnotes">
+        <div>Copyright © <span id="year"></span>  The Center for the Built Environment and UC Regents. All rights reserved.</div>
+
+        <script>
+            // Set the current year
+            document.getElementById('year').textContent = new Date().getFullYear();
+        </script>
+
+        <div class="cbe-version-license">
+            <div>Version 1.1</div>
+            <a class="license-badge" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                <img src="https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg" alt="License: CC BY-SA 4.0">
+            </a>
+        </div>
+    </div>
+    
+  </footer>
 
   </body>
 
