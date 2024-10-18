@@ -160,6 +160,8 @@ header {
 
 footer {
     color: white;
+    width: 988px;
+    margin: 0 auto;
 }
 
 .cbe-footer-content {
@@ -172,7 +174,7 @@ footer {
     padding-bottom: 20px;
     width: 965px;
     overflow: hidden;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
 
 .cbe-footer-logo {
